@@ -1,11 +1,9 @@
 # 2004_covid_testing_lab_simulation
 Simulation of covid screening lab
 
-## The code contains the following sections:
+## Running the simulation:
 
-* *lab_sim*: The covid-19 screening laboratory simulation. Use covid_screening_lab.ipynb as your starting point.
-
-* *pooling* experiments in pooling samples. Under development.
+Use covid_screening_lab.ipynb as your starting point.
 
 
 ## Run on BinderHub:
