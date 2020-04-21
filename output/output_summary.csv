@@ -1,0 +1,8 @@
+,,min,mean,median,max
+,,Result,Result,Result,Result
+result_type,name,,,,
+demand_met,30k_recommended,0.64,0.8846666666666667,0.92,0.93
+input,30k_recommended,29992.0,29992.0,29992.0,29992.0
+max_process_time_hours,30k_recommended,19.05,19.61733333333333,19.560000000000002,20.08
+median_process_time_hours,30k_recommended,19.05,19.61733333333333,19.560000000000002,20.08
+output,30k_recommended,19136.0,26545.066666666666,27600.0,27968.0
