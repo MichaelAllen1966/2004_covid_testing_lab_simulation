@@ -19,8 +19,6 @@ class Scenario(object):
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
         self.day_duration = 1440
-        self.fte_start = 0
-        self.fte_end = 17.75 * 60
         self.run_days = 1
         self.warm_up_days = 0
         
@@ -40,10 +38,14 @@ class Scenario(object):
 
         # Resource numbers        
         self.resource_numbers = {
-            'human_sample_receipt': 12,
-            'human_sample_prep': 5,
-            'human_rna_prep': 4,
-            'human_pcr': 3,
+            'human_sample_receipt_shift_1': 12,
+            'human_sample_receipt_shift_2': 12,
+            'human_sample_prep_shift_1': 5,
+            'human_sample_prep_shift_2': 5,
+            'human_rna_prep_shift_1': 4,
+            'human_rna_prep_shift_2': 4,
+            'human_pcr_shift_1': 3,
+            'human_pcr_shift_2': 3,
             'beckman_rna_extraction': 16,
             'pcr_plate_stamper': 2,
             'pcr_plate_reader': 13,
@@ -52,10 +54,14 @@ class Scenario(object):
 
         # Resource available hours (use hours)
         self.resource_shift_hours = {
-            'human_sample_receipt': (0.0, 18.0),
-            'human_sample_prep': (0.0, 18.0),
-            'human_rna_prep': (0.0, 18.0),
-            'human_pcr': (0.0, 18.0),
+            'human_sample_receipt_shift_1': (0.3, 9.0),
+            'human_sample_receipt_shift_2': (9.0, 17.75),
+            'human_sample_prep_shift_1': (0.3, 9.0),
+            'human_sample_prep_shift_2': (9.0, 17.75),
+            'human_rna_prep_shift_1': (0.3, 9.0),
+            'human_rna_prep_shift_2': (9.0, 17.75),
+            'human_pcr_shift_1': (0.3, 9.0),
+            'human_pcr_shift_2': (9.0, 17.75),
             'beckman_rna_extraction': (0.0, 24.0),
             'pcr_plate_stamper': (0.0, 24.0),
             'pcr_plate_reader': (0.0, 24.0),
@@ -65,10 +71,14 @@ class Scenario(object):
         
         # Resource unavailability on any whole day due to breakdown
         self.resource_breakdown_unavailability = {
-            'human_sample_receipt': 0,
-            'human_sample_prep': 0,
-            'human_rna_prep': 0,
-            'human_pcr': 0,
+            'human_sample_receipt_shift_1': 0,
+            'human_sample_receipt_shift_2': 0,
+            'human_sample_prep_shift_1': 0,
+            'human_sample_prep_shift_2': 0,
+            'human_rna_prep_shift_1': 0,
+            'human_rna_prep_shift_2': 0,
+            'human_pcr_shift_1': 0,
+            'human_pcr_shift_2': 0,
             'beckman_rna_extraction': 0.04,
             'pcr_plate_stamper': 0.08,
             'pcr_plate_reader': 0.02,
@@ -76,8 +86,16 @@ class Scenario(object):
             }
         
         # FTE resources (these will take breaks!)
-        self.fte_resources = ['human_sample_receipt', 'human_sample_prep','human_rna_prep',
-                              'human_pcr']
+        self.fte_resources = [
+            'human_sample_receipt_shift_1',
+            'human_sample_receipt_shift_2',
+            'human_sample_prep_shift_1',
+            'human_sample_prep_shift_2',
+            'human_rna_prep_shift_1',
+            'human_rna_prep_shift_2',
+            'human_pcr_shift_1',
+            'human_pcr_shift_2']
+
         
         # Process duration. Tuple of fixed time, time per entity, and time per item in entity.
         # Multi-step automated processes have three sets of times (set up, automated, clean down)
@@ -91,26 +109,25 @@ class Scenario(object):
              'pcr': ([5,0,0],[117,0,0],[1,0,0]),
              }
         
-        self.allow_maual_sample_prep = False
+        self.allow_maual_sample_prep = True
         
         # Add a triangular distribution of extra time per prcoess
         # Average extra time with be 1/4 of this (e.g. 0.25 = 6.25% added length on average)       
         self.additional_time_manual = 0.25
         self.additional_time_auto = 0.10
                 
-        # Last process start (minutes before day end)
-        # Adjust for length of FTE day (as model set up to start with FTE arrival) - days ends at 6 am
-        self.process_last_start = {
-            'sample_receipt': 60 + (6 * 60),
-            'sample_prep': 150 + (6 * 60),
-            'rna_extraction': 93 + (6 * 60),
-            'pcr_prep': 0 + (6 * 60),
-            'pcr': 0 + (6 * 60),
+        # Range of times new jobs may start
+        self.process_start_hours = {
+            'sample_receipt': (0, 17),
+            'sample_prep': (0, 15.5),
+            'rna_extraction': (0, 15.5),
+            'pcr_prep': (0, 15.5),
+            'pcr': (0, 15.5)
             }
 
         # rna pcr kanban group limit
         # Limit of PCR read capapcity multiple allowed from sample prep onwards
-        self.pcr_kanban_limit = 3.0
+        self.pcr_kanban_limit = 3
     
         # Process priories (lower number - higher prioirity)
         self.process_priorites = {
@@ -128,27 +145,33 @@ class Scenario(object):
         self.process_resources = {
             'sample_receipt': {
                 'process_type': 'manual',
-                'human_list': (['human_sample_receipt'],),
+                'human_list': (['human_sample_receipt_shift_1',
+                                'human_sample_receipt_shift_2'],),
                 'machine_list': ([],)},
             'sample_prep_manual': {
                 'process_type': 'manual',
-                'human_list': (['human_sample_receipt'],),
+                'human_list': (['human_sample_receipt_shift_1',
+                                'human_sample_receipt_shift_2'],),
                 'machine_list': ([],)},
             'sample_prep_auto': {
                 'process_type': 'auto',
-                'human_list': (['human_sample_prep'],),
+                'human_list': (['human_sample_prep_shift_1',
+                                'human_sample_prep_shift_2'],),
                 'machine_list': (['sample_prep_automation'],)},
             'rna_extraction':{
                 'process_type': 'auto',
-                'human_list': (['human_rna_prep'],),
+                'human_list': (['human_rna_prep_shift_1',
+                                'human_rna_prep_shift_2'],),
                 'machine_list': (['beckman_rna_extraction'],)},
             'pcr_prep':{
                 'process_type': 'auto',
-                'human_list': (['human_pcr'],),
+                'human_list': (['human_pcr_shift_1',
+                                'human_pcr_shift_2'],),
                 'machine_list': (['pcr_plate_stamper'],)},
             'pcr':{
                 'process_type': 'auto',
-                'human_list': (['human_pcr'],),
+                'human_list': (['human_pcr_shift_1',
+                                'human_pcr_shift_2'],),
                 'machine_list': (['pcr_plate_reader'],)},
             }
         
@@ -210,4 +233,9 @@ class Scenario(object):
             start = shift_hours[0] * 60
             end = shift_hours[1] * 60
             self.resource_shifts[resource] = (start, end)
+            
+
+
+        
+        
             

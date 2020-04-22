@@ -247,7 +247,6 @@ class ProcessSteps:
     def generate_input(self):
         """Continuous loop of work arrival. Adds new work to batch input."""
         # First delivery at start of day
-        yield self._env.timeout(self._params.fte_start)
         # While loop continues generating new patients throughout model run
         while True:
             # generate new entity and add to list of current entities
