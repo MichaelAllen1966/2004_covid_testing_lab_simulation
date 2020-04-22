@@ -111,52 +111,47 @@ class Process:
         self.assign(q, process)
         
     def assign_pcr_prep(self, time_of_day, time_left):
-        shift = self._params.resource_shifts['human_pcr']
-        if shift[0] <= time_of_day <= shift[1]:
-            if time_left >= self._params.process_last_start['pcr_prep']:
-                q = 'q_pcr_prep'; process = 'pcr_prep'
-                self.assign(q, process)
+        shift = self._params.process_start_hours['pcr_prep']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            q = 'q_pcr_prep'; process = 'pcr_prep'
+            self.assign(q, process)
         
     def assign_pcr(self, time_of_day, time_left):
-        shift = self._params.resource_shifts['human_pcr']
-        if shift[0] <= time_of_day <= shift[1]:
-            if time_left >= self._params.process_last_start['pcr']:
-                q = 'q_pcr'; process = 'pcr'
-                self.assign(q, process)
+        shift = self._params.process_start_hours['pcr']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            q = 'q_pcr'; process = 'pcr'
+            self.assign(q, process)
         
     def assign_rna_extraction(self, time_of_day, time_left):
-        shift = self._params.resource_shifts['human_rna_prep']
-        if shift[0] <= time_of_day <= shift[1]:
-            if time_left >= self._params.process_last_start['rna_extraction']:
-                # Assign sample_receipts
-                q = 'q_rna_extraction'; process = 'rna_extraction'
-                self.assign(q, process)
+        shift = self._params.process_start_hours['rna_extraction']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            # Assign sample_receipts
+            q = 'q_rna_extraction'; process = 'rna_extraction'
+            self.assign(q, process)
 
     def assign_sample_receipt(self, time_of_day, time_left):
-        shift = self._params.resource_shifts['human_sample_receipt']
-        if shift[0] <= time_of_day <= shift[1]:
-            if time_left >= self._params.process_last_start['sample_receipt']:
+        shift = self._params.process_start_hours['sample_receipt']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
                 # Assign sample_receipts
                 q = 'q_sample_receipt'; process = 'sample_receipt'
                 self.assign(q, process)
         
     def assign_sample_prep(self, time_of_day, time_left):
-        shift = self._params.resource_shifts['human_sample_prep']
-        if shift[0] <= time_of_day <= shift[1]:
-            if time_left >= self._params.process_last_start['sample_prep']:
-                # Call autoated prep, then manual, if system is below kanban limit
-                max_calls = ((self._params.resource_numbers['pcr_plate_reader'] * 
-                            self._params.pcr_kanban_limit) - self.count_kanban_rna_pcr())
-                # Convert max_calls to 96 well plates equivalent
-                max_calls = int(max_calls * 4)
-                
-                q = 'q_sample_prep'; process = 'sample_prep_auto'
+        shift = self._params.process_start_hours['sample_prep']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            # Call autoated prep, then manual, if system is below kanban limit
+            max_calls = ((self._params.resource_numbers['pcr_plate_reader'] * 
+                        self._params.pcr_kanban_limit) - self.count_kanban_rna_pcr())
+            # Convert max_calls to 96 well plates equivalent
+            max_calls = int(max_calls * 4)
+            
+            q = 'q_sample_prep'; process = 'sample_prep_auto'
+            self.assign(q, process, max_calls)
+            
+            # Also use manual process if allowed
+            if self._params.allow_maual_sample_prep:
+                q = 'q_sample_prep'; process = 'sample_prep_manual'
                 self.assign(q, process, max_calls)
-                
-                # Also use manual process if allowed
-                if self._params.allow_maual_sample_prep:
-                    q = 'q_sample_prep'; process = 'sample_prep_manual'
-                    self.assign(q, process, max_calls)
 
     def collate_for_pcr(self):
         # Takes 2 plates from RNA extraction and combines to one for PCR
@@ -180,17 +175,14 @@ class Process:
             self.collate_for_rna_extraction()
             self.collate_for_pcr()
             
-            if time_of_day >= self._params.fte_start:
-                # Assign work by priority
-                for key, _ in self._params.process_priorites.items():
-                    self.process_assign_calls[key](time_of_day, time_left)
+            for key, _ in self._params.process_priorites.items():
+                self.process_assign_calls[key](time_of_day, time_left)
                     
             # Time before next control loop
             yield self._env.timeout(1.0)
     
     def count_kanban_rna_pcr(self):
-        """Count all 384 well equivalent between sample prep and PCR (inclusive)
-        """
+        """Count all 384 well equivalent between sample prep and PCR (inclusive)"""
         rna_pcr_kanban_group = (
                 0.25 * self.process_step_counters['sample_prep_manual'] +
                 0.25 * self.process_step_counters['sample_prep_auto'] +
@@ -208,7 +200,7 @@ class Process:
     
     def display_day(self):
         while True:
-            print (f'\r>> Day {int(self._env.now/1440)}', end='')
+            print (f'\r>> Day {int(self._env.now/self._params.day_duration)}', end='')
             yield self._env.timeout(self._params.day_duration)
             
     def end_run_routine(self):

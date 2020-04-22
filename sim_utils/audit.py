@@ -22,19 +22,17 @@ class Audit:
         self.resource_names = ['day'] + [key for key, value in self._recources.items()]
         self.resource_audit = pd.DataFrame(columns = self.resource_names)
 
-    def audit_queue(self, fte_present):
+    def audit_queue(self):
         day = self._env.now
         audit_counts = {key: len(value) for key, value in self._queues.items()}
         audit_counts['day'] = day / self._params.day_duration
-        audit_counts['fte_present'] = fte_present
         self.queue_audit = self.queue_audit.append(audit_counts, ignore_index=True)
         
         
-    def audit_resources(self, fte_present):
+    def audit_resources(self):
         time = self._env.now
         resource_counts = {key: value.count for key, value in self._recources.items()}
         resource_counts['day'] = time / self._params.day_duration
-        resource_counts['fte_present'] = fte_present
         for resource, shift in self._params.resource_shifts.items():
             label = resource + '_shift'
             if shift[0] < time < shift[1]:
@@ -136,10 +134,9 @@ class Audit:
             'q_completed': 368          
             }
         
-        mask = self.queue_audit['fte_present'] == 1
         queued_units = pd.DataFrame()
         for key, value in queue_units.items():
-            queue_samples = self.queue_audit[key][mask] * value
+            queue_samples = self.queue_audit[key] * value
             queued_units[key] = queue_samples
                 
         self.max_queue_sizes = queued_units.max()
@@ -199,11 +196,9 @@ class Audit:
         while True:
             
             time_of_day = self._env.now % self._params.day_duration
-            fte_present = 1 if (time_of_day >= self._params.fte_start and 
-                                time_of_day <= self._params.fte_end) else 0
             
-            self.audit_queue(fte_present)
-            self.audit_resources(fte_present)
+            self.audit_queue()
+            self.audit_resources()
             yield self._env.timeout(self._params.audit_interval)
         
         
