@@ -109,7 +109,7 @@ class Scenario(object):
              'pcr': ([5,0,0],[117,0,0],[1,0,0]),
              }
         
-        self.allow_maual_sample_prep = True
+        self.allow_maual_sample_prep = False
         
         # Add a triangular distribution of extra time per prcoess
         # Average extra time with be 1/4 of this (e.g. 0.25 = 6.25% added length on average)       
@@ -118,11 +118,11 @@ class Scenario(object):
                 
         # Range of times new jobs may start
         self.process_start_hours = {
-            'sample_receipt': (0, 17),
+            'sample_receipt': (0, 15.5),
             'sample_prep': (0, 15.5),
-            'rna_extraction': (0, 15.5),
-            'pcr_prep': (0, 15.5),
-            'pcr': (0, 15.5)
+            'rna_extraction': (0, 24),
+            'pcr_prep': (0, 24),
+            'pcr': (0, 24)
             }
 
         # rna pcr kanban group limit
