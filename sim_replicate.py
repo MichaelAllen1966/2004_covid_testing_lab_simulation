@@ -93,7 +93,7 @@ scenarios['30k_recommended'] = Scenario(
          'pcr': ([5,0,0],[117,0,0],[1,0,0]),
          },
              
-    allow_maual_sample_prep = True,
+    allow_maual_sample_prep = False,
     tea_break_times = [2*60, 6*60, 12*60, 16*60],
     meal_break_times = [4*60, 14*60],
     break_start_spread = 60,
