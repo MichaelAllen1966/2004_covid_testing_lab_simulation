@@ -1,5 +1,5 @@
 from sim_utils.model import Model
-from sim_utils.parameters_200422 import Scenario
+from sim_utils.parameters import Scenario
 
 # Temporary run model without replication
 

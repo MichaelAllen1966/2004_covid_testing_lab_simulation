@@ -15,6 +15,7 @@ class Scenario(object):
         # Work arrival
         self.samples_per_day = 30000
         self.deliveries_per_day = 1
+        self.basic_batch_size = 24
 
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
@@ -211,9 +212,10 @@ class Scenario(object):
             
         # Calculations
         
-        # Set arrival batch size and round (down) oto nearest 92
+        # Set arrival batch size and round (down) to nearest basic batch size
         self.arrival_batch_size = self.samples_per_day / self.deliveries_per_day
-        self.arrival_batch_size = np.floor(self.arrival_batch_size / 92) * 92
+        self.arrival_batch_size = np.floor(
+            self.arrival_batch_size / self.basic_batch_size) * self.basic_batch_size
         
         # Set interarrival time
         self.interarrival_time = self.day_duration / self.deliveries_per_day

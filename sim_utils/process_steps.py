@@ -9,7 +9,7 @@ class ProcessSteps:
     -------
 
     batch_input:
-        Create job batches of 92 samples for model (not a physcial step; 
+        Create job batches of samples for model (not a physcial step; 
         does not need resources).
     
     collate:
@@ -72,12 +72,13 @@ class ProcessSteps:
 
 
     def batch_input(self, workstation, job):
-        """Create job batches of 92 samples for model (not a physcial step; 
+        """Create job batches of samples for model (not a physcial step; 
         does not need resources)."""
 
         orginal_batch_size = job.batch_size
-        # Round batches up to complete 92 batches
-        new_batches = int(np.ceil(orginal_batch_size / 92))
+        # Round batches up to complete  batches
+        new_batches = int(
+            np.ceil(orginal_batch_size / self._params.basic_batch_size))
 
         if new_batches > 1:
             for _batch in range(new_batches):
@@ -85,7 +86,7 @@ class ProcessSteps:
                 entity = Entity(_env = self._env,
                                 _params = self._params,
                                 batch_id = job.batch_id,
-                                batch_size = 92,
+                                batch_size = self._params.basic_batch_size,
                                 entity_id = self._id_count,
                                 entity_type = 'registered sample tubes',
                                 last_queue = 'q_sample_receipt',
@@ -491,7 +492,7 @@ class ProcessSteps:
         entity = Entity(_env = self._env,
                 _params = self._params,
                 batch_id = job.batch_id,
-                batch_size = 92*4,
+                batch_size = self._params.basic_batch_size*4,
                 entity_id = self._id_count,
                 entity_type = 'pcr output',
                 last_queue = 'q_data_analysis',
@@ -538,7 +539,7 @@ class ProcessSteps:
         entity = Entity(_env = self._env,
                 _params = self._params,
                 batch_id = job.batch_id,
-                batch_size = 92*4,
+                batch_size = self._params.basic_batch_size * 4,
                 entity_id = self._id_count,
                 entity_type = 'plate for pcr read',
                 last_queue = 'q_pcr',
@@ -594,7 +595,7 @@ class ProcessSteps:
         entity = Entity(_env = self._env,
                 _params = self._params,
                 batch_id = job.batch_id,
-                batch_size = 92,
+                batch_size = self._params.basic_batch_size,
                 entity_id = self._id_count,
                 entity_type = 'plate for pcr',
                 last_queue = 'q_pcr_collation',
@@ -643,9 +644,9 @@ class ProcessSteps:
         entity = Entity(_env = self._env,
                 _params = self._params,
                 batch_id = job.batch_id,
-                batch_size = 92,
+                batch_size = self._params.basic_batch_size,
                 entity_id = self._id_count,
-                entity_type = '92 samples in plate for rna extraction',
+                entity_type = 'samples in plate for rna extraction',
                 last_queue = 'q_rna_collation',
                 last_queue_time_in = self._env.now,
                 parent_ids = [job.entity_id],
@@ -690,9 +691,9 @@ class ProcessSteps:
         entity = Entity(_env = self._env,
                 _params = self._params,
                 batch_id = job.batch_id,
-                batch_size = 92,
+                batch_size = self._params.basic_batch_size,
                 entity_id = self._id_count,
-                entity_type = '92 samples in plate for rna extraction',
+                entity_type = 'samples in plate for rna extraction',
                 last_queue = 'q_rna_collation',
                 last_queue_time_in = self._env.now,
                 parent_ids = [job.entity_id],
@@ -712,12 +713,8 @@ class ProcessSteps:
     def sample_receipt(self, workstation, job):
         """
         Process as described:
-            Takes batches of 250 samples. Log and rack into racks of 92 samples.
-            Time taken = 133 min
-        
-        Simplification: 
-            Assume they can draw on 92 samples at a time. Scale time to 50 min
-            
+            Takes batches of 250 samples. Log and rack into racks of samples.
+            Time taken = 133 min         
 
         """
 
@@ -743,7 +740,7 @@ class ProcessSteps:
         entity = Entity(_env = self._env,
                 _params = self._params,
                 batch_id = job.batch_id,
-                batch_size = 92,
+                batch_size = self._params.basic_batch_size,
                 entity_id = self._id_count,
                 entity_type = 'rack of tubes for sample prep',
                 last_queue = 'q_sample_prep',
