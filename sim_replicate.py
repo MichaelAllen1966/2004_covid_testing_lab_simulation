@@ -14,7 +14,7 @@ scenarios = {}
 scenarios['30k_recommended'] = Scenario(
     samples_per_day = 30000,
 
-    basic_batch_size = 93,
+    basic_batch_size = 10,
 
     resource_numbers = {
         'human_sample_receipt_shift_1': 12,

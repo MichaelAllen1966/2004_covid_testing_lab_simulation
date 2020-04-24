@@ -23,7 +23,11 @@ class Replicator:
         self.resources_pivot = pd.DataFrame()
         
             
-    def pivot_results(self):   
+    def pivot_results(self):  
+
+        def percentile_95(g):
+            """Function for percentiles in pandas picot table"""
+            return np.percentile(g, 95)
         
         
         # Output summary
@@ -75,9 +79,8 @@ class Replicator:
         self.max_queue_pivot = df.pivot_table(
             index = ['queue', 'name'],
             values = [0],
-            aggfunc = [np.max],
+            aggfunc = [np.max, percentile_95],
             margins=False)
-        self.max_queue_pivot = self.max_queue_pivot['amax']
         self.max_queue_pivot.rename(columns={0:'Max samples'},inplace=True)
         rows_to_drop = ['q_batch_input', 'q_completed']
         self.max_queue_pivot.drop(rows_to_drop, inplace=True)
@@ -100,9 +103,34 @@ class Replicator:
         print('\n\n')
         print('Max samples queuing')
         print('-------------------')
+        print('Results describe maximum queueing across runs')
         print(self.max_queue_pivot)
         
 
+    def run_scenarios(self):
+        
+        # Run all scenarios
+        scenario_count = len(self.scenarios)
+        counter = 0
+        for name, scenario in self.scenarios.items():
+            counter += 1
+            print(f'\r>> Running scenario {counter} of {scenario_count}', end='')
+            scenario_output = self.run_trial(scenario)
+            self.unpack_trial_results(name, scenario_output)
+        
+        # Clear progress output
+        clear_line = '\r' + " " * 79
+        print(clear_line, end = '')
+        
+        # Pivot results
+        self.pivot_results()
+        
+        # Print results
+        self.print_results()
+        
+        # save results
+        self.save_results()
+        
         
     
     def run_trial(self, scenario):
@@ -139,30 +167,7 @@ class Replicator:
         return results
         
     
-    def run_scenarios(self):
-        
-        # Run all scenarios
-        scenario_count = len(self.scenarios)
-        counter = 0
-        for name, scenario in self.scenarios.items():
-            counter += 1
-            print(f'\r>> Running scenario {counter} of {scenario_count}', end='')
-            scenario_output = self.run_trial(scenario)
-            self.unpack_trial_results(name, scenario_output)
-        
-        # Clear progress output
-        clear_line = '\r' + " " * 79
-        print(clear_line, end = '')
-        
-        # Pivot results
-        self.pivot_results()
-        
-        # Print results
-        self.print_results()
-        
-        # save results
-        self.save_results()
-        
+
 
 
     def unpack_trial_results(self, name, results):
