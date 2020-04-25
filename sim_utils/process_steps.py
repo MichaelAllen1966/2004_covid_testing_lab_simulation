@@ -64,6 +64,7 @@ class ProcessSteps:
             'sample_receipt': self.sample_receipt,
             'sample_prep_auto': self.sample_prep_auto,
             'sample_prep_manual': self.sample_prep_manual,
+            'sample_heat': self.sample_heat,
             'rna_extraction': self.rna_extraction,
             'pcr_prep': self.pcr_prep,
             'pcr': self.pcr,
@@ -277,7 +278,7 @@ class ProcessSteps:
         
     def occupy_resources_automated_subprocess(self, workstation, human_resources, machine_resources,
             stage_process_times, priority, entity_to_create, queue_to_add_new_entity, 
-            process_step_counter):
+            process_step):
         
         """Obtains and occupied resources for a process step involving three steps:
             1) Machine set up (requires machine + human)
@@ -287,26 +288,8 @@ class ProcessSteps:
 
         # Set up
         
-        self.process_step_counters[process_step_counter] += 1
+        self.process_step_counters[process_step] += 1
 
-        # Get human resources
-        human_resources_required = human_resources
-        human_resources_selected = [] # names of selected resources
-        human_resource_requests = [] # resource request obejects
-        for resource_list in human_resources_required:
-            # Check availability. If none of list available, use first item
-            chosen_resource = resource_list[0]
-            for resource in resource_list:
-                if self._resources_available[resource] > 0:
-                    chosen_resource = resource
-                    break
-            human_resources_selected.append(chosen_resource)
-            self._resources_available[chosen_resource] -= 1
-            self._resources_occupied[chosen_resource] +- 1
-            # Get resource (store in resource_requests to release later)
-            req = self._resources[chosen_resource].request(priority=priority)
-            human_resource_requests.append((self._resources[chosen_resource], req))
-            yield req
 
         # Get machine resources
         machine_resources_required = machine_resources
@@ -325,6 +308,26 @@ class ProcessSteps:
             # Get resource (store in resource_requests to release later)
             req = self._resources[chosen_resource].request(priority=priority)
             machine_resource_requests.append((self._resources[chosen_resource], req))
+            yield req
+
+
+        # Get human resources
+        human_resources_required = human_resources
+        human_resources_selected = [] # names of selected resources
+        human_resource_requests = [] # resource request obejects
+        for resource_list in human_resources_required:
+            # Check availability. If none of list available, use first item
+            chosen_resource = resource_list[0]
+            for resource in resource_list:
+                if self._resources_available[resource] > 0:
+                    chosen_resource = resource
+                    break
+            human_resources_selected.append(chosen_resource)
+            self._resources_available[chosen_resource] -= 1
+            self._resources_occupied[chosen_resource] +- 1
+            # Get resource (store in resource_requests to release later)
+            req = self._resources[chosen_resource].request(priority=priority)
+            human_resource_requests.append((self._resources[chosen_resource], req))
             yield req
 
             
@@ -411,18 +414,22 @@ class ProcessSteps:
         
         # Free workstation
         self._workstation_assigned_jobs[workstation] -= 1
-        self.process_step_counters[process_step_counter] -= 1
+        self.process_step_counters[process_step] -= 1
+        
+        # Reduce kanban counts as necessary
+        self.reduce_kanban_counts(process_step, entity_to_create.batch_size)
+
             
     
     def occupy_resources_single_subprocess(self, workstation, resources_required, process_time, 
-            priority, entity_to_create, queue_to_add_new_entity, process_step_counter):
+            priority, entity_to_create, queue_to_add_new_entity, process_step):
         
         """Obtains and occupied resources for a single process step (e.g manual
         or semi-automated process). c.f. Multi-step process which has machine set up,
         automation, and machine clean-down.
         """
         
-        self.process_step_counters[process_step_counter] += 1
+        self.process_step_counters[process_step] += 1
         
         resources_selected = [] # names of selected resources
         resource_requests = [] # resource request obejects
@@ -462,7 +469,11 @@ class ProcessSteps:
         
         # Free workstation
         self._workstation_assigned_jobs[workstation] -= 1
-        self.process_step_counters[process_step_counter] -= 1
+        self.process_step_counters[process_step] -= 1
+        
+        # Reduce kanban counts as necessary
+        self.reduce_kanban_counts(process_step, entity_to_create.batch_size)
+        
         
             
     def pcr(self, workstation, job):
@@ -505,7 +516,7 @@ class ProcessSteps:
             workstation = workstation, human_resources = human_resources, 
             machine_resources = machine_resources, stage_process_times = stage_process_times, 
             priority = process_priority, entity_to_create = entity, 
-            queue_to_add_new_entity = 'q_data_analysis', process_step_counter='pcr'))
+            queue_to_add_new_entity = 'q_data_analysis', process_step='pcr'))
         
         self.record_queuing_time(
             'q_pcr', job.last_queue_time_in, self._env.now)    
@@ -552,7 +563,7 @@ class ProcessSteps:
             workstation = workstation, human_resources = human_resources, 
             machine_resources = machine_resources, stage_process_times = stage_process_times, 
             priority = process_priority, entity_to_create = entity, 
-            queue_to_add_new_entity = 'q_pcr', process_step_counter='pcr_prep'))
+            queue_to_add_new_entity = 'q_pcr', process_step='pcr_prep'))
         
         self.record_queuing_time(
             'q_pcr_prep', job.last_queue_time_in, self._env.now)    
@@ -565,6 +576,16 @@ class ProcessSteps:
         """Add time entered/left queue to process queue monitors"""
 
         self.queue_monitors[queue].append((time_in, time_out))
+        
+        
+
+    def reduce_kanban_counts(self, process, quantity):
+        """Reduce quantity in kanban group if process is at end of a kanban 
+        group"""
+        relevant_kanban_groups = self._params.kanban_end[process]
+        if len(relevant_kanban_groups) > 0:
+            for kanban_group in relevant_kanban_groups:
+                    self._params.kanban_group_counts[kanban_group] -= quantity
 
     
     
@@ -608,11 +629,60 @@ class ProcessSteps:
             workstation = workstation, human_resources = human_resources, 
             machine_resources = machine_resources, stage_process_times = stage_process_times, 
             priority = process_priority, entity_to_create = entity, 
-            queue_to_add_new_entity = 'q_pcr_collation', process_step_counter='rna_extraction'))
+            queue_to_add_new_entity = 'q_pcr_collation', process_step='rna_extraction'))
 
         self.record_queuing_time(
             'q_rna_extraction', job.last_queue_time_in, self._env.now)
-    
+        
+        
+    def sample_heat(self, workstation, job):
+        # Job is a single input entity
+        
+        num_entities = 1
+        
+        # Get resources required (a tuple of list of required alternative resoucres)
+        human_resources = self._params.process_resources['sample_heat']['human_list']
+        machine_resources = self._params.process_resources['sample_heat']['machine_list']
+
+        # Process time
+        process_times = self._params.process_duration['sample_heat']
+        
+        stage_process_times = []
+        for stage in process_times: 
+            process_time = (stage[0] + 
+                            stage[1] * num_entities +
+                            stage[2] * num_entities * job.batch_size)
+            stage_process_times.append(process_time)
+        
+        process_priority = self._params.process_priorites['sample_heat']
+        
+        # Generate new entity (one output entity per job)
+        self._id_count += 1
+        
+        # Define entity to create
+        entity = Entity(_env = self._env,
+                _params = self._params,
+                batch_id = job.batch_id,
+                batch_size = self._params.basic_batch_size,
+                entity_id = self._id_count,
+                entity_type = 'samples in plate for rna extraction',
+                last_queue = 'q_rna_collation',
+                last_queue_time_in = self._env.now,
+                parent_ids = [job.entity_id],
+                time_in = job.time_in)
+        
+        # Define queue to add new entitiy to
+        self._env.process(self.occupy_resources_automated_subprocess(
+            workstation = workstation, human_resources = human_resources, 
+            machine_resources = machine_resources, stage_process_times = stage_process_times, 
+            priority = process_priority, entity_to_create = entity, 
+            queue_to_add_new_entity = 'q_rna_collation', process_step='sample_heat'))
+
+        self.record_queuing_time(
+            'q_sample_heat', job.last_queue_time_in, self._env.now)
+        
+        
+        
 
     def sample_prep_auto(self, workstation, job):
         """
@@ -647,7 +717,7 @@ class ProcessSteps:
                 batch_size = self._params.basic_batch_size,
                 entity_id = self._id_count,
                 entity_type = 'samples in plate for rna extraction',
-                last_queue = 'q_rna_collation',
+                last_queue = 'q_sample_heat',
                 last_queue_time_in = self._env.now,
                 parent_ids = [job.entity_id],
                 time_in = job.time_in)
@@ -657,7 +727,7 @@ class ProcessSteps:
             workstation = workstation, human_resources = human_resources, 
             machine_resources = machine_resources, stage_process_times = stage_process_times, 
             priority = process_priority, entity_to_create = entity, 
-            queue_to_add_new_entity = 'q_rna_collation', process_step_counter='sample_prep_auto'))
+            queue_to_add_new_entity = 'q_sample_heat', process_step='sample_prep_auto'))
 
         self.record_queuing_time(
             'q_sample_prep', job.last_queue_time_in, self._env.now)
@@ -694,7 +764,7 @@ class ProcessSteps:
                 batch_size = self._params.basic_batch_size,
                 entity_id = self._id_count,
                 entity_type = 'samples in plate for rna extraction',
-                last_queue = 'q_rna_collation',
+                last_queue = 'q_sample_heat',
                 last_queue_time_in = self._env.now,
                 parent_ids = [job.entity_id],
                 time_in = job.time_in)
@@ -703,8 +773,8 @@ class ProcessSteps:
         self._env.process(self.occupy_resources_single_subprocess(
             workstation = workstation, resources_required = resources_required, 
             process_time = process_time, priority = process_priority,
-            entity_to_create = entity, queue_to_add_new_entity = 'q_rna_collation', 
-            process_step_counter='sample_prep_manual'))
+            entity_to_create = entity, queue_to_add_new_entity = 'q_sample_heat', 
+            process_step='sample_prep_manual'))
 
         self.record_queuing_time(
             'q_sample_prep', job.last_queue_time_in, self._env.now)
@@ -753,7 +823,7 @@ class ProcessSteps:
             workstation = workstation, resources_required = resources_required, 
             process_time = process_time, priority = process_priority,
             entity_to_create = entity, queue_to_add_new_entity = 'q_sample_prep',
-            process_step_counter='sample_receipt'))
+            process_step='sample_receipt'))
         
         self.record_queuing_time(
             'q_sample_receipt', job.last_queue_time_in, self._env.now)

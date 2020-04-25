@@ -15,7 +15,7 @@ class Scenario(object):
         # Work arrival
         self.samples_per_day = 30000
         self.deliveries_per_day = 1
-        self.basic_batch_size = 24
+        self.basic_batch_size = 93
 
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
@@ -25,44 +25,49 @@ class Scenario(object):
         
         # Breaks for people (high prority job, but does not interupt work)
         # Times from start of FTE day (6am)
-        self.tea_break_times = [2*60, 6*60, 12*60, 16*60]
+        self.tea_break_times = [2*60, 7*60, 12*60, 16*60]
         self.meal_break_times = [4*60, 14*60]
         # Spread start of break for people randomly after set start times
         self.break_start_spread = 60
                 
         # break duration is a uniform distribution between min and max
-        self.tea_break_duration = [15, 20]
-        self.meal_break_duration = [30, 40]
+        self.tea_break_duration = [25, 35]
+        self.meal_break_duration = [40, 50]
         
         # Audit parameters
         self.audit_interval = 15
 
         # Resource numbers        
         self.resource_numbers = {
-            'human_sample_receipt_shift_1': 12,
-            'human_sample_receipt_shift_2': 12,
-            'human_sample_prep_shift_1': 5,
-            'human_sample_prep_shift_2': 5,
-            'human_rna_prep_shift_1': 4,
-            'human_rna_prep_shift_2': 4,
-            'human_pcr_shift_1': 3,
-            'human_pcr_shift_2': 3,
-            'beckman_rna_extraction': 16,
-            'pcr_plate_stamper': 2,
-            'pcr_plate_reader': 13,
+            'human_sample_receipt': 20,
+            'human_sample_prep': 6,
+            'human_rna_prep': 8,
+            'human_pcr': 4,
+            'sample_heat_block': 14,
+            'beckman_rna_extraction': 22,
+            'pcr_plate_stamper': 5,
+            'pcr_plate_reader': 14,
             'sample_prep_automation': 5
+            }
+        
+        self.workstation_capacity =  {
+            'workstation_0': 99999,
+            'workstation_1a': 12,
+            'workstation_1b_man': 8,
+            'workstation_1b_auto': 5, 
+            'workstation_1c': 14, 
+            'workstation_2': 20,
+            'workstation_3': 5,
+            'workstation_4': 13
             }
 
         # Resource available hours (use hours)
         self.resource_shift_hours = {
-            'human_sample_receipt_shift_1': (0.3, 9.0),
-            'human_sample_receipt_shift_2': (9.0, 17.75),
-            'human_sample_prep_shift_1': (0.3, 9.0),
-            'human_sample_prep_shift_2': (9.0, 17.75),
-            'human_rna_prep_shift_1': (0.3, 9.0),
-            'human_rna_prep_shift_2': (9.0, 17.75),
-            'human_pcr_shift_1': (0.3, 9.0),
-            'human_pcr_shift_2': (9.0, 17.75),
+            'human_sample_receipt': (0.3, 17.75),
+            'human_sample_prep': (0.3, 17.75),
+            'human_rna_prep': (0.3, 17.75),
+            'human_pcr': (0.3, 17.75),
+            'sample_heat_block': (0.0, 24.0),
             'beckman_rna_extraction': (0.0, 24.0),
             'pcr_plate_stamper': (0.0, 24.0),
             'pcr_plate_reader': (0.0, 24.0),
@@ -72,14 +77,11 @@ class Scenario(object):
         
         # Resource unavailability on any whole day due to breakdown
         self.resource_breakdown_unavailability = {
-            'human_sample_receipt_shift_1': 0,
-            'human_sample_receipt_shift_2': 0,
-            'human_sample_prep_shift_1': 0,
-            'human_sample_prep_shift_2': 0,
-            'human_rna_prep_shift_1': 0,
-            'human_rna_prep_shift_2': 0,
-            'human_pcr_shift_1': 0,
-            'human_pcr_shift_2': 0,
+            'human_sample_receipt': 0,
+            'human_sample_prep': 0,
+            'human_rna_prep': 0,
+            'human_pcr': 0,
+            'sample_heat_block': 0,
             'beckman_rna_extraction': 0.04,
             'pcr_plate_stamper': 0.08,
             'pcr_plate_reader': 0.02,
@@ -88,14 +90,11 @@ class Scenario(object):
         
         # FTE resources (these will take breaks!)
         self.fte_resources = [
-            'human_sample_receipt_shift_1',
-            'human_sample_receipt_shift_2',
-            'human_sample_prep_shift_1',
-            'human_sample_prep_shift_2',
-            'human_rna_prep_shift_1',
-            'human_rna_prep_shift_2',
-            'human_pcr_shift_1',
-            'human_pcr_shift_2']
+            'human_sample_receipt',
+            'human_sample_prep',
+            'human_rna_prep',
+            'human_pcr'
+            ]
 
         
         # Process duration. Tuple of fixed time, time per entity, and time per item in entity.
@@ -104,10 +103,12 @@ class Scenario(object):
              'batch_input': ([0,0,0],),
              'sample_receipt': ([16, 0, 0],),
              'sample_prep_manual': ([37, 0, 0],),
-             'sample_prep_auto': ([2, 0, 0], [6, 0, 0], [2, 0, 0]),
-             'rna_extraction': ([5,0,0],[70,0,0],[2,0,0]),
-             'pcr_prep': ([5,0,0],[10,0,0],[1,0,0]),
+             'sample_prep_auto': ([2, 0, 0], [6, 0, 0], [8, 0, 0]),
+             'sample_heat':  ([1, 0, 0], [20, 0, 0], [2, 0, 0]),
+             'rna_extraction': ([15,0,0],[77,0,0],[5,0,0]),
+             'pcr_prep': ([31,0,0],[10,0,0],[1,0,0]),
              'pcr': ([5,0,0],[117,0,0],[1,0,0]),
+             'data_analysis': ([0,0,0],)
              }
         
         self.allow_maual_sample_prep = False
@@ -119,22 +120,20 @@ class Scenario(object):
                 
         # Range of times new jobs may start
         self.process_start_hours = {
-            'sample_receipt': (0, 15.5),
-            'sample_prep': (0, 15.5),
-            'rna_extraction': (0, 24),
-            'pcr_prep': (0, 24),
-            'pcr': (0, 24)
+            'sample_receipt': (0.3, 15.5),
+            'sample_prep': (0.3, 15.5),
+            'sample_heat': (0.3, 15.5),
+            'rna_extraction': (0.3, 24),
+            'pcr_prep': (0.3, 24),
+            'pcr': (0.3, 24)
             }
 
-        # rna pcr kanban group limit
-        # Limit of PCR read capapcity multiple allowed from sample prep onwards
-        self.pcr_kanban_limit = 3
-    
         # Process priories (lower number - higher prioirity)
         self.process_priorites = {
-            'sample_receipt': 45,
-            'sample_prep_manual': 50,
-            'sample_prep_auto': 43,
+            'sample_receipt': 100,
+            'sample_prep_manual': 80,
+            'sample_prep_auto': 70,
+            'sample_heat': 60,
             'rna_extraction': 40,
             'pcr_prep': 35,
             'pcr': 30
@@ -146,33 +145,37 @@ class Scenario(object):
         self.process_resources = {
             'sample_receipt': {
                 'process_type': 'manual',
-                'human_list': (['human_sample_receipt_shift_1',
-                                'human_sample_receipt_shift_2'],),
+                'human_list': (['human_sample_receipt'],),
                 'machine_list': ([],)},
+            
             'sample_prep_manual': {
                 'process_type': 'manual',
-                'human_list': (['human_sample_receipt_shift_1',
-                                'human_sample_receipt_shift_2'],),
+                'human_list': (['human_sample_receipt'],),
                 'machine_list': ([],)},
+            
             'sample_prep_auto': {
                 'process_type': 'auto',
-                'human_list': (['human_sample_prep_shift_1',
-                                'human_sample_prep_shift_2'],),
+                'human_list': (['human_sample_prep'],),
                 'machine_list': (['sample_prep_automation'],)},
+            
+            'sample_heat': {
+                'process_type': 'auto',
+                'human_list': (['human_sample_prep'],),
+                'machine_list': (['sample_heat_block'],)},
+            
             'rna_extraction':{
                 'process_type': 'auto',
-                'human_list': (['human_rna_prep_shift_1',
-                                'human_rna_prep_shift_2'],),
+                'human_list': (['human_rna_prep'],),
                 'machine_list': (['beckman_rna_extraction'],)},
+          
             'pcr_prep':{
                 'process_type': 'auto',
-                'human_list': (['human_pcr_shift_1',
-                                'human_pcr_shift_2'],),
+                'human_list': (['human_pcr'],),
                 'machine_list': (['pcr_plate_stamper'],)},
+          
             'pcr':{
                 'process_type': 'auto',
-                'human_list': (['human_pcr_shift_1',
-                                'human_pcr_shift_2'],),
+                'human_list': (['human_pcr'],),
                 'machine_list': (['pcr_plate_reader'],)},
             }
         
@@ -184,22 +187,22 @@ class Scenario(object):
             'sample_receipt': ['workstation_1a'],
             'sample_prep_manual' : ['workstation_1b_man'],
             'sample_prep_auto' : ['workstation_1b_auto'],
+            'sample_heat': ['workstation_1c'],
             'rna_extraction': ['workstation_2'],
             'pcr_prep': ['workstation_3'],
             'pcr': ['workstation_4']
             }
 
 
-        self.workstation_capacity = {
-            'workstation_0': 99999,
-            'workstation_1a': 6,
-            'workstation_1b_man': 7,
-            'workstation_1b_auto': 5, 
-            'workstation_2': 16,
-            'workstation_3': 2,
-            'workstation_4': 13
-            }
+        # kanban groups have start process, end process, max samples, current samples
+        self.kanban_groups = {
+            0: ['rna_extraction', 
+                'pcr', 
+                self.resource_numbers['pcr_plate_reader'] * 372 * 999]
+                }
         
+        #self.kanban_groups = {}
+
 
         # Overwrite default values
         
@@ -230,14 +233,31 @@ class Scenario(object):
         
         # Convert resource shifts to minutes, and place in new dictionary
         self.resource_shifts = dict()
-        
         for resource, shift_hours in self.resource_shift_hours.items():
             start = shift_hours[0] * 60
             end = shift_hours[1] * 60
             self.resource_shifts[resource] = (start, end)
-            
 
+        # Set up kanban group counts and dictionaries for start.end
+        self.kanban_group_counts = dict()
+        self.kanban_group_max = dict()
+        self.kanban_start = dict()
+        self.kanban_end = dict()
+        
+        # Set up dictionaries based on process
+        for key in self.process_duration.keys():
+            self.kanban_start[key] = []
+            self.kanban_end[key] = []
 
-        
-        
+        # Update dictionaries if kanban groups exist        
+        if len(self.kanban_groups) > 0:
             
+            # Add process start and ends to dictionaries
+            for key, value in self.kanban_groups.items():
+                self.kanban_start[value[0]].append(key)
+                self.kanban_end[value[1]].append(key)
+            
+            # Set up kanban group counts
+            for key, value in self.kanban_groups.items():
+                self.kanban_group_counts[key] = 0
+                self.kanban_group_max[key] = value[2]
