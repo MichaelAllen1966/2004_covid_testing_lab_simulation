@@ -127,8 +127,9 @@ class Audit:
             'q_sample_receipt': self._params.basic_batch_size,
             'q_sample_prep': self._params.basic_batch_size,
             'q_rna_extraction': self._params.basic_batch_size,
-            'q_pcr_collation': self._params.basic_batch_size * 2,
-            'q_pcr_prep': self._params.basic_batch_size * 4,
+            'q_sample_heat': self._params.basic_batch_size,
+            'q_pcr_collation': self._params.basic_batch_size,
+            'q_pcr_prep': self._params.basic_batch_size * 2,
             'q_pcr': self._params.basic_batch_size * 4,
             'q_data_analysis': self._params.basic_batch_size * 4,
             'q_completed': self._params.basic_batch_size *4          
@@ -194,9 +195,6 @@ class Audit:
         yield self._env.timeout(self._params.audit_warm_up)
         
         while True:
-            
-            time_of_day = self._env.now % self._params.day_duration
-            
             self.audit_queue()
             self.audit_resources()
             yield self._env.timeout(self._params.audit_interval)
