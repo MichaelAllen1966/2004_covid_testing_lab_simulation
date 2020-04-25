@@ -91,7 +91,7 @@ class Replicator:
                 
         print('\nOutput results')
         print('--------------')
-        print(self.output_pivot['mean'])
+        print(self.output_pivot)
         print('\n\n')
         print('Resources used')
         print('--------------')
