@@ -104,10 +104,10 @@ class Scenario(object):
         self.fte_resources = [
             'human_sample_receipt_1',
             'human_sample_receipt_2',
-            'human_rna_prep_1',
-            'human_rna_prep_2',
             'human_pcr_1',
             'human_pcr_2',
+            'human_rna_prep_1',
+            'human_rna_prep_2',
             ]
 
         

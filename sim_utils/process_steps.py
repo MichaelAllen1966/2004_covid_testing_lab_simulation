@@ -335,15 +335,22 @@ class ProcessSteps:
         # Request resources from environment
         human_resource_requests = []
         machine_resource_requests = []
+
         for resource in human_resources_selected:
-            self._resources_available[resource] += 1
-            self._resources_occupied[resource] -= 1
+            self._resources_available[resource] -=1
+            self._resources_occupied[resource] +=1
+        
+        for resource in machine_resources_selected:
+            self._resources_available[resource] -=1
+            self._resources_occupied[resource] +=1
+
+
+        for resource in human_resources_selected:
             req = self._resources[resource].request(priority=priority)
             human_resource_requests.append((self._resources[resource], req))
             yield req
+
         for resource in machine_resources_selected:
-            self._resources_available[resource] += 1
-            self._resources_occupied[resource] -= 1
             req = self._resources[resource].request(priority=priority)
             machine_resource_requests.append((self._resources[resource], req))
             yield req
@@ -404,7 +411,9 @@ class ProcessSteps:
         for resource in human_resources_selected:
             self._resources_available[resource] += 1
             self._resources_occupied[resource] -= 1
-            req = self._resources[resource].request(priority=priority)
+
+        for resource in human_resources_selected:
+            req = self._resources[resource].request(priority=priority-1)
             human_resource_requests.append((self._resources[resource], req))
             yield req
         
@@ -479,8 +488,10 @@ class ProcessSteps:
         # Request resources from environment
         resource_requests = [] # resource request obejects
         for resource in resources_selected:
-            self._resources_available[resource] += 1
-            self._resources_occupied[resource] -= 1
+            self._resources_available[resource] -= 1
+            self._resources_occupied[resource] += 1
+
+        for resource in resources_selected:
             req = self._resources[resource].request(priority=priority)
             resource_requests.append((self._resources[resource], req))
             yield req

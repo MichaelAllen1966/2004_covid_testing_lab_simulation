@@ -170,10 +170,10 @@ class Audit:
     
       
     def summarise_resources_with_shifts(self):
-        index = [key for key, _ in self._params.resource_shifts.items()]
+        index = [key for key, value in self._params.resource_numbers.items() if value > 0]
         columns = ['Available', 'Used', 'Utilisation']
         self.summary_resources = pd.DataFrame(index=index, columns=columns)
-        for resource, _ in self._params.resource_shifts.items():
+        for resource in index:
             # Get number available on-shift
             available = self._params.resource_numbers[resource]
             # Get resource use only when resoucres are on-shift

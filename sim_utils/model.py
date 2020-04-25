@@ -95,11 +95,13 @@ class Model(object):
         # Set up resources
         for key, value in self._params.resource_numbers.items():
             # Store resource objects in a dictionary
-            self.resources[key] = simpy.PriorityResource(
-                self._env, capacity=value)
             # Set up dictionaries of available and occupied
             self.resources_available[key] = value
             self.resources_occupied[key] = 0
+            if value > 0:
+                self.resources[key] = simpy.PriorityResource(
+                    self._env, capacity=value)
+
             
             
     def set_up_workstations(self):
