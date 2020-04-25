@@ -91,7 +91,7 @@ class Replicator:
                 
         print('\nOutput results')
         print('--------------')
-        print(self.output_pivot)
+        print(self.output_pivot['mean'])
         print('\n\n')
         print('Resources used')
         print('--------------')
@@ -105,7 +105,6 @@ class Replicator:
         print('-------------------')
         print('Results describe maximum queueing across runs')
         print(self.max_queue_pivot)
-        
 
     def run_scenarios(self):
         

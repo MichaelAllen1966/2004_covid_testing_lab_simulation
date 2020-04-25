@@ -115,6 +115,30 @@ class ProcessSteps:
             self._resources_occupied[resource] -= 1
 
 
+    def check_resourse_availability(self, resources_required):
+        time_of_day = self._env.now
+        number_of_recources_required = len(resources_required)
+        number_of_recources_found = 0
+        resources_selected = [] # names of selected resources
+        # Look through all resources required
+        for resource_list in resources_required:
+            # Check availability of alternative resources
+            for resource in resource_list:
+                # Check whether time is within shift operating times
+                shift = self._params.resource_shifts[resource]
+                shift_available = shift[0] <= time_of_day <= shift[1]
+                # Check number of resources available
+                if shift_available and self._resources_available[resource] > 0:
+                    number_of_recources_found += 1
+                    resources_selected.append(resource)
+                    break
+                
+        all_resources_found = \
+            True if number_of_recources_required == number_of_recources_found else False
+
+        return(all_resources_found, resources_selected)
+    
+    
     def collate(self, batch_size, from_queue, to_queue):
         """ Admin step that requires no time or resources.
         Use the first entitiy form each batch for the batch id and time in."""
@@ -286,50 +310,47 @@ class ProcessSteps:
             3) Machine clean down (requires machine + human)
         We assume that the clean down can be done by a different human to the set up."""
 
-        # Set up
-        
+        search_for_resources = True
+
+        # continue looking for resources until all available
+        while search_for_resources:
+            # Search for humand and machien resoucres
+            human_resources_found, human_resources_selected = \
+                self.check_resourse_availability(human_resources)
+            machine_resources_found, machine_resources_selected = \
+                self.check_resourse_availability(machine_resources)
+            # Check both resources found
+            if human_resources_found and machine_resources_found:
+                # All resources are available
+                search_for_resources = False
+                break
+            else:
+                # Not all resources found wait for 1 min continue loop
+                yield self._env.timeout(1)
+
+        # Steps to take after finding all resoucres
+
         self.process_step_counters[process_step] += 1
 
-
-        # Get machine resources
-        machine_resources_required = machine_resources
-        machine_resources_selected = [] # names of selected resources
-        machine_resource_requests = [] # resource request obejects
-        for resource_list in machine_resources_required:
-            # Check availability. If none of list available, use first item
-            chosen_resource = resource_list[0]
-            for resource in resource_list:
-                if self._resources_available[resource] > 0:
-                    chosen_resource = resource
-                    break
-            machine_resources_selected.append(chosen_resource)
-            self._resources_available[chosen_resource] -= 1
-            self._resources_occupied[chosen_resource] +- 1
-            # Get resource (store in resource_requests to release later)
-            req = self._resources[chosen_resource].request(priority=priority)
-            machine_resource_requests.append((self._resources[chosen_resource], req))
+        # Request resources from environment
+        human_resource_requests = []
+        machine_resource_requests = []
+        for resource in human_resources_selected:
+            self._resources_available[resource] += 1
+            self._resources_occupied[resource] -= 1
+            req = self._resources[resource].request(priority=priority)
+            human_resource_requests.append((self._resources[resource], req))
+            yield req
+        for resource in machine_resources_selected:
+            self._resources_available[resource] += 1
+            self._resources_occupied[resource] -= 1
+            req = self._resources[resource].request(priority=priority)
+            machine_resource_requests.append((self._resources[resource], req))
             yield req
 
-
-        # Get human resources
-        human_resources_required = human_resources
-        human_resources_selected = [] # names of selected resources
-        human_resource_requests = [] # resource request obejects
-        for resource_list in human_resources_required:
-            # Check availability. If none of list available, use first item
-            chosen_resource = resource_list[0]
-            for resource in resource_list:
-                if self._resources_available[resource] > 0:
-                    chosen_resource = resource
-                    break
-            human_resources_selected.append(chosen_resource)
-            self._resources_available[chosen_resource] -= 1
-            self._resources_occupied[chosen_resource] +- 1
-            # Get resource (store in resource_requests to release later)
-            req = self._resources[chosen_resource].request(priority=priority)
-            human_resource_requests.append((self._resources[chosen_resource], req))
-            yield req
-
+        # Resources co-opted
+       
+        self.process_step_counters[process_step] += 1
             
         # Add NumPy triangular additional time
         process_time = stage_process_times[0]
@@ -361,22 +382,30 @@ class ProcessSteps:
         #########################################################################
         
         # Clean down - require human resources again
-        human_resources_required = human_resources
-        human_resources_selected = [] # names of selected resources
-        human_resource_requests = [] # resource request obejects
-        for resource_list in human_resources_required:
-            # Check availability. If none of list available, use first item
-            chosen_resource = resource_list[0]
-            for resource in resource_list:
-                if self._resources_available[resource] > 0:
-                    chosen_resource = resource
-                    break
-            human_resources_selected.append(chosen_resource)
-            self._resources_available[chosen_resource] -= 1
-            self._resources_occupied[chosen_resource] +- 1
-            # Get resource (store in resource_requests to release later)
-            req = self._resources[chosen_resource].request(priority=priority)
-            human_resource_requests.append((self._resources[chosen_resource], req))
+
+        search_for_resources = True
+
+        # continue looking for resources until all available
+        while search_for_resources:
+            # Search for humand and machien resoucres
+            human_resources_found, human_resources_selected = \
+                self.check_resourse_availability(human_resources)
+            # Check resources found
+            if human_resources_found:
+                # All resources are available
+                search_for_resources = False
+                break
+            else:
+                # Not all resources found wait for 1 min continue loop
+                yield self._env.timeout(1)
+
+        # Request human resources from environment
+        human_resource_requests = []
+        for resource in human_resources_selected:
+            self._resources_available[resource] += 1
+            self._resources_occupied[resource] -= 1
+            req = self._resources[resource].request(priority=priority)
+            human_resource_requests.append((self._resources[resource], req))
             yield req
         
         # Add NumPy triangular additional time
@@ -428,24 +457,32 @@ class ProcessSteps:
         or semi-automated process). c.f. Multi-step process which has machine set up,
         automation, and machine clean-down.
         """
-        
+
+        search_for_resources = True
+
+        # continue looking for resources until all available
+        while search_for_resources:
+            all_resources_found, resources_selected = \
+                self.check_resourse_availability(resources_required)
+            if all_resources_found:
+                # All resources are available
+                search_for_resources = False
+                break
+            else:
+                # Not all resources found wait for 1 min continue loop
+                yield self._env.timeout(1)
+
+        # Steps to take after finding all resoucres
+
         self.process_step_counters[process_step] += 1
-        
-        resources_selected = [] # names of selected resources
+
+        # Request resources from environment
         resource_requests = [] # resource request obejects
-        for resource_list in resources_required:
-            # Check availability. If none of list available, use first item
-            chosen_resource = resource_list[0]
-            for resource in resource_list:
-                if self._resources_available[resource] > 0:
-                    chosen_resource = resource
-                    break
-            resources_selected.append(chosen_resource)
-            self._resources_available[chosen_resource] -= 1
-            self._resources_occupied[chosen_resource] +- 1
-            # Get resource (store in resource_requests to release later)
-            req = self._resources[chosen_resource].request(priority=priority)
-            resource_requests.append((self._resources[chosen_resource], req))
+        for resource in resources_selected:
+            self._resources_available[resource] += 1
+            self._resources_occupied[resource] -= 1
+            req = self._resources[resource].request(priority=priority)
+            resource_requests.append((self._resources[resource], req))
             yield req
         
         # Add NumPy triangular additional time
