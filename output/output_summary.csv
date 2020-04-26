@@ -1,6 +1,8 @@
 ,,min,mean,median,max
 ,,Result,Result,Result,Result
 result_type,name,,,,
-demand_met,30k_example,0.0,0.0,0.0,0.0
+demand_met,30k_example,0.86,0.9343333333333336,0.94,0.98
 input,30k_example,30132.0,30132.0,30132.0,30132.0
-output,30k_example,0.0,0.0,0.0,0.0
+max_process_time_hours,30k_example,17.38,17.729333333333333,17.8,17.85
+median_process_time_hours,30k_example,17.38,17.729333333333333,17.8,17.85
+output,30k_example,26040.0,28123.2,28272.0,29388.0

@@ -116,7 +116,7 @@ class ProcessSteps:
 
 
     def check_resourse_availability(self, resources_required):
-        time_of_day = self._env.now
+        time_of_day = self._env.now % self._params.day_duration
         number_of_recources_required = len(resources_required)
         number_of_recources_found = 0
         resources_selected = [] # names of selected resources
@@ -126,7 +126,7 @@ class ProcessSteps:
             for resource in resource_list:
                 # Check whether time is within shift operating times
                 shift = self._params.resource_shifts[resource]
-                shift_available = shift[0] <= time_of_day <= shift[1]
+                shift_available = shift[0] <= time_of_day < shift[1]
                 # Check number of resources available
                 if shift_available and self._resources_available[resource] > 0:
                     number_of_recources_found += 1
@@ -236,17 +236,24 @@ class ProcessSteps:
         # Delay sets time of break in day
         yield self._env.timeout(delay)
         while True:
+            # Get current time
+            time_of_day = self._env.now % self._params.day_duration
             # Loop through resources
             for resource in self._params.fte_resources:
-                # Loop through numbers in each resource pool
-                for _i in range(self._params.resource_numbers[resource]):
-                    # Set break duration
-                    min_duration = self._params.meal_break_duration[0]
-                    max_duration = self._params.meal_break_duration[1]
-                    break_time = np.random.uniform(min_duration, max_duration)
-                    # Call break 
-                    self._env.process(self.fte_break(resource, break_time))
-            # 1 day delay before next call        
+                # Only call for a break if shift activate at the time
+                # Check whether time is within shift operating times
+                shift = self._params.resource_shifts[resource]
+                shift_available = shift[0] <= time_of_day < shift[1]
+                if shift_available:
+                    # Loop through numbers in each resource pool
+                    for _i in range(self._params.resource_numbers[resource]):
+                        # Set break duration
+                        min_duration = self._params.meal_break_duration[0]
+                        max_duration = self._params.meal_break_duration[1]
+                        break_time = np.random.uniform(min_duration, max_duration)
+                        # Call break 
+                        self._env.process(self.fte_break(resource, break_time))
+                           # 1 day delay before next call        
             yield self._env.timeout(self._params.day_duration)
          
         
@@ -256,16 +263,23 @@ class ProcessSteps:
         # Delay sets time of break in day
         yield self._env.timeout(delay)
         while True:
+            # Get current time
+            time_of_day = self._env.now % self._params.day_duration
             # Loop through resources
             for resource in self._params.fte_resources:
-                # Loop through numbers in each resource pool
-                for _i in range(self._params.resource_numbers[resource]):
-                    # Set break duration
-                    min_duration = self._params.tea_break_duration[0]
-                    max_duration = self._params.tea_break_duration[1]
-                    break_time = np.random.uniform(min_duration, max_duration)
-                    # Call break 
-                    self._env.process(self.fte_break(resource, break_time))
+                # Only call for a break if shift activate at the time
+                # Check whether time is within shift operating times
+                shift = self._params.resource_shifts[resource]
+                shift_available = shift[0] <= time_of_day < shift[1]
+                if shift_available:
+                    # Loop through numbers in each resource pool
+                    for _i in range(self._params.resource_numbers[resource]):
+                        # Set break duration
+                        min_duration = self._params.tea_break_duration[0]
+                        max_duration = self._params.tea_break_duration[1]
+                        break_time = np.random.uniform(min_duration, max_duration)
+                        # Call break 
+                        self._env.process(self.fte_break(resource, break_time))
             # 1 day delay before next call        
             yield self._env.timeout(self._params.day_duration)
 
@@ -314,12 +328,14 @@ class ProcessSteps:
 
         # continue looking for resources until all available
         while search_for_resources:
-            # Search for humand and machien resoucres
-            human_resources_found, human_resources_selected = \
-                self.check_resourse_availability(human_resources)
+            
+            # Search for macine and human resoucres
             machine_resources_found, machine_resources_selected = \
                 self.check_resourse_availability(machine_resources)
-            # Check both resources found
+            
+            human_resources_found, human_resources_selected = \
+                self.check_resourse_availability(human_resources)
+                        # Check both resources found
             if human_resources_found and machine_resources_found:
                 # All resources are available
                 search_for_resources = False
@@ -336,25 +352,28 @@ class ProcessSteps:
         human_resource_requests = []
         machine_resource_requests = []
 
-        for resource in human_resources_selected:
-            self._resources_available[resource] -=1
-            self._resources_occupied[resource] +=1
-        
+        # Adjust resource counts
+
         for resource in machine_resources_selected:
             self._resources_available[resource] -=1
             self._resources_occupied[resource] +=1
 
-
         for resource in human_resources_selected:
-            req = self._resources[resource].request(priority=priority)
-            human_resource_requests.append((self._resources[resource], req))
-            yield req
+            self._resources_available[resource] -=1
+            self._resources_occupied[resource] +=1
+        
+        # Request resources
 
         for resource in machine_resources_selected:
             req = self._resources[resource].request(priority=priority)
             machine_resource_requests.append((self._resources[resource], req))
             yield req
 
+        for resource in human_resources_selected:
+            req = self._resources[resource].request(priority=priority)
+            human_resource_requests.append((self._resources[resource], req))
+            yield req
+        
         # Resources co-opted
        
         self.process_step_counters[process_step] += 1
@@ -406,7 +425,8 @@ class ProcessSteps:
                 # Not all resources found wait for 1 min continue loop
                 yield self._env.timeout(1)
 
-        # Request human resources from environment
+        # Request human resources from environment (adjust counts then request)
+
         human_resource_requests = []
         for resource in human_resources_selected:
             self._resources_available[resource] += 1
@@ -485,11 +505,14 @@ class ProcessSteps:
 
         self.process_step_counters[process_step] += 1
 
-        # Request resources from environment
+        # Adjust resource counts
+        
         resource_requests = [] # resource request obejects
         for resource in resources_selected:
             self._resources_available[resource] -= 1
             self._resources_occupied[resource] += 1
+
+        # Request resources from environment
 
         for resource in resources_selected:
             req = self._resources[resource].request(priority=priority)
