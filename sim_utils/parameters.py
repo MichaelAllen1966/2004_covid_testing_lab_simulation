@@ -104,12 +104,13 @@ class Scenario(object):
         self.fte_resources = [
             'human_sample_receipt_1',
             'human_sample_receipt_2',
+            'human_sample_prep_1',
+            'human_sample_prep_2',
             'human_pcr_1',
             'human_pcr_2',
             'human_rna_prep_1',
             'human_rna_prep_2',
             ]
-
         
         # Process duration. Tuple of fixed time, time per entity, and time per item in entity.
         # Multi-step automated processes have three sets of times (set up, automated, clean down)

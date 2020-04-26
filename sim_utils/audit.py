@@ -113,11 +113,9 @@ class Audit:
         self.summary_output_by_day = df_summary
         
         self.summary_output = df_summary = self.summary_output_by_day.mean()
-        
         self.summary_output = pd.DataFrame(self.summary_output)
         self.summary_output.rename(columns={0: 'Result'}, inplace=True)
         self.summary_output = self.summary_output.round(2)
-
         
         
     def summarise_queues(self):
