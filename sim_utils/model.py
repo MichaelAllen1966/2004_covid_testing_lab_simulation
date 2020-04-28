@@ -106,8 +106,8 @@ class Model(object):
             
     def set_up_workstations(self):
         """
-        Set up dictionaries for counts of assigned jobs and queued jobs for each workstation.
-        """
+        Set up dictionaries for counts of assigned jobs and queued jobs for each
+        workstation. """
         for key, _ in self._params.workstation_capacity.items():
             self.workstation_assigned_jobs[key] = 0
 

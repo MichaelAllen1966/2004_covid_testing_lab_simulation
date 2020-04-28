@@ -1,8 +1,6 @@
-import inspect
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from sim_utils.helper_functions import expand_multi_index
 from sim_utils.model import Model
 
 
@@ -113,7 +111,8 @@ class Replicator:
         counter = 0
         for name, scenario in self.scenarios.items():
             counter += 1
-            print(f'\r>> Running scenario {counter} of {scenario_count}', end='')
+            print(
+                f'\r>> Running scenario {counter} of {scenario_count}', end='')
             scenario_output = self.run_trial(scenario)
             self.unpack_trial_results(name, scenario_output)
         
@@ -184,7 +183,8 @@ class Replicator:
             result_item = results[run]['output_by_day']
             result_item['run'] = run
             result_item['name'] = name
-            self.summary_output_by_day = self.summary_output_by_day.append(result_item)
+            self.summary_output_by_day = \
+                self.summary_output_by_day.append(result_item)
             
             # Resources summary
             result_item = results[run]['resources']
@@ -196,13 +196,15 @@ class Replicator:
             result_item = pd.DataFrame(results[run]['max_queues'])
             result_item['run'] = run
             result_item['name'] = name
-            self.summary_max_queues = self.summary_max_queues.append(result_item)
+            self.summary_max_queues = \
+                self.summary_max_queues.append(result_item)
             
             # Queueing time summary
             result_item = pd.DataFrame(results[run]['queue_times'])
             result_item['run'] = run
             result_item['name'] = name
-            self.summary_queue_times = self.summary_queue_times.append(result_item)
+            self.summary_queue_times = \
+                self.summary_queue_times.append(result_item)
 
 
             

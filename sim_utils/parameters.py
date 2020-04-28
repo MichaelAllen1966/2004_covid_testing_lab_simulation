@@ -23,7 +23,7 @@ class Scenario(object):
         self.run_days = 1
         self.warm_up_days = 0
         
-        # Breaks for people (high prority job, but does not interupt work)
+        # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)
         self.tea_break_times = [2*60, 7*60, 12*60, 16*60]
         self.meal_break_times = [4*60, 14*60]
@@ -112,8 +112,9 @@ class Scenario(object):
             'human_rna_prep_2',
             ]
         
-        # Process duration. Tuple of fixed time, time per entity, and time per item in entity.
-        # Multi-step automated processes have three sets of times (set up, automated, clean down)
+        # Process duration. Tuple of fixed time, time per entity, and time per
+        # item in entity. Multi-step automated processes have three sets of
+        # times (set up, automated, clean down)
         self.process_duration = {
              'batch_input': ([0,0,0],),
              'sample_receipt': ([33, 0, 0],),
@@ -128,8 +129,9 @@ class Scenario(object):
         
         self.allow_maual_sample_prep = False
         
-        # Add a triangular distribution of extra time per prcoess
-        # Average extra time with be 1/4 of this (e.g. 0.25 = 6.25% added length on average)       
+        # Add a triangular distribution of extra time per process
+        # Average extra time with be 1/4 of this
+        # (e.g. 0.25 = 6.25% added length on average)
         self.additional_time_manual = 0.25
         self.additional_time_auto = 0.10
                 
@@ -154,9 +156,10 @@ class Scenario(object):
             'pcr': 30
             }
         
-        # Process resources = tuple of different resources needed and lists of alternatives
-        # Remember to put , after a single list to miantain tuple format!
-        # A tuple of two or more elemnts will require resources from each tuple element
+        # Process resources = tuple of different resources needed and lists of
+        # alternatives. Remember to put , after a single list to miantain tuple
+        # format! tuple of two or more elemnts will require resources from each
+        # tuple element
         self.process_resources = {
             'sample_receipt': {
                 'process_type': 'manual',
@@ -222,7 +225,8 @@ class Scenario(object):
             }
 
 
-        # kanban groups have start process, end process, max samples, current samples
+        # kanban groups have start process, end process, max samples,
+        # current samples
         self.kanban_groups = {
             0: ['rna_extraction', 
                 'pcr', 
@@ -245,8 +249,9 @@ class Scenario(object):
         
         # Set arrival batch size and round (down) to nearest basic batch size
         self.arrival_batch_size = self.samples_per_day / self.deliveries_per_day
-        self.arrival_batch_size = np.floor(
-            self.arrival_batch_size / self.basic_batch_size) * self.basic_batch_size
+        self.arrival_batch_size = (np.floor(
+            self.arrival_batch_size / self.basic_batch_size) *
+            self.basic_batch_size)
         
         # Set interarrival time
         self.interarrival_time = self.day_duration / self.deliveries_per_day
