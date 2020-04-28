@@ -13,8 +13,8 @@ class Process:
  
     """
     
-    def __init__(self, _env, _params, resources, resources_available, resources_occupied, 
-                 workstation_assigned_jobs):
+    def __init__(self, _env, _params, resources, resources_available,
+                 resources_occupied, workstation_assigned_jobs):
         
         # Question: do we need a dictionary of all enitites in model?
         self._env = _env
@@ -95,9 +95,12 @@ class Process:
                 # Check any relavant kanban group limits are OK
                 all_kanban_limts_ok = True
                 for kanban_group in relevant_kanban_groups:
-                    current_kanban_count = self._params.kanban_group_counts[kanban_group]
-                    kanban_capacity = self._params.kanban_group_max[kanban_group]
-                    spare_kanban_capacity = kanban_capacity - current_kanban_count
+                    current_kanban_count = \
+                        self._params.kanban_group_counts[kanban_group]
+                    kanban_capacity = \
+                        self._params.kanban_group_max[kanban_group]
+                    spare_kanban_capacity = \
+                        kanban_capacity - current_kanban_count
                     if spare_kanban_capacity < job_size:
                         all_kanban_limts_ok = False
                 # if at least one kanban limit breached break loop
@@ -107,7 +110,8 @@ class Process:
                 else:
                     # Adjust kanban group counts
                     for kanban_group in relevant_kanban_groups:
-                        self._params.kanban_group_counts[kanban_group] += job_size
+                        self._params.kanban_group_counts[kanban_group] += \
+                            job_size
             
             # All relevant kanban limits OK -  proceed to assign job
             job = self.queues[queue].pop()
@@ -117,7 +121,8 @@ class Process:
                 process_func(workstation, job)
                 self.workstation_assigned_jobs[workstation] += 1
             else: 
-                # Process workstations full, move all remaining jobs to unallocated job queue
+                # Process workstations full, move all remaining jobs to
+                # unallocated job queue
                 new_unallocated_queue = [job] + self.queues[queue]
                 self.queues[queue] = []
                 
@@ -217,7 +222,8 @@ class Process:
     
     def display_day(self):
         while True:
-            print (f'\r>> Day {int(self._env.now/self._params.day_duration)}', end='')
+            print (f'\r>> Day {int(self._env.now/self._params.day_duration)}',
+                   end='')
             yield self._env.timeout(self._params.day_duration)
             
     def end_run_routine(self):
@@ -225,6 +231,7 @@ class Process:
         self.audit.summarise_resources_with_shifts()
         self.audit.summarise_queues()
         self.audit.summarise_queue_times()
+        self.audit.summarise_trackers()
         
        
             
@@ -258,16 +265,12 @@ class Process:
     def set_up_breaks(self):
         if len(self._params.meal_break_times) > 0:
             for meal_break in self._params.meal_break_times:
-                self._env.process(self.process_steps.generate_meal_breaks(meal_break))
+                self._env.process(
+                    self.process_steps.generate_meal_breaks(meal_break))
         if len(self._params.tea_break_times) > 0:
             for tea_break in self._params.tea_break_times:
-                self._env.process(self.process_steps.generate_tea_breaks(tea_break))
+                self._env.process(
+                    self.process_steps.generate_tea_breaks(tea_break))
             
     def set_up_process_steps(self):
         self.process_steps = ProcessSteps(self)
-        
-           
-    
-    
-
-    

@@ -1,8 +1,8 @@
-import inspect
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from sim_utils.helper_functions import expand_multi_index
 from sim_utils.model import Model
 
 
@@ -18,6 +18,7 @@ class Replicator:
         self.summary_output_by_day = pd.DataFrame()
         self.summary_queue_times = pd.DataFrame()
         self.summary_resources = pd.DataFrame()
+        self.summary_tracker = pd.DataFrame()
         self.summary_max_queues = pd.DataFrame()
         self.output_pivot = pd.DataFrame()
         self.resources_pivot = pd.DataFrame()
@@ -70,8 +71,7 @@ class Replicator:
             margins=False)
         self.queue_times_pivot = self.queue_times_pivot['median']
         
-        # Maxmium queue sizes
-        
+
         # Max queue summary summary
         df = self.summary_max_queues.copy()
         df['queue'] = df.index
@@ -84,6 +84,89 @@ class Replicator:
         self.max_queue_pivot.rename(columns={0:'Max samples'},inplace=True)
         rows_to_drop = ['q_batch_input', 'q_completed']
         self.max_queue_pivot.drop(rows_to_drop, inplace=True)
+        
+        # Tracker summery
+        df = self.summary_tracker.copy()
+        df.drop('run', inplace=True, axis=1)
+        df = df.round(1)
+        self.tracker_pivot = df.pivot_table(
+            index = ['hour', 'name'],
+            aggfunc = [np.mean],
+            margins=False)
+        self.tracker_pivot = self.tracker_pivot['mean']
+        
+  
+        
+    def plot_trackers(self):
+        df = self.tracker_pivot.copy()
+        # remove 'tracker_' from column titles
+        rename_dict = {}
+        for col in list(df):
+            if col[0:8] == 'tracker_':
+                new_col = col[8:]
+            else:
+                new_col = col
+            rename_dict[col] = new_col
+        df.rename(columns=rename_dict, inplace=True)
+        
+        df = df.reset_index()
+        scenarios = list(set(df['name']))
+        scenarios.sort()
+        
+        linestyles = ['-','--',':','-.']
+        
+        for scenario in scenarios:
+            data = df[df['name'] == scenario]
+            x = data['hour']
+            y_data = data.drop(['hour', 'name'], axis=1)
+            fig = plt.figure(figsize=(10,6))
+            
+            ax1 = fig.add_subplot(1,2,1)
+            counter = 0
+            for tracker in list(y_data):
+                if tracker[-5:] == '_jobs':
+                    label = tracker[0:-5]
+                    ax1.plot(x, y_data[tracker], label=label, 
+                        linestyle=linestyles[counter % 4])
+                counter += 1
+            
+            ax1.set_ylim(0)
+            ax1.set_xlim(0,24)
+            ax1.yaxis.set_major_locator(ticker.MultipleLocator(5))
+            ax1.xaxis.set_major_locator(ticker.MultipleLocator(4))
+            ax1.xaxis.set_minor_locator(ticker.MultipleLocator(1))
+            ax1.set_xlabel('Hour')
+            ax1.set_ylabel('Tracker count')
+            ax1.set_title('Active Jobs')
+            ax1.legend()
+            ax1.grid(True, which='major')
+            
+            
+            ax2 = fig.add_subplot(1,2,2)
+            counter = 0
+            for tracker in list(y_data):
+                if tracker[-4:] == '_fte':
+                    label = tracker[0:-4]
+                    ax2.plot(x, y_data[tracker], label=label, 
+                        linestyle=linestyles[counter % 4])
+                counter += 1
+            ax2.set_ylim(0)
+            ax2.set_xlim(0,24)
+            ax2.yaxis.set_major_locator(ticker.MultipleLocator(5))
+            ax2.xaxis.set_major_locator(ticker.MultipleLocator(4))
+            ax2.xaxis.set_minor_locator(ticker.MultipleLocator(1))
+            ax2.set_xlabel('Hour')
+            ax2.set_ylabel('Tracker count')
+            ax2.set_title('Active FTE (excluding breaks)')
+            ax2.legend()
+            ax2.grid(True, which='major')
+            
+            plt.suptitle(scenario)
+            plt.tight_layout(pad=2)
+            plt.savefig(f'output/tracker_{scenario}.png', dpi=600)
+            plt.show()
+            
+
         
    
  
@@ -105,6 +188,7 @@ class Replicator:
         print('-------------------')
         print('Results describe maximum queueing across runs')
         print(self.max_queue_pivot)
+        print('\n\n')
 
     def run_scenarios(self):
         
@@ -113,7 +197,8 @@ class Replicator:
         counter = 0
         for name, scenario in self.scenarios.items():
             counter += 1
-            print(f'\r>> Running scenario {counter} of {scenario_count}', end='')
+            print(
+                f'\r>> Running scenario {counter} of {scenario_count}', end='')
             scenario_output = self.run_trial(scenario)
             self.unpack_trial_results(name, scenario_output)
         
@@ -129,6 +214,9 @@ class Replicator:
         
         # save results
         self.save_results()
+        
+        # Create charts
+        self.plot_trackers()
         
         
     
@@ -160,7 +248,8 @@ class Replicator:
             'output_by_day': model.process.audit.summary_output_by_day,
             'resources': model.process.audit.summary_resources,
             'max_queues': model.process.audit.max_queue_sizes,
-            'queue_times': model.process.audit.queue_times
+            'queue_times': model.process.audit.queue_times,
+            'tracker': model.process.audit.tracker_results
                    }
         
         return results
@@ -184,7 +273,8 @@ class Replicator:
             result_item = results[run]['output_by_day']
             result_item['run'] = run
             result_item['name'] = name
-            self.summary_output_by_day = self.summary_output_by_day.append(result_item)
+            self.summary_output_by_day = \
+                self.summary_output_by_day.append(result_item)
             
             # Resources summary
             result_item = results[run]['resources']
@@ -196,13 +286,23 @@ class Replicator:
             result_item = pd.DataFrame(results[run]['max_queues'])
             result_item['run'] = run
             result_item['name'] = name
-            self.summary_max_queues = self.summary_max_queues.append(result_item)
+            self.summary_max_queues = \
+                self.summary_max_queues.append(result_item)
             
             # Queueing time summary
             result_item = pd.DataFrame(results[run]['queue_times'])
             result_item['run'] = run
             result_item['name'] = name
-            self.summary_queue_times = self.summary_queue_times.append(result_item)
+            self.summary_queue_times = \
+                self.summary_queue_times.append(result_item)
+                
+            # Resource tracker
+            result_item = pd.DataFrame(results[run]['tracker'])
+            result_item['run'] = run
+            result_item['name'] = name
+            self.summary_tracker = \
+                self.summary_tracker.append(result_item)
+
 
 
             
