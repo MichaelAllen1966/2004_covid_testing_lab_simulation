@@ -109,7 +109,7 @@ class Scenario(object):
             'human_pcr_1',
             'human_pcr_2',
             'human_rna_prep_1',
-            'human_rna_prep_2',
+            'human_rna_prep_2'
             ]
         
         # Process duration. Tuple of fixed time, time per entity, and time per
@@ -127,7 +127,7 @@ class Scenario(object):
              'data_analysis': ([0,0,0],)
              }
         
-        self.allow_maual_sample_prep = False
+        self.allow_maual_sample_prep = True
         
         # Add a triangular distribution of extra time per process
         # Average extra time with be 1/4 of this
@@ -164,7 +164,10 @@ class Scenario(object):
             'sample_receipt': {
                 'process_type': 'manual',
                 'human_list': (['human_sample_receipt_1',
-                                'human_sample_receipt_2'],),
+                                'human_sample_receipt_2'],
+                               ['tracker_sample_receipt_fte'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_sample_receipt_jobs']),
                 'machine_list': ([],)},
             
             'sample_prep_manual': {
@@ -176,38 +179,57 @@ class Scenario(object):
                                 'human_rna_prep_1',
                                 'human_rna_prep_2',
                                 'human_sample_receipt_1', 
-                                'human_sample_receipt_2']),
+                                'human_sample_receipt_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_sample_prep_jobs'],
+                               ['tracker_sample_prep_fte']),
                 'machine_list': ([],)},
             
             'sample_prep_auto': {
                 'process_type': 'auto',
                 'human_list': (['human_sample_prep_1',
-                                'human_sample_prep_2'],),
-                'machine_list': (['sample_prep_automation'],)},
+                                'human_sample_prep_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_sample_prep_jobs'],
+                               ['tracker_sample_prep_fte']),
+                'machine_list': (['sample_prep_automation'],
+                                 ['tracker_sample_prep_jobs'])},
             
             'sample_heat': {
                 'process_type': 'auto',
                 'human_list': (['human_sample_prep_1',
-                                'human_sample_prep_2'],),
-                'machine_list': (['sample_heat_block'],)},
+                                'human_sample_prep_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_heat_fte']),
+                'machine_list': (['sample_heat_block'],
+                                 ['tracker_heat_jobs'])},
             
             'rna_extraction':{
                 'process_type': 'auto',
                 'human_list': (['human_rna_prep_1',
-                                'human_rna_prep_2'],),
-                'machine_list': (['beckman_rna_extraction'],)},
+                                'human_rna_prep_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_rna_prep_fte']),
+                'machine_list': (['beckman_rna_extraction'],
+                                 ['tracker_rna_prep_jobs'])},
           
             'pcr_prep':{
                 'process_type': 'auto',
                 'human_list': (['human_pcr_1',
-                                'human_pcr_2'],),
-                'machine_list': (['pcr_plate_stamper'],)},
+                                'human_pcr_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_pcr_prep_fte']),
+                'machine_list': (['pcr_plate_stamper'],
+                                 ['tracker_pcr_prep_jobs'])},
           
             'pcr':{
                 'process_type': 'auto',
                 'human_list': (['human_pcr_1',
-                                'human_pcr_2'],),
-                'machine_list': (['pcr_plate_reader'],)},
+                                'human_pcr_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_pcr_fte']),
+                'machine_list': (['pcr_plate_reader'],
+                                 ['tracker_pcr_jobs'])},
             }
         
         # Workstation (used to limit work in progress)
@@ -264,13 +286,6 @@ class Scenario(object):
         self.process_priorites = {key: value for key, value in sorted(
             self.process_priorites.items(), key=lambda item: item[1])}
         
-        # Convert resource shifts to minutes, and place in new dictionary
-        self.resource_shifts = dict()
-        for resource, shift_hours in self.resource_shift_hours.items():
-            start = shift_hours[0] * 60
-            end = shift_hours[1] * 60
-            self.resource_shifts[resource] = (start, end)
-
         # Set up kanban group counts and dictionaries for start.end
         self.kanban_group_counts = dict()
         self.kanban_group_max = dict()
@@ -294,3 +309,65 @@ class Scenario(object):
             for key, value in self.kanban_groups.items():
                 self.kanban_group_counts[key] = 0
                 self.kanban_group_max[key] = value[2]
+
+        # Add tracker resources
+        tracker_resource_numbers = {
+            'tracker_all_jobs_fte': 1000,
+            'tracker_heat_fte': 1000,
+            'tracker_heat_jobs': 1000,
+            'tracker_pcr_prep_fte': 1000,
+            'tracker_pcr_prep_jobs': 1000,
+            'tracker_pcr_fte': 1000,
+            'tracker_pcr_jobs': 1000,
+            'tracker_rna_prep_fte': 1000,
+            'tracker_rna_prep_jobs': 1000,
+            'tracker_sample_prep_jobs': 1000,
+            'tracker_sample_prep_fte': 1000,
+            'tracker_sample_receipt_fte': 1000,
+            'tracker_sample_receipt_jobs': 1000
+        }
+
+        self.resource_numbers.update(tracker_resource_numbers)
+
+        tracker_shifts = {
+            'tracker_all_jobs_fte': (0.0, 24.0),
+            'tracker_heat_fte': (0.0, 24.0),
+            'tracker_heat_jobs': (0.0, 24.0),
+            'tracker_pcr_prep_fte': (0.0, 24.0),
+            'tracker_pcr_prep_jobs': (0.0, 24.0),
+            'tracker_pcr_fte': (0.0, 24.0),
+            'tracker_pcr_jobs': (0.0, 24.0),
+            'tracker_rna_prep_fte': (0.0, 24.0),
+            'tracker_rna_prep_jobs': (0.0, 24.0),
+            'tracker_sample_prep_fte': (0.0, 24.0),
+            'tracker_sample_prep_jobs': (0.0, 24.0),
+            'tracker_sample_receipt_fte': (0.0, 24.0),
+            'tracker_sample_receipt_jobs': (0.0, 24.0)
+        }
+
+        self.resource_shift_hours.update(tracker_shifts)
+
+        tracker_unavailability = {
+            'tracker_all_jobs_fte': 0,
+            'tracker_heat_fte': 0,
+            'tracker_heat_jobs': 0,
+            'tracker_pcr_prep_fte': 0,
+            'tracker_pcr_prep_jobs': 0,
+            'tracker_pcr_fte': 0,
+            'tracker_pcr_jobs': 0,
+            'tracker_rna_prep_fte': 0,
+            'tracker_rna_prep_jobs': 0,
+            'tracker_sample_prep_fte': 0,
+            'tracker_sample_prep_jobs': 0,
+            'tracker_sample_receipt_fte': 0,
+            'tracker_sample_receipt_jobs': 0
+        }
+
+        self.resource_breakdown_unavailability.update(tracker_unavailability)
+
+        # Convert resource shifts to minutes, and place in new dictionary
+        self.resource_shifts = dict()
+        for resource, shift_hours in self.resource_shift_hours.items():
+            start = shift_hours[0] * 60
+            end = shift_hours[1] * 60
+            self.resource_shifts[resource] = (start, end)

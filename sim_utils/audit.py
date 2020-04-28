@@ -178,7 +178,13 @@ class Audit:
     def summarise_resources_with_shifts(self):
         index = [key for key, value in self._params.resource_numbers.items() if
                  value > 0]
+
+        # Remove trackers from utilisation summary
+        index = [item for item in index if item[0:7] != 'tracker']
+
         columns = ['Available', 'Used', 'Utilisation']
+
+
         self.summary_resources = pd.DataFrame(index=index, columns=columns)
         for resource in index:
             # Get number available on-shift
@@ -194,6 +200,29 @@ class Audit:
                       'Utilisation': mean_utilisation}
             # Add to DataFrame
             self.summary_resources.loc[resource] = result
+            
+
+    def summarise_trackers(self):
+        """Aggregate trackers by hour"""
+        self.tracker_results = pd.DataFrame()
+        df = self.resource_audit.copy()
+        index = list(df)
+        # Get tracker columns (remove whether on shift or not for trackers
+        index = [item for item in index if item[0:7] == 'tracker' and
+                 item[-6:] != '_shift']
+        if len(index) == 0:
+            # No trackers active
+            return
+        day_fraction = df['day'] % 1.0
+        hour = day_fraction.values * 24
+        df['hour'] = hour.astype(int)
+        self.tracker_results = df.pivot_table(
+            index='hour',
+            aggfunc=[np.mean],
+            margins=False)
+        # Limit table
+        self.tracker_results = self.tracker_results['mean'][index]
+
 
     def run_audit(self):
         yield self._env.timeout(self._params.audit_warm_up)

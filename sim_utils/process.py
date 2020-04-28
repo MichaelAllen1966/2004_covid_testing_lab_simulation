@@ -231,6 +231,7 @@ class Process:
         self.audit.summarise_resources_with_shifts()
         self.audit.summarise_queues()
         self.audit.summarise_queue_times()
+        self.audit.summarise_trackers()
         
        
             
