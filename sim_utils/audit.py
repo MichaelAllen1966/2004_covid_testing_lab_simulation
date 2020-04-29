@@ -13,9 +13,9 @@ class Audit:
         self._recources = _process.resources
         self._count_in = _process.count_in
         self._count_out = _process.count_out
+        self._fte_on_break = _process.fte_on_break
 
         # Set up queue audit
-
         self.queue_names = ['day'] + [
             key for key, _ in self._queues.items()]
         self.queue_audit = pd.DataFrame(columns=self.queue_names)
@@ -23,7 +23,8 @@ class Audit:
         # Set up resources audit
         self.resource_names = ['day'] + [
             key for key, _ in self._recources.items()]
-        self.resource_audit = pd.DataFrame(columns=self.resource_names)
+        self.resource_audit = pd.DataFrame(columns=self.resource_names +
+                                                   ['tracker_break_fte'])
 
     def audit_queue(self):
         day = self._env.now
@@ -36,6 +37,7 @@ class Audit:
         time = self._env.now
         resource_counts = {key: value.count for key, value in
                            self._recources.items()}
+        resource_counts['tracker_break_fte'] = self._fte_on_break[0]
         resource_counts['day'] = time / self._params.day_duration
         for resource, shift in self._params.resource_shifts.items():
             label = resource + '_shift'
