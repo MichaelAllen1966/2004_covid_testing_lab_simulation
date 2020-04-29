@@ -22,6 +22,7 @@ class Process:
         self.batch_id_count = 0
         self.parent_child = dict()
         self.id_count = 0
+        self.fte_on_break = [0]
         self.count_in = []
         self.count_out = []
         self.resources = resources

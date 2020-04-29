@@ -46,9 +46,10 @@ class ProcessSteps:
     def __init__(self, _process):
 
         self._env = _process._env
-        self._batch_id_count = _process.batch_id_count = 0
+        self._batch_id_count = _process.batch_id_count
         self._count_in = _process.count_in
         self._count_out = _process.count_out
+        self._fte_on_break = _process.fte_on_break
         self._id_count = _process.id_count
         self._params = _process._params
         self.queue_monitors = _process.queue_monitors
@@ -189,7 +190,7 @@ class ProcessSteps:
         """FTE break process step. Used for tea and coffee breaks. Breaks are
         highest priority process, but do not interupt other work. Break is
         triggered after a random time (to spread breaks) which is set in the 
-        model paramters file."""
+        model parameters file."""
 
         # Spread break starts by adding random delay over set period
         delay = np.random.uniform(0, self._params.break_start_spread)
@@ -200,12 +201,14 @@ class ProcessSteps:
             # Get resource as soon as free
             yield req
             # Break time
+            self._fte_on_break[0] += 1
             self._resources_available[resource] -= 1
             self._resources_occupied[resource] += 1
             yield self._env.timeout(break_time)
             # End break
             self._resources_available[resource] += 1
             self._resources_occupied[resource] -= 1
+            self._fte_on_break[0] -= 1
 
     def generate_breakdowns(self):
         while True:

@@ -7,12 +7,14 @@ from sim_utils.model import Model
 
 
 class Replicator:
-    
+
     def __init__(self, scenarios, replications):
-        
+        """Constructor class for Replicator
+        """
+
         self.replications = replications
         self.scenarios = scenarios
-        
+
         # Set up DataFrames for all trials results
         self.summary_output = pd.DataFrame()
         self.summary_output_by_day = pd.DataFrame()
@@ -22,44 +24,44 @@ class Replicator:
         self.summary_max_queues = pd.DataFrame()
         self.output_pivot = pd.DataFrame()
         self.resources_pivot = pd.DataFrame()
-        
-            
-    def pivot_results(self):  
+
+
+    def pivot_results(self):
+        """Summarise results across multiple scenario replicates. """
 
         def percentile_95(g):
-            """Function for percentiles in pandas picot table"""
+            """Function for percentiles in pandas pivot table"""
             return np.percentile(g, 95)
-        
-        
+
         # Output summary
         df = self.summary_output.copy()
         df['result_type'] = df.index
-         
+
         pivot = df.pivot_table(
             index = ['result_type', 'name'],
             values = ['Result'],
             aggfunc = [np.min, np.mean, np.median, np.max],
             margins=False)
-        
+
         pivot.rename(columns={'amin': 'min', 'amax': 'max'}, inplace=True)
         self.output_pivot = pivot
-        
+
         # resource results
         df = self.summary_resources.copy()
         cols = list(df)
         cols.remove('run')
         df['resource'] = df.index
-        
+
         # Ensure all data is is a form for aggregation
         df = df.convert_dtypes()
-                
+
         self.resources_pivot = df.pivot_table(
             index = ['resource', 'name'],
             values = ['Used', 'Available', 'Utilisation'],
             aggfunc = [np.median],
             margins=False)
         self.resources_pivot = self.resources_pivot['median']
-                
+
         # Queue time results
         
         df = self.summary_queue_times.copy()
@@ -128,7 +130,7 @@ class Replicator:
                     label = tracker[0:-5]
                     ax1.plot(x, y_data[tracker], label=label, 
                         linestyle=linestyles[counter % 4])
-                counter += 1
+                    counter += 1
             
             ax1.set_ylim(0)
             ax1.set_xlim(0,24)
@@ -149,7 +151,7 @@ class Replicator:
                     label = tracker[0:-4]
                     ax2.plot(x, y_data[tracker], label=label, 
                         linestyle=linestyles[counter % 4])
-                counter += 1
+                    counter += 1
             ax2.set_ylim(0)
             ax2.set_xlim(0,24)
             ax2.yaxis.set_major_locator(ticker.MultipleLocator(5))
@@ -157,7 +159,7 @@ class Replicator:
             ax2.xaxis.set_minor_locator(ticker.MultipleLocator(1))
             ax2.set_xlabel('Hour')
             ax2.set_ylabel('Tracker count')
-            ax2.set_title('Active FTE (excluding breaks)')
+            ax2.set_title('Active FTE')
             ax2.legend()
             ax2.grid(True, which='major')
             
