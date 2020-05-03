@@ -35,9 +35,9 @@ class Process:
             'q_batch_input': [],
             'q_sample_receipt': [],
             'q_sample_prep': [],
-            'q_sample_heat': [],
-            'q_rna_collation': [],
-            'q_rna_extraction': [],
+            'q_heat': [],
+            'q_heat_collation': [],
+            'q_heat_split': [],
             'q_pcr_collation': [],
             'q_pcr_prep': [],
             'q_pcr': [],
@@ -49,9 +49,9 @@ class Process:
         self.queue_monitors = {
             'q_sample_receipt': [],
             'q_sample_prep': [],
-            'q_sample_heat': [],
-            'q_rna_collation': [],
-            'q_rna_extraction': [],
+            'q_heat': [],
+            'q_heat_collation': [],
+            'q_heat_split': [],
             'q_pcr_collation': [],
             'q_pcr_prep': [],
             'q_pcr': [],
@@ -64,7 +64,6 @@ class Process:
             'sample_prep_manual': 0,
             'sample_prep_auto': 0,
             'sample_heat': 0,
-            'rna_extraction': 0,
             'pcr_prep': 0,
             'pcr': 0,
             'data_analysis': 0
@@ -74,7 +73,6 @@ class Process:
         self.process_assign_calls = {
             'pcr': self.assign_pcr,
             'pcr_prep': self.assign_pcr_prep,
-            'rna_extraction': self.assign_rna_extraction,
             'sample_heat': self.assign_sample_heat,
             'sample_prep_auto': self.assign_sample_prep,
             'sample_prep_manual': self.assign_sample_prep,
@@ -128,24 +126,28 @@ class Process:
                 self.queues[queue] = []
                 
         self.queues[queue] = new_unallocated_queue
+
         
     def assign_analysis(self):
         # pass any new input to process_step.batch_input
         q = 'q_data_analysis'; process = 'data_analysis'
         self.assign(q, process)    
-    
+
+
     def assign_batch_input(self):
         # pass any new input to process_step.batch_input
         q = 'q_batch_input'
         process = 'batch_input'
         self.assign(q, process)
-        
+
+
     def assign_pcr_prep(self, time_of_day, time_left):
         shift = self._params.process_start_hours['pcr_prep']
         if shift[0] * 60 <= time_of_day <= shift[1] * 60:
             q = 'q_pcr_prep'
             process = 'pcr_prep'
             self.assign(q, process)
+
         
     def assign_pcr(self, time_of_day, time_left):
         shift = self._params.process_start_hours['pcr']
@@ -153,20 +155,13 @@ class Process:
             q = 'q_pcr'
             process = 'pcr'
             self.assign(q, process)
-        
-    def assign_rna_extraction(self, time_of_day, time_left):
-        shift = self._params.process_start_hours['rna_extraction']
-        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
-            # Assign sample_receipts
-            q = 'q_rna_extraction'
-            process = 'rna_extraction'
-            self.assign(q, process)
-            
+
+
     def assign_sample_heat(self, time_of_day, time_left):
         shift = self._params.process_start_hours['sample_heat']
         if shift[0] * 60 <= time_of_day <= shift[1] * 60:
             # Assign sample_receipts
-            q = 'q_sample_heat'; process = 'sample_heat'
+            q = 'q_heat'; process = 'sample_heat'
             self.assign(q, process)
         
 
@@ -186,19 +181,22 @@ class Process:
             self.assign(q, process)
             
             #Also use manual process if allowed
-            if self._params.allow_maual_sample_prep:
+            if self._params.allow_manual_sample_prep:
                 q = 'q_sample_prep'
                 process = 'sample_prep_manual'
                 self.assign(q, process)
-            
+
+
+    def collate_for_heat(self):
+        # Takes plates from sample receipt
+        self.process_steps.collate(
+            self._params.heat_batch_size, 'q_heat_collation', 'q_heat')
+
 
     def collate_for_pcr(self):
-        # Takes 2 plates from RNA extraction and combines to one for PCR
-        self.process_steps.collate(2, 'q_pcr_collation', 'q_pcr_prep')
-        
-    def collate_for_rna_extraction(self):
-        # Process two plates for RNA extraction
-        self.process_steps.collate(2, 'q_rna_collation', 'q_rna_extraction')
+        # Takes 4 plates from sample prep
+        self.process_steps.collate(4, 'q_pcr_collation', 'q_pcr_prep')
+
 
     def control_process(self):
         yield self._env.timeout(5)
@@ -211,10 +209,11 @@ class Process:
             # Model admin jobs (no resources needed)
             self.assign_batch_input()
             self.assign_analysis()
-            self.collate_for_rna_extraction()
             self.collate_for_pcr()
+            self.collate_for_heat()
+            self.split_after_heat()
             
-            for key, _ in self._params.process_priorites.items():
+            for key in self._params.process_priorites.keys():
                 self.process_assign_calls[key](time_of_day, time_left)
                     
             # Time before next control loop
@@ -226,15 +225,14 @@ class Process:
             print (f'\r>> Day {int(self._env.now/self._params.day_duration)}',
                    end='')
             yield self._env.timeout(self._params.day_duration)
-            
+
+
     def end_run_routine(self):
         self.audit.summarise_in_out()
         self.audit.summarise_resources_with_shifts()
         self.audit.summarise_queues()
         self.audit.summarise_queue_times()
         self.audit.summarise_trackers()
-        
-       
             
     def indentify_workstation(self, process):
         """
@@ -272,6 +270,12 @@ class Process:
             for tea_break in self._params.tea_break_times:
                 self._env.process(
                     self.process_steps.generate_tea_breaks(tea_break))
+
             
     def set_up_process_steps(self):
         self.process_steps = ProcessSteps(self)
+
+
+    def split_after_heat(self):
+        self.process_steps.split(
+            self._params.heat_batch_size, 'q_heat_split', 'q_sample_prep')
