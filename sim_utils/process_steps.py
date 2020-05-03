@@ -40,6 +40,10 @@ class ProcessSteps:
     occupy_resources_single_subprocess:
         Obtains and occupied resources for a single process step.
 
+    split:
+        Splits a single entity into multipel entitites
+        Admin step that requires no time or resources.
+
     
     """
 
@@ -67,7 +71,6 @@ class ProcessSteps:
             'sample_prep_auto': self.sample_prep_auto,
             'sample_prep_manual': self.sample_prep_manual,
             'sample_heat': self.sample_heat,
-            'rna_extraction': self.rna_extraction,
             'pcr_prep': self.pcr_prep,
             'pcr': self.pcr,
             'data_analysis': self.data_analysis
@@ -139,7 +142,7 @@ class ProcessSteps:
 
     def collate(self, batch_size, from_queue, to_queue):
         """ Admin step that requires no time or resources.
-        Use the first entitiy form each batch for the batch id and time in."""
+        Use the first entity form each batch for the batch id and time in."""
         while len(self._queues[from_queue]) >= batch_size:
             parent_ids = []
             new_batch_size = 0
@@ -661,53 +664,6 @@ class ProcessSteps:
             for kanban_group in relevant_kanban_groups:
                 self._params.kanban_group_counts[kanban_group] -= quantity
 
-    def rna_extraction(self, workstation, job):
-
-        num_entities = 1
-
-        # Get resources required (a tuple of list of required alternative
-        # resources)
-        human_resources = self._params.process_resources['rna_extraction'][
-            'human_list']
-        machine_resources = self._params.process_resources['rna_extraction'][
-            'machine_list']
-
-        # Process time
-        process_times = self._params.process_duration['rna_extraction']
-
-        stage_process_times = []
-        for stage in process_times:
-            process_time = (stage[0] +
-                            stage[1] * num_entities +
-                            stage[2] * num_entities * job.batch_size)
-            stage_process_times.append(process_time)
-
-        process_priority = self._params.process_priorites['rna_extraction']
-
-        # Generate new entity (one output entity per job)
-        self._id_count += 1
-
-        entity = Entity(_env=self._env,
-                        _params=self._params,
-                        batch_id=job.batch_id,
-                        batch_size=self._params.basic_batch_size,
-                        entity_id=self._id_count,
-                        entity_type='plate for pcr',
-                        last_queue='q_pcr_collation',
-                        last_queue_time_in=self._env.now,
-                        parent_ids=[job.entity_id],
-                        time_in=job.time_in)
-
-        self._env.process(self.occupy_resources_automated_subprocess(
-            workstation=workstation, human_resources=human_resources,
-            machine_resources=machine_resources,
-            stage_process_times=stage_process_times,
-            priority=process_priority, entity_to_create=entity,
-            queue_to_add_new_entity='q_pcr_collation',
-            process_step='rna_extraction'))
-
-        self.record_queuing_time(
-            'q_rna_extraction', job.last_queue_time_in, self._env.now)
 
     def sample_heat(self, workstation, job):
         # Job is a single input entity
@@ -742,23 +698,23 @@ class ProcessSteps:
                         batch_id=job.batch_id,
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
-                        entity_type='samples in plate for rna extraction',
-                        last_queue='q_rna_collation',
+                        entity_type='samples in tubes for heat inactivation',
+                        last_queue='q_heat',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
 
-        # Define queue to add new entitiy to
+        # Define queue to add new entity to
         self._env.process(self.occupy_resources_automated_subprocess(
             workstation=workstation, human_resources=human_resources,
             machine_resources=machine_resources,
             stage_process_times=stage_process_times,
             priority=process_priority, entity_to_create=entity,
-            queue_to_add_new_entity='q_rna_collation',
+            queue_to_add_new_entity='q_heat_split',
             process_step='sample_heat'))
 
         self.record_queuing_time(
-            'q_sample_heat', job.last_queue_time_in, self._env.now)
+            'q_heat', job.last_queue_time_in, self._env.now)
 
     def sample_prep_auto(self, workstation, job):
         """
@@ -795,8 +751,8 @@ class ProcessSteps:
                         batch_id=job.batch_id,
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
-                        entity_type='samples in plate for rna extraction',
-                        last_queue='q_sample_heat',
+                        entity_type='samples in plate for pcr',
+                        last_queue='q_pcr_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -807,7 +763,7 @@ class ProcessSteps:
             machine_resources=machine_resources,
             stage_process_times=stage_process_times,
             priority=process_priority, entity_to_create=entity,
-            queue_to_add_new_entity='q_sample_heat',
+            queue_to_add_new_entity='q_pcr_collation',
             process_step='sample_prep_auto'))
 
         self.record_queuing_time(
@@ -845,8 +801,8 @@ class ProcessSteps:
                         batch_id=job.batch_id,
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
-                        entity_type='samples in plate for rna extraction',
-                        last_queue='q_sample_heat',
+                        entity_type='samples in plate for pcr',
+                        last_queue='q_pcr_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -855,7 +811,7 @@ class ProcessSteps:
         self._env.process(self.occupy_resources_single_subprocess(
             workstation=workstation, resources_required=resources_required,
             process_time=process_time, priority=process_priority,
-            entity_to_create=entity, queue_to_add_new_entity='q_sample_heat',
+            entity_to_create=entity, queue_to_add_new_entity='q_pcr_collation',
             process_step='sample_prep_manual'))
 
         self.record_queuing_time(
@@ -896,7 +852,7 @@ class ProcessSteps:
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
                         entity_type='rack of tubes for sample prep',
-                        last_queue='q_sample_prep',
+                        last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -904,8 +860,30 @@ class ProcessSteps:
         self._env.process(self.occupy_resources_single_subprocess(
             workstation=workstation, resources_required=resources_required,
             process_time=process_time, priority=process_priority,
-            entity_to_create=entity, queue_to_add_new_entity='q_sample_prep',
+            entity_to_create=entity, queue_to_add_new_entity='q_heat_collation',
             process_step='sample_receipt'))
 
         self.record_queuing_time(
             'q_sample_receipt', job.last_queue_time_in, self._env.now)
+
+
+    def split(self, batch_size, from_queue, to_queue):
+        """ Admin step that requires no time or resources"""
+        while len(self._queues[from_queue]) > 0:
+            ent = self._queues[from_queue].pop()
+            # Generate new entities
+            new_batch_size = int(ent.batch_size / batch_size)
+            for i in range(batch_size):
+                self._id_count += 1
+                new_ent = Entity(_env=self._env,
+                                 _params=self._params,
+                                 batch_id=ent.batch_id,
+                                 batch_size=new_batch_size,
+                                 entity_id=self._id_count,
+                                 entity_type='split',
+                                 last_queue=to_queue,
+                                 last_queue_time_in=self._env.now,
+                                 parent_ids=ent.entity_id,
+                                 time_in=ent.time_in)
+                # Add to queue
+                self._queues[to_queue].append(new_ent)
