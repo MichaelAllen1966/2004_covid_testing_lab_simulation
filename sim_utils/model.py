@@ -110,8 +110,3 @@ class Model(object):
         workstation. """
         for key, _ in self._params.workstation_capacity.items():
             self.workstation_assigned_jobs[key] = 0
-
-            
-        
-    
-        

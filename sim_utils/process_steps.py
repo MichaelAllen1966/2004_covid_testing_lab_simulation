@@ -699,7 +699,7 @@ class ProcessSteps:
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
                         entity_type='samples in tubes for heat inactivation',
-                        last_queue='q_heat',
+                        last_queue='q_heat_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -752,7 +752,7 @@ class ProcessSteps:
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
                         entity_type='samples in plate for pcr',
-                        last_queue='q_pcr_collation',
+                        last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -763,7 +763,7 @@ class ProcessSteps:
             machine_resources=machine_resources,
             stage_process_times=stage_process_times,
             priority=process_priority, entity_to_create=entity,
-            queue_to_add_new_entity='q_pcr_collation',
+            queue_to_add_new_entity='q_heat_collation',
             process_step='sample_prep_auto'))
 
         self.record_queuing_time(
@@ -802,7 +802,7 @@ class ProcessSteps:
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
                         entity_type='samples in plate for pcr',
-                        last_queue='q_pcr_collation',
+                        last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -811,7 +811,7 @@ class ProcessSteps:
         self._env.process(self.occupy_resources_single_subprocess(
             workstation=workstation, resources_required=resources_required,
             process_time=process_time, priority=process_priority,
-            entity_to_create=entity, queue_to_add_new_entity='q_pcr_collation',
+            entity_to_create=entity, queue_to_add_new_entity='q_heat_collation',
             process_step='sample_prep_manual'))
 
         self.record_queuing_time(
@@ -852,7 +852,7 @@ class ProcessSteps:
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
                         entity_type='rack of tubes for sample prep',
-                        last_queue='q_heat_collation',
+                        last_queue='q_sample_prep',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -860,7 +860,7 @@ class ProcessSteps:
         self._env.process(self.occupy_resources_single_subprocess(
             workstation=workstation, resources_required=resources_required,
             process_time=process_time, priority=process_priority,
-            entity_to_create=entity, queue_to_add_new_entity='q_heat_collation',
+            entity_to_create=entity, queue_to_add_new_entity='q_sample_prep',
             process_step='sample_receipt'))
 
         self.record_queuing_time(

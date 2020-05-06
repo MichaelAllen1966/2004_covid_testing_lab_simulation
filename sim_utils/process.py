@@ -278,4 +278,4 @@ class Process:
 
     def split_after_heat(self):
         self.process_steps.split(
-            self._params.heat_batch_size, 'q_heat_split', 'q_sample_prep')
+            self._params.heat_batch_size, 'q_heat_split', 'q_pcr_collation')

@@ -55,8 +55,9 @@ class Scenario(object):
             'workstation_0': 9999,
             'workstation_1a': 21,
             'workstation_1b_man': 25,
-            'workstation_1b_auto': 5, 
-            'workstation_2': 10,
+            'workstation_1b_auto': 5,
+            'workstation_1c': 10,
+            'workstation_2': 0,
             'workstation_3': 9,
             'workstation_4': 15
             }
@@ -138,10 +139,10 @@ class Scenario(object):
         # Process priories (lower number - higher priority)
         self.process_priorites = {
             'sample_receipt': 100,
-            'sample_heat': 90,
-            'sample_prep_manual': 80,
-            'sample_prep_auto': 70,
-            'pcr_prep': 35,
+            'sample_prep_manual': 70,
+            'sample_prep_auto': 60,
+            'sample_heat': 50,
+            'pcr_prep': 40,
             'pcr': 30
             }
         
@@ -218,7 +219,7 @@ class Scenario(object):
             'sample_receipt': ['workstation_1a'],
             'sample_prep_manual' : ['workstation_1b_man'],
             'sample_prep_auto' : ['workstation_1b_auto'],
-            'sample_heat': ['workstation_2'],
+            'sample_heat': ['workstation_1c'],
             'pcr_prep': ['workstation_3'],
             'pcr': ['workstation_4']
             }
@@ -296,7 +297,7 @@ class Scenario(object):
             'tracker_pcr_prep_jobs': 1000,
             'tracker_pcr_fte': 1000,
             'tracker_pcr_jobs': 1000,
-             'tracker_sample_prep_jobs': 1000,
+            'tracker_sample_prep_jobs': 1000,
             'tracker_sample_prep_fte': 1000,
             'tracker_sample_receipt_fte': 1000,
             'tracker_sample_receipt_jobs': 1000
