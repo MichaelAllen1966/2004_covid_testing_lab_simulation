@@ -54,6 +54,8 @@ class Replicator:
 
         # Ensure all data is is a form for aggregation
         df = df.convert_dtypes()
+        # Do not report dummy resources
+        df.drop('dummy', inplace=True)
 
         self.resources_pivot = df.pivot_table(
             index = ['resource', 'name'],

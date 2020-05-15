@@ -67,13 +67,14 @@ class ProcessSteps:
 
         self.process_step_funcs = {
             'batch_input': self.batch_input,
-            'sample_receipt': self.sample_receipt,
+            'data_analysis': self.data_analysis,
+            'pcr': self.pcr,
+            'pcr_prep': self.pcr_prep,
+            'rna_extraction': self.rna_extraction,
+            'sample_heat': self.sample_heat,
             'sample_prep_auto': self.sample_prep_auto,
             'sample_prep_manual': self.sample_prep_manual,
-            'sample_heat': self.sample_heat,
-            'pcr_prep': self.pcr_prep,
-            'pcr': self.pcr,
-            'data_analysis': self.data_analysis
+            'sample_receipt': self.sample_receipt
         }
 
     def batch_input(self, workstation, job):
@@ -121,6 +122,7 @@ class ProcessSteps:
         time_of_day = self._env.now % self._params.day_duration
         number_of_recources_required = len(resources_required)
         number_of_recources_found = 0
+
         resources_selected = []  # names of selected resources
         # Look through all resources required
         for resource_list in resources_required:
@@ -663,6 +665,55 @@ class ProcessSteps:
         if len(relevant_kanban_groups) > 0:
             for kanban_group in relevant_kanban_groups:
                 self._params.kanban_group_counts[kanban_group] -= quantity
+
+
+    def rna_extraction(self, workstation, job):
+
+        num_entities = 1
+
+        # Get resources required (a tuple of list of required alternative
+        # resources)
+        human_resources = self._params.process_resources['rna_extraction'][
+            'human_list']
+        machine_resources = self._params.process_resources['rna_extraction'][
+            'machine_list']
+
+        # Process time
+        process_times = self._params.process_duration['rna_extraction']
+
+        stage_process_times = []
+        for stage in process_times:
+            process_time = (stage[0] +
+                            stage[1] * num_entities +
+                            stage[2] * num_entities * job.batch_size)
+            stage_process_times.append(process_time)
+
+        process_priority = self._params.process_priorites['rna_extraction']
+
+        # Generate new entity (one output entity per job)
+        self._id_count += 1
+
+        entity = Entity(_env=self._env,
+                        _params=self._params,
+                        batch_id=job.batch_id,
+                        batch_size=self._params.basic_batch_size,
+                        entity_id=self._id_count,
+                        entity_type='plate for pcr',
+                        last_queue='q_pcr_collation',
+                        last_queue_time_in=self._env.now,
+                        parent_ids=[job.entity_id],
+                        time_in=job.time_in)
+
+        self._env.process(self.occupy_resources_automated_subprocess(
+            workstation=workstation, human_resources=human_resources,
+            machine_resources=machine_resources,
+            stage_process_times=stage_process_times,
+            priority=process_priority, entity_to_create=entity,
+            queue_to_add_new_entity='q_pcr_collation',
+            process_step='rna_extraction'))
+
+        self.record_queuing_time(
+            'q_rna_extraction', job.last_queue_time_in, self._env.now)
 
 
     def sample_heat(self, workstation, job):

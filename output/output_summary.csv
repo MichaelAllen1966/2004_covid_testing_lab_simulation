@@ -1,8 +1,8 @@
 ,,min,mean,median,max
 ,,Result,Result,Result,Result
 result_type,name,,,,
-demand_met,30k_example,0.91,0.9936666666666666,1.0,1.0
-input,30k_example,30132.0,30132.0,30132.0,30132.0
-max_process_time_hours,30k_example,17.33,17.587666666666667,17.57,17.83
-median_process_time_hours,30k_example,17.33,17.587666666666667,17.57,17.83
-output,30k_example,27528.0,29946.0,30132.0,30132.0
+demand_met,base,0.84,0.9883333333333333,1.0,1.0
+input,base,30132.0,30132.0,30132.0,30132.0
+max_process_time_hours,base,17.2,17.576000000000004,17.6,17.83
+median_process_time_hours,base,17.2,17.576000000000004,17.6,17.83
+output,base,25296.0,29784.8,30132.0,30132.0
