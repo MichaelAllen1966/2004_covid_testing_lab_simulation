@@ -14,7 +14,7 @@ class Scenario(object):
 
         # Work arrival
         self.samples_per_day = 30132
-        self.deliveries_per_day = 1
+        self.delivery_times = [0]
         self.basic_batch_size = 93
 
         # Day and run parameters
@@ -279,14 +279,12 @@ class Scenario(object):
 
 
         # Set arrival batch size and round (down) to nearest basic batch size
-        self.arrival_batch_size = self.samples_per_day / self.deliveries_per_day
+        deliveries_per_day = len(self.delivery_times)
+        self.arrival_batch_size = self.samples_per_day / deliveries_per_day
         self.arrival_batch_size = (np.floor(
             self.arrival_batch_size / self.basic_batch_size) *
             self.basic_batch_size)
-        
-        # Set interarrival time
-        self.interarrival_time = self.day_duration / self.deliveries_per_day
-        
+
         # Set warm up and run length
         self.audit_warm_up = self.day_duration * self.warm_up_days
         self.run_length = self.run_days * self.day_duration + self.audit_warm_up

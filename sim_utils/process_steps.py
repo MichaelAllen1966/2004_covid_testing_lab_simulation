@@ -288,9 +288,10 @@ class ProcessSteps:
             # 1 day delay before next call        
             yield self._env.timeout(self._params.day_duration)
 
-    def generate_input(self):
+    def generate_input(self, arrival_time):
         """Continuous loop of work arrival. Adds new work to batch input."""
-        # First delivery at start of day
+        # First delivery
+        yield self._env.timeout(arrival_time)
         # While loop continues generating new patients throughout model run
         while True:
             # generate new entity and add to list of current entities
@@ -316,7 +317,7 @@ class ProcessSteps:
             self._count_in.append(input_log)
 
             # Schedule next admission
-            yield self._env.timeout(self._params.interarrival_time)
+            yield self._env.timeout(self._params.day_duration)
 
     def occupy_resources_automated_subprocess(self, workstation,
                                               human_resources,

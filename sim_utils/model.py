@@ -63,11 +63,13 @@ class Model(object):
             
         # Initialise processes that will run on model run
         self._env.process(self.process.process_steps.generate_breakdowns())
-        self._env.process(self.process.process_steps.generate_input())
         self._env.process(self.process.control_process())
         self._env.process(self.process.display_day())
         self._env.process(self.process.audit.run_audit())
         self.process.set_up_breaks()
+        for delivery_time in self._params.delivery_times:
+            self._env.process(self.process.process_steps.generate_input(
+                delivery_time))
 
         # Run
         self._env.run(self._params.run_length)
