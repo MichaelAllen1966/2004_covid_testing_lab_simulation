@@ -1,8 +1,8 @@
 ,,min,mean,median,max
 ,,Result,Result,Result,Result
 result_type,name,,,,
-demand_met,no_rna_prep,0.95,0.9983333333333333,1.0,1.0
+demand_met,no_rna_prep,1.0,1.0,1.0,1.0
 input,no_rna_prep,30132.0,30132.0,30132.0,30132.0
-max_process_time_hours,no_rna_prep,10.68,11.892333333333333,11.05,16.55
-median_process_time_hours,no_rna_prep,10.44,11.295666666666667,10.774999999999999,13.98
-output,no_rna_prep,28644.0,30082.4,30132.0,30132.0
+max_process_time_hours,no_rna_prep,15.87,16.252,16.215,16.87
+median_process_time_hours,no_rna_prep,15.87,16.252,16.215,16.87
+output,no_rna_prep,30132.0,30132.0,30132.0,30132.0
