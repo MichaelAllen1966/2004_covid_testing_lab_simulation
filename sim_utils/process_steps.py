@@ -334,6 +334,13 @@ class ProcessSteps:
         We assume that the clean down can be done by a different human to the
         set up."""
 
+        # Add random 10 second delay (to avoid jobs asking for resources at
+        # exactly the same time)
+
+        delay = np.random.random() * 10
+        delay = delay / (1440 * 60) # Convert to seconds
+        yield self._env.timeout(delay)
+
         search_for_resources = True
 
         # continue looking for resources until all available
@@ -499,6 +506,10 @@ class ProcessSteps:
         """Obtains and occupied resources for a single process step (e.g manual
         or semi-automated process). c.f. Multi-step process which has machine
         set up, automation, and machine clean-down. """
+
+        delay = np.random.random() * 10
+        delay = delay / (1440 * 60) # Convert to seconds
+        yield self._env.timeout(delay)
 
         search_for_resources = True
 
