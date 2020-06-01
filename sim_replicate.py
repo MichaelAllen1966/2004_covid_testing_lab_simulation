@@ -13,7 +13,11 @@ scenarios = {}
 # Note: Resource shifts are in hours and fractions of hours. e.g. 14.5 is 2.30pm
 
 
-scenarios['30k_example'] = Scenario()
+scenarios['30k_example'] = Scenario(
+
+    run_days = 2,
+    warm_up_days = 2
+)
 # Set up and call replicator
 replications = 30
 replications = Replicator(scenarios, replications)
