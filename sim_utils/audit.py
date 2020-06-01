@@ -34,14 +34,18 @@ class Audit:
             audit_counts, ignore_index=True)
 
     def audit_resources(self):
+
         time = self._env.now
+        day = int(time / self._params.day_duration)
+        time_of_day = time - (day * self._params.day_duration)
+
         resource_counts = {key: value.count for key, value in
                            self._recources.items()}
         resource_counts['tracker_break_fte'] = self._fte_on_break[0]
         resource_counts['day'] = time / self._params.day_duration
         for resource, shift in self._params.resource_shifts.items():
             label = resource + '_shift'
-            if shift[0] < time < shift[1]:
+            if shift[0] < time_of_day < shift[1]:
                 resource_counts[label] = 1
             else:
                 resource_counts[label] = 0
