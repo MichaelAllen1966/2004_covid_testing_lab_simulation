@@ -1,6 +1,7 @@
 from sim_utils.process_steps import ProcessSteps
 from sim_utils.audit import Audit
 
+
 class Process:
     """
     A collection of process steps.
@@ -12,10 +13,10 @@ class Process:
     parent_child = child ids for each parent id (dictionary)
  
     """
-    
+
     def __init__(self, _env, _params, resources, resources_available,
                  resources_occupied, workstation_assigned_jobs):
-        
+
         # Question: do we need a dictionary of all enitites in model?
         self._env = _env
         self._params = _params
@@ -29,7 +30,7 @@ class Process:
         self.resources_available = resources_available
         self.resources_occupied = resources_occupied
         self.workstation_assigned_jobs = workstation_assigned_jobs
-        
+
         # Queues for assignment
         self.queues = {
             'q_batch_input': [],
@@ -43,10 +44,11 @@ class Process:
             'q_pcr_prep': [],
             'q_rna_collation': [],
             'q_rna_extraction': [],
+            'q_rna_extraction_split': [],
             'q_sample_receipt': [],
             'q_sample_prep': []
-            }
-            
+        }
+
         # Queue monitor (lists of time/time out tuples)
         self.queue_monitors = {
             'q_data_analysis': [],
@@ -58,10 +60,11 @@ class Process:
             'q_pcr_prep': [],
             'q_rna_collation': [],
             'q_rna_extraction': [],
+            'q_rna_extraction_split': [],
             'q_sample_prep': [],
             'q_sample_receipt': []
-            }
- 
+        }
+
         # Process step counters
         self.process_step_counters = {
             'data_analysis': 0,
@@ -72,7 +75,7 @@ class Process:
             'sample_prep_auto': 0,
             'sample_prep_manual': 0,
             'sample_receipt': 0,
-            }
+        }
 
         # Link from process priorities to process assign calls
         self.process_assign_calls = {
@@ -83,15 +86,14 @@ class Process:
             'sample_prep_auto': self.assign_sample_prep,
             'sample_prep_manual': self.assign_sample_prep,
             'sample_receipt': self.assign_sample_receipt
-            }
-                 
-        
+        }
+
     def assign(self, queue, process):
-        
+
         process_func = self.process_steps.process_step_funcs[process]
         # Assign sample_receipts
         new_unallocated_queue = []
-       
+
         while (len(self.queues[queue]) > 0):
             # Check kanban limits 
             job_size = self.queues[queue][-1].batch_size
@@ -117,7 +119,7 @@ class Process:
                     for kanban_group in relevant_kanban_groups:
                         self._params.kanban_group_counts[kanban_group] += \
                             job_size
-            
+
             # All relevant kanban limits OK -  proceed to assign job
             job = self.queues[queue].pop()
             workstation = self.indentify_workstation(process)
@@ -125,27 +127,25 @@ class Process:
                 # Allocate job to sample_receipt process
                 process_func(workstation, job)
                 self.workstation_assigned_jobs[workstation] += 1
-            else: 
+            else:
                 # Process workstations full, move all remaining jobs to
                 # unallocated job queue
                 new_unallocated_queue = [job] + self.queues[queue]
                 self.queues[queue] = []
-                
+
         self.queues[queue] = new_unallocated_queue
 
-        
     def assign_analysis(self):
         # pass any new input to process_step.batch_input
-        q = 'q_data_analysis'; process = 'data_analysis'
-        self.assign(q, process)    
-
+        q = 'q_data_analysis';
+        process = 'data_analysis'
+        self.assign(q, process)
 
     def assign_batch_input(self):
         # pass any new input to process_step.batch_input
         q = 'q_batch_input'
         process = 'batch_input'
         self.assign(q, process)
-
 
     def assign_pcr_prep(self, time_of_day, time_left):
         shift = self._params.process_start_hours['pcr_prep']
@@ -154,14 +154,12 @@ class Process:
             process = 'pcr_prep'
             self.assign(q, process)
 
-        
     def assign_pcr(self, time_of_day, time_left):
         shift = self._params.process_start_hours['pcr']
         if shift[0] * 60 <= time_of_day <= shift[1] * 60:
             q = 'q_pcr'
             process = 'pcr'
             self.assign(q, process)
-
 
     def assign_rna_extraction(self, time_of_day, time_left):
         shift = self._params.process_start_hours['rna_extraction']
@@ -171,52 +169,48 @@ class Process:
             process = 'rna_extraction'
             self.assign(q, process)
 
-
     def assign_sample_heat(self, time_of_day, time_left):
         shift = self._params.process_start_hours['sample_heat']
         if shift[0] * 60 <= time_of_day <= shift[1] * 60:
             # Assign sample_receipts
-            q = 'q_heat'; process = 'sample_heat'
+            q = 'q_heat';
+            process = 'sample_heat'
             self.assign(q, process)
-        
 
     def assign_sample_receipt(self, time_of_day, time_left):
         shift = self._params.process_start_hours['sample_receipt']
         if shift[0] * 60 <= time_of_day <= shift[1] * 60:
-                # Assign sample_receipts
-                q = 'q_sample_receipt'
-                process = 'sample_receipt'
-                self.assign(q, process)
-        
+            # Assign sample_receipts
+            q = 'q_sample_receipt'
+            process = 'sample_receipt'
+            self.assign(q, process)
+
     def assign_sample_prep(self, time_of_day, time_left):
         shift = self._params.process_start_hours['sample_prep']
-        if shift[0] * 60 <= time_of_day <= shift[1] * 60:            
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
             q = 'q_sample_prep'
             process = 'sample_prep_auto'
             self.assign(q, process)
-            
-            #Also use manual process if allowed
+
+            # Also use manual process if allowed
             if self._params.allow_manual_sample_prep:
                 q = 'q_sample_prep'
                 process = 'sample_prep_manual'
                 self.assign(q, process)
 
-
     def collate_for_heat(self):
-        # Takes plates from sample receipt
-        self.process_steps.collate(
-            self._params.heat_batch_size, 'q_heat_collation', 'q_heat')
-
+        # Takes plates from sample receipt (will be split after)
+        self.process_steps.collate(self._params.heat_batch_size,
+                                   'q_heat_collation', 'q_heat')
 
     def collate_for_pcr(self):
-        # Takes 4 plates from sample prep
-        self.process_steps.collate(2, 'q_pcr_collation', 'q_pcr_prep')
-
+        # Takes 4 plates from RNA extraction
+        self.process_steps.collate(4, 'q_pcr_collation', 'q_pcr_prep')
 
     def collate_for_rna_extraction(self):
-        # Process two plates for RNA extraction
-        self.process_steps.collate(2, 'q_rna_collation', 'q_rna_extraction')
-
+        # Process multiple plates for RNA extraction (will be split after)
+        self.process_steps.collate(self._params.rna_extraction_batch_size,
+                                   'q_rna_collation', 'q_rna_extraction')
 
     def control_process(self):
         yield self._env.timeout(5)
@@ -225,28 +219,27 @@ class Process:
 
             time_of_day = self._env.now % self._params.day_duration
             time_left = self._params.day_duration - time_of_day
-            
+
             # Model admin jobs (no resources needed)
             self.assign_batch_input()
             self.assign_analysis()
             self.collate_for_pcr()
             self.collate_for_rna_extraction()
+            self.split_after_rna_extraction()
             self.collate_for_heat()
             self.split_after_heat()
-            
+
             for key in self._params.process_priorites.keys():
                 self.process_assign_calls[key](time_of_day, time_left)
-                    
+
             # Time before next control loop
             yield self._env.timeout(1.0)
-           
-    
+
     def display_day(self):
         while True:
-            print (f'\r>> Day {int(self._env.now/self._params.day_duration)}',
-                   end='')
+            print(f'\r>> Day {int(self._env.now / self._params.day_duration)}',
+                  end='')
             yield self._env.timeout(self._params.day_duration)
-
 
     def end_run_routine(self):
         self.audit.summarise_in_out()
@@ -254,17 +247,17 @@ class Process:
         self.audit.summarise_queues()
         self.audit.summarise_queue_times()
         self.audit.summarise_trackers()
-            
+
     def indentify_workstation(self, process):
         """
         Loops through workstations that can perform a process. Looks for 
         workstation with greatest remaining capacity. If no workstation has
         capapcity, returns 'none'
         """
-        
+
         selected_workstation = 'none'
         best_remaining_capacity = 0
-        
+
         workstations = self._params.process_workstations[process]
         for workstation in workstations:
             workstation_capacity = \
@@ -274,14 +267,12 @@ class Process:
             if remaining_capacity > best_remaining_capacity:
                 best_remaining_capacity = remaining_capacity
                 selected_workstation = workstation
-        
+
         return selected_workstation
-    
 
     def set_up_audit(self):
         self.audit = Audit(self)
-     
-        
+
     def set_up_breaks(self):
         if len(self._params.meal_break_times) > 0:
             for meal_break in self._params.meal_break_times:
@@ -292,11 +283,13 @@ class Process:
                 self._env.process(
                     self.process_steps.generate_tea_breaks(tea_break))
 
-            
     def set_up_process_steps(self):
         self.process_steps = ProcessSteps(self)
-
 
     def split_after_heat(self):
         self.process_steps.split(
             self._params.heat_batch_size, 'q_heat_split', 'q_rna_collation')
+
+    def split_after_rna_extraction(self):
+        self.process_steps.split(self._params.rna_extraction_batch_size,
+                                 'q_rna_extraction_split', 'q_pcr_collation')

@@ -146,7 +146,7 @@ class Audit:
                             self._params.heat_batch_size,
             'q_rna_extraction': self._params.basic_batch_size,
             'q_pcr_collation': self._params.basic_batch_size,
-            'q_pcr_prep': self._params.basic_batch_size * 2,
+            'q_pcr_prep': self._params.basic_batch_size * 4,
             'q_pcr': self._params.basic_batch_size * 4,
             'q_data_analysis': self._params.basic_batch_size * 4,
             'q_completed': self._params.basic_batch_size * 4

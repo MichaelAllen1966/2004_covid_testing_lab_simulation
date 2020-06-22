@@ -5,7 +5,7 @@ from sim_utils.parameters import Scenario
 
 
 scenario = Scenario(
-
+    samples_per_day = 93 * 12,
     run_days = 2,
     warm_up_days = 2
 )
