@@ -711,7 +711,7 @@ class ProcessSteps:
                         batch_size=self._params.basic_batch_size,
                         entity_id=self._id_count,
                         entity_type='plate for pcr',
-                        last_queue='q_pcr_collation',
+                        last_queue='q_rna_extraction_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
                         time_in=job.time_in)
@@ -721,7 +721,7 @@ class ProcessSteps:
             machine_resources=machine_resources,
             stage_process_times=stage_process_times,
             priority=process_priority, entity_to_create=entity,
-            queue_to_add_new_entity='q_pcr_collation',
+            queue_to_add_new_entity='q_rna_extraction_split',
             process_step='rna_extraction'))
 
         self.record_queuing_time(

@@ -132,8 +132,9 @@ class Scenario(object):
         # Allow manual sample prep (automated prep will be chosen first if free)
         self.allow_manual_sample_prep = True
 
-        # Batch sizing for heat stage
+        # Batch sizing for stages (collate for job then resplit)
         self.heat_batch_size = 4
+        self.rna_extraction_batch_size = 3
 
         # Add a triangular distribution of extra time per process
         # Average extra time with be 1/4 of this
