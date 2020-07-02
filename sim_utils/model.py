@@ -69,7 +69,7 @@ class Model(object):
         self.process.set_up_breaks()
         for delivery_time in self._params.delivery_times:
             self._env.process(self.process.process_steps.generate_input(
-                delivery_time))
+                delivery_time * 60))
 
         # Run
         self._env.run(self._params.run_length)

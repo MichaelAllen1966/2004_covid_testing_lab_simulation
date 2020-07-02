@@ -14,7 +14,7 @@ class Scenario(object):
 
         # Work arrival
         self.samples_per_day = 30132
-        # List of sample arrival times (from start of day)
+        # List of sample arrival times (hours from start of day)
         self.delivery_times = [0]
         self.basic_batch_size = 93
 
