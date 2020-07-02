@@ -15,8 +15,10 @@ scenarios = {}
 
 scenarios['30k_example'] = Scenario(
 
-    run_days = 2,
-    warm_up_days = 2
+    samples_per_day = 9000,
+    run_days = 1,
+    warm_up_days = 0,
+    delivery_times = [0]
 )
 # Set up and call replicator
 replications = 30
