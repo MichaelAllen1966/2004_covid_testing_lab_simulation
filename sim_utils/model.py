@@ -75,7 +75,8 @@ class Model(object):
         self._env.run(self._params.run_length)
         
         # End of run
-        self.process.end_run_routine()        
+        self.process.end_run_routine()
+        
         
         
     def set_up_process(self):
