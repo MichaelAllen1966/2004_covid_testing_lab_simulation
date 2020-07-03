@@ -448,8 +448,8 @@ class ProcessSteps:
 
         human_resource_requests = []
         for resource in human_resources_selected:
-            self._resources_available[resource] += 1
-            self._resources_occupied[resource] -= 1
+            self._resources_available[resource] -= 1
+            self._resources_occupied[resource] += 1
 
         for resource in human_resources_selected:
             req = self._resources[resource].request(priority=priority - 1)

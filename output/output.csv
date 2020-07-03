@@ -1,151 +1,151 @@
 ,Result,run,name
-input,8928.0,0,30k_example
-output,8928.0,0,30k_example
-demand_met,1.0,0,30k_example
-median_process_time_hours,11.98,0,30k_example
-max_process_time_hours,11.98,0,30k_example
-input,8928.0,1,30k_example
-output,8928.0,1,30k_example
-demand_met,1.0,1,30k_example
-median_process_time_hours,11.27,1,30k_example
-max_process_time_hours,11.27,1,30k_example
-input,8928.0,2,30k_example
-output,8928.0,2,30k_example
-demand_met,1.0,2,30k_example
-median_process_time_hours,11.2,2,30k_example
-max_process_time_hours,11.2,2,30k_example
-input,8928.0,3,30k_example
-output,7812.0,3,30k_example
-demand_met,0.88,3,30k_example
-median_process_time_hours,11.52,3,30k_example
-max_process_time_hours,11.52,3,30k_example
-input,8928.0,4,30k_example
-output,8556.0,4,30k_example
-demand_met,0.96,4,30k_example
-median_process_time_hours,12.05,4,30k_example
-max_process_time_hours,12.05,4,30k_example
-input,8928.0,5,30k_example
-output,8928.0,5,30k_example
-demand_met,1.0,5,30k_example
-median_process_time_hours,11.95,5,30k_example
-max_process_time_hours,11.95,5,30k_example
-input,8928.0,6,30k_example
-output,8928.0,6,30k_example
-demand_met,1.0,6,30k_example
-median_process_time_hours,11.7,6,30k_example
-max_process_time_hours,11.7,6,30k_example
-input,8928.0,7,30k_example
-output,8928.0,7,30k_example
-demand_met,1.0,7,30k_example
-median_process_time_hours,11.62,7,30k_example
-max_process_time_hours,11.62,7,30k_example
-input,8928.0,8,30k_example
-output,8928.0,8,30k_example
-demand_met,1.0,8,30k_example
-median_process_time_hours,11.97,8,30k_example
-max_process_time_hours,11.97,8,30k_example
-input,8928.0,9,30k_example
-output,8928.0,9,30k_example
-demand_met,1.0,9,30k_example
-median_process_time_hours,12.05,9,30k_example
-max_process_time_hours,12.05,9,30k_example
-input,8928.0,10,30k_example
-output,8928.0,10,30k_example
-demand_met,1.0,10,30k_example
-median_process_time_hours,11.55,10,30k_example
-max_process_time_hours,11.55,10,30k_example
-input,8928.0,11,30k_example
-output,8928.0,11,30k_example
-demand_met,1.0,11,30k_example
-median_process_time_hours,11.25,11,30k_example
-max_process_time_hours,11.25,11,30k_example
-input,8928.0,12,30k_example
-output,8928.0,12,30k_example
-demand_met,1.0,12,30k_example
-median_process_time_hours,11.68,12,30k_example
-max_process_time_hours,11.68,12,30k_example
-input,8928.0,13,30k_example
-output,8928.0,13,30k_example
-demand_met,1.0,13,30k_example
-median_process_time_hours,11.55,13,30k_example
-max_process_time_hours,11.55,13,30k_example
-input,8928.0,14,30k_example
-output,8928.0,14,30k_example
-demand_met,1.0,14,30k_example
-median_process_time_hours,11.87,14,30k_example
-max_process_time_hours,11.87,14,30k_example
-input,8928.0,15,30k_example
-output,8928.0,15,30k_example
-demand_met,1.0,15,30k_example
-median_process_time_hours,11.58,15,30k_example
-max_process_time_hours,11.58,15,30k_example
-input,8928.0,16,30k_example
-output,8556.0,16,30k_example
-demand_met,0.96,16,30k_example
-median_process_time_hours,12.07,16,30k_example
-max_process_time_hours,12.07,16,30k_example
-input,8928.0,17,30k_example
-output,8928.0,17,30k_example
-demand_met,1.0,17,30k_example
-median_process_time_hours,11.8,17,30k_example
-max_process_time_hours,11.8,17,30k_example
-input,8928.0,18,30k_example
-output,8928.0,18,30k_example
-demand_met,1.0,18,30k_example
-median_process_time_hours,11.67,18,30k_example
-max_process_time_hours,11.67,18,30k_example
-input,8928.0,19,30k_example
-output,8928.0,19,30k_example
-demand_met,1.0,19,30k_example
-median_process_time_hours,11.98,19,30k_example
-max_process_time_hours,11.98,19,30k_example
-input,8928.0,20,30k_example
-output,8556.0,20,30k_example
-demand_met,0.96,20,30k_example
-median_process_time_hours,12.07,20,30k_example
-max_process_time_hours,12.07,20,30k_example
-input,8928.0,21,30k_example
-output,8928.0,21,30k_example
-demand_met,1.0,21,30k_example
-median_process_time_hours,11.83,21,30k_example
-max_process_time_hours,11.83,21,30k_example
-input,8928.0,22,30k_example
-output,8928.0,22,30k_example
-demand_met,1.0,22,30k_example
-median_process_time_hours,12.08,22,30k_example
-max_process_time_hours,12.08,22,30k_example
-input,8928.0,23,30k_example
-output,8928.0,23,30k_example
-demand_met,1.0,23,30k_example
-median_process_time_hours,11.98,23,30k_example
-max_process_time_hours,11.98,23,30k_example
-input,8928.0,24,30k_example
-output,8928.0,24,30k_example
-demand_met,1.0,24,30k_example
-median_process_time_hours,11.67,24,30k_example
-max_process_time_hours,11.67,24,30k_example
-input,8928.0,25,30k_example
-output,8928.0,25,30k_example
-demand_met,1.0,25,30k_example
-median_process_time_hours,11.18,25,30k_example
-max_process_time_hours,11.18,25,30k_example
-input,8928.0,26,30k_example
-output,8556.0,26,30k_example
-demand_met,0.96,26,30k_example
-median_process_time_hours,12.07,26,30k_example
-max_process_time_hours,12.07,26,30k_example
-input,8928.0,27,30k_example
-output,8928.0,27,30k_example
-demand_met,1.0,27,30k_example
-median_process_time_hours,11.93,27,30k_example
-max_process_time_hours,11.93,27,30k_example
-input,8928.0,28,30k_example
-output,8556.0,28,30k_example
-demand_met,0.96,28,30k_example
-median_process_time_hours,12.07,28,30k_example
-max_process_time_hours,12.07,28,30k_example
-input,8928.0,29,30k_example
-output,8928.0,29,30k_example
-demand_met,1.0,29,30k_example
-median_process_time_hours,11.88,29,30k_example
-max_process_time_hours,11.88,29,30k_example
+input,29946.0,0,V12.1 Intervals CONT
+output,10416.0,0,V12.1 Intervals CONT
+demand_met,0.35,0,V12.1 Intervals CONT
+median_process_time_hours,17.7,0,V12.1 Intervals CONT
+max_process_time_hours,17.7,0,V12.1 Intervals CONT
+input,29946.0,1,V12.1 Intervals CONT
+output,8928.0,1,V12.1 Intervals CONT
+demand_met,0.3,1,V12.1 Intervals CONT
+median_process_time_hours,16.98,1,V12.1 Intervals CONT
+max_process_time_hours,16.98,1,V12.1 Intervals CONT
+input,29946.0,2,V12.1 Intervals CONT
+output,11904.0,2,V12.1 Intervals CONT
+demand_met,0.4,2,V12.1 Intervals CONT
+median_process_time_hours,18.12,2,V12.1 Intervals CONT
+max_process_time_hours,18.12,2,V12.1 Intervals CONT
+input,29946.0,3,V12.1 Intervals CONT
+output,12276.0,3,V12.1 Intervals CONT
+demand_met,0.41,3,V12.1 Intervals CONT
+median_process_time_hours,14.73,3,V12.1 Intervals CONT
+max_process_time_hours,14.73,3,V12.1 Intervals CONT
+input,29946.0,4,V12.1 Intervals CONT
+output,4836.0,4,V12.1 Intervals CONT
+demand_met,0.16,4,V12.1 Intervals CONT
+median_process_time_hours,14.83,4,V12.1 Intervals CONT
+max_process_time_hours,14.83,4,V12.1 Intervals CONT
+input,29946.0,5,V12.1 Intervals CONT
+output,10788.0,5,V12.1 Intervals CONT
+demand_met,0.36,5,V12.1 Intervals CONT
+median_process_time_hours,16.62,5,V12.1 Intervals CONT
+max_process_time_hours,16.62,5,V12.1 Intervals CONT
+input,29946.0,6,V12.1 Intervals CONT
+output,6324.0,6,V12.1 Intervals CONT
+demand_met,0.21,6,V12.1 Intervals CONT
+median_process_time_hours,,6,V12.1 Intervals CONT
+max_process_time_hours,,6,V12.1 Intervals CONT
+input,29946.0,7,V12.1 Intervals CONT
+output,11160.0,7,V12.1 Intervals CONT
+demand_met,0.37,7,V12.1 Intervals CONT
+median_process_time_hours,17.13,7,V12.1 Intervals CONT
+max_process_time_hours,17.13,7,V12.1 Intervals CONT
+input,29946.0,8,V12.1 Intervals CONT
+output,12648.0,8,V12.1 Intervals CONT
+demand_met,0.42,8,V12.1 Intervals CONT
+median_process_time_hours,18.07,8,V12.1 Intervals CONT
+max_process_time_hours,18.07,8,V12.1 Intervals CONT
+input,29946.0,9,V12.1 Intervals CONT
+output,11904.0,9,V12.1 Intervals CONT
+demand_met,0.4,9,V12.1 Intervals CONT
+median_process_time_hours,15.67,9,V12.1 Intervals CONT
+max_process_time_hours,15.67,9,V12.1 Intervals CONT
+input,29946.0,10,V12.1 Intervals CONT
+output,11160.0,10,V12.1 Intervals CONT
+demand_met,0.37,10,V12.1 Intervals CONT
+median_process_time_hours,16.23,10,V12.1 Intervals CONT
+max_process_time_hours,16.23,10,V12.1 Intervals CONT
+input,29946.0,11,V12.1 Intervals CONT
+output,14136.0,11,V12.1 Intervals CONT
+demand_met,0.47,11,V12.1 Intervals CONT
+median_process_time_hours,18.0,11,V12.1 Intervals CONT
+max_process_time_hours,18.0,11,V12.1 Intervals CONT
+input,29946.0,12,V12.1 Intervals CONT
+output,13764.0,12,V12.1 Intervals CONT
+demand_met,0.46,12,V12.1 Intervals CONT
+median_process_time_hours,17.83,12,V12.1 Intervals CONT
+max_process_time_hours,17.83,12,V12.1 Intervals CONT
+input,29946.0,13,V12.1 Intervals CONT
+output,11904.0,13,V12.1 Intervals CONT
+demand_met,0.4,13,V12.1 Intervals CONT
+median_process_time_hours,17.57,13,V12.1 Intervals CONT
+max_process_time_hours,17.57,13,V12.1 Intervals CONT
+input,29946.0,14,V12.1 Intervals CONT
+output,8556.0,14,V12.1 Intervals CONT
+demand_met,0.29,14,V12.1 Intervals CONT
+median_process_time_hours,17.08,14,V12.1 Intervals CONT
+max_process_time_hours,17.08,14,V12.1 Intervals CONT
+input,29946.0,15,V12.1 Intervals CONT
+output,10044.0,15,V12.1 Intervals CONT
+demand_met,0.34,15,V12.1 Intervals CONT
+median_process_time_hours,18.0,15,V12.1 Intervals CONT
+max_process_time_hours,18.0,15,V12.1 Intervals CONT
+input,29946.0,16,V12.1 Intervals CONT
+output,11904.0,16,V12.1 Intervals CONT
+demand_met,0.4,16,V12.1 Intervals CONT
+median_process_time_hours,18.03,16,V12.1 Intervals CONT
+max_process_time_hours,18.03,16,V12.1 Intervals CONT
+input,29946.0,17,V12.1 Intervals CONT
+output,7440.0,17,V12.1 Intervals CONT
+demand_met,0.25,17,V12.1 Intervals CONT
+median_process_time_hours,16.63,17,V12.1 Intervals CONT
+max_process_time_hours,16.63,17,V12.1 Intervals CONT
+input,29946.0,18,V12.1 Intervals CONT
+output,13392.0,18,V12.1 Intervals CONT
+demand_met,0.45,18,V12.1 Intervals CONT
+median_process_time_hours,17.52,18,V12.1 Intervals CONT
+max_process_time_hours,17.52,18,V12.1 Intervals CONT
+input,29946.0,19,V12.1 Intervals CONT
+output,8928.0,19,V12.1 Intervals CONT
+demand_met,0.3,19,V12.1 Intervals CONT
+median_process_time_hours,16.73,19,V12.1 Intervals CONT
+max_process_time_hours,16.73,19,V12.1 Intervals CONT
+input,29946.0,20,V12.1 Intervals CONT
+output,12648.0,20,V12.1 Intervals CONT
+demand_met,0.42,20,V12.1 Intervals CONT
+median_process_time_hours,18.05,20,V12.1 Intervals CONT
+max_process_time_hours,18.05,20,V12.1 Intervals CONT
+input,29946.0,21,V12.1 Intervals CONT
+output,11160.0,21,V12.1 Intervals CONT
+demand_met,0.37,21,V12.1 Intervals CONT
+median_process_time_hours,17.33,21,V12.1 Intervals CONT
+max_process_time_hours,17.33,21,V12.1 Intervals CONT
+input,29946.0,22,V12.1 Intervals CONT
+output,9300.0,22,V12.1 Intervals CONT
+demand_met,0.31,22,V12.1 Intervals CONT
+median_process_time_hours,17.75,22,V12.1 Intervals CONT
+max_process_time_hours,17.75,22,V12.1 Intervals CONT
+input,29946.0,23,V12.1 Intervals CONT
+output,8928.0,23,V12.1 Intervals CONT
+demand_met,0.3,23,V12.1 Intervals CONT
+median_process_time_hours,16.17,23,V12.1 Intervals CONT
+max_process_time_hours,16.17,23,V12.1 Intervals CONT
+input,29946.0,24,V12.1 Intervals CONT
+output,11532.0,24,V12.1 Intervals CONT
+demand_met,0.39,24,V12.1 Intervals CONT
+median_process_time_hours,18.12,24,V12.1 Intervals CONT
+max_process_time_hours,18.12,24,V12.1 Intervals CONT
+input,29946.0,25,V12.1 Intervals CONT
+output,12276.0,25,V12.1 Intervals CONT
+demand_met,0.41,25,V12.1 Intervals CONT
+median_process_time_hours,18.07,25,V12.1 Intervals CONT
+max_process_time_hours,18.07,25,V12.1 Intervals CONT
+input,29946.0,26,V12.1 Intervals CONT
+output,11532.0,26,V12.1 Intervals CONT
+demand_met,0.39,26,V12.1 Intervals CONT
+median_process_time_hours,18.05,26,V12.1 Intervals CONT
+max_process_time_hours,18.05,26,V12.1 Intervals CONT
+input,29946.0,27,V12.1 Intervals CONT
+output,10044.0,27,V12.1 Intervals CONT
+demand_met,0.34,27,V12.1 Intervals CONT
+median_process_time_hours,15.13,27,V12.1 Intervals CONT
+max_process_time_hours,15.13,27,V12.1 Intervals CONT
+input,29946.0,28,V12.1 Intervals CONT
+output,8556.0,28,V12.1 Intervals CONT
+demand_met,0.29,28,V12.1 Intervals CONT
+median_process_time_hours,17.23,28,V12.1 Intervals CONT
+max_process_time_hours,17.23,28,V12.1 Intervals CONT
+input,29946.0,29,V12.1 Intervals CONT
+output,12276.0,29,V12.1 Intervals CONT
+demand_met,0.41,29,V12.1 Intervals CONT
+median_process_time_hours,18.02,29,V12.1 Intervals CONT
+max_process_time_hours,18.02,29,V12.1 Intervals CONT
