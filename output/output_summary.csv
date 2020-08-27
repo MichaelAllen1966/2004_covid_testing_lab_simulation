@@ -1,8 +1,8 @@
 ,,min,mean,median,max
 ,,Result,Result,Result,Result
 result_type,name,,,,
-demand_met,V12.1 Intervals CONT,0.16,0.35800000000000004,0.37,0.47
-input,V12.1 Intervals CONT,29946.0,29946.0,29946.0,29946.0
-max_process_time_hours,V12.1 Intervals CONT,14.73,17.151379310344826,17.52,18.12
-median_process_time_hours,V12.1 Intervals CONT,14.73,17.151379310344826,17.52,18.12
-output,V12.1 Intervals CONT,4836.0,10688.8,11160.0,14136.0
+demand_met,base,0.69,0.8453333333333334,0.85,0.9
+input,base,30132.0,30132.0,30132.0,30132.0
+max_process_time_hours,base,38.7,40.88366666666666,41.165,42.08
+median_process_time_hours,base,27.76,29.28766666666666,29.49,30.06
+output,base,20832.0,25475.8,25668.0,27156.0

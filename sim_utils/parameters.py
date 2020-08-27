@@ -244,7 +244,6 @@ class Scenario(object):
         }
         
         # Workstation (used to limit work in progress)
-        
         self.process_workstations = {
             'data_analysis': ['workstation_0'],
             'batch_input': ['workstation_0'],
@@ -256,7 +255,12 @@ class Scenario(object):
             'pcr_prep': ['workstation_3'],
             'pcr': ['workstation_4']
             }
-
+        
+        # Set up transfer 
+        self.transit_1 = {
+            'interval': 20, # Time between transits
+            'transfer_time': 3, # One way transfer time
+            'max_capacity': 4}
 
         # kanban groups have start process, end process, max samples,
         # current samples

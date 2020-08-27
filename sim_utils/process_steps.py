@@ -318,7 +318,18 @@ class ProcessSteps:
 
             # Schedule next admission
             yield self._env.timeout(self._params.day_duration)
+            
 
+    def generate_transits(self):
+        """Continuous loop of transit steps"""
+        
+        # Transit 1
+        interval = self._params.transit_1['interval']
+        while True:
+            yield self._env.timeout(interval)
+            self._env.process(self.transit_1())
+
+        
     def occupy_resources_automated_subprocess(self, workstation,
                                               human_resources,
                                               machine_resources,
@@ -496,6 +507,7 @@ class ProcessSteps:
 
         # Reduce kanban counts as necessary
         self.reduce_kanban_counts(process_step, entity_to_create.batch_size)
+        
 
     def occupy_resources_single_subprocess(self, workstation,
                                            resources_required, process_time,
@@ -950,3 +962,22 @@ class ProcessSteps:
                                  time_in=ent.time_in)
                 # Add to queue
                 self._queues[to_queue].append(new_ent)
+                
+    
+    def transit_1(self):
+        """Tansit between heat inactivation and RNA extraction"""
+
+        from_queue = 'q_transit_1'
+        to_queue = 'q_rna_collation'
+        transfer_capacity = self._params.transit_1['max_capacity']
+        transfer_queue_length = len(self._queues[from_queue])
+        if transfer_queue_length > 0:
+            # Add transfer time            
+            transfer_time = self._params.transit_1['transfer_time']
+            yield self._env.timeout(transfer_time)
+            # Transfer plates
+            number_to_transfer = min(transfer_queue_length, transfer_capacity)
+            # Use updated queue length in case of overlapping process calls
+            for i in range(len(self._queues[from_queue])):
+                plate = self._queues[from_queue].pop()
+                self._queues[to_queue].append(plate)

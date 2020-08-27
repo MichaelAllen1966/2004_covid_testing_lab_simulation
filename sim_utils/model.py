@@ -1,7 +1,6 @@
 import simpy
 from sim_utils.process import Process
 
-
 class Model(object):
     """
     Model class for SimPy model. Initiates and runs a single instance of a
@@ -58,8 +57,7 @@ class Model(object):
         # Set up processes and audit
         self.set_up_process()
         self.process.set_up_process_steps()
-        self.process.set_up_audit()
-        
+        self.process.set_up_audit()        
             
         # Initialise processes that will run on model run
         self._env.process(self.process.process_steps.generate_breakdowns())
@@ -67,19 +65,21 @@ class Model(object):
         self._env.process(self.process.display_day())
         self._env.process(self.process.audit.run_audit())
         self.process.set_up_breaks()
+        self._env.process(self.process.process_steps.generate_transits())
         for delivery_time in self._params.delivery_times:
             self._env.process(self.process.process_steps.generate_input(
                 delivery_time * 60))
+        
 
         # Run
         self._env.run(self._params.run_length)
         
         # End of run
-        self.process.end_run_routine()
-        
+        self.process.end_run_routine()        
         
         
     def set_up_process(self):
+        """Set up master process object"""
         self.process = Process(self._env, 
                                self._params, 
                                self.resources,

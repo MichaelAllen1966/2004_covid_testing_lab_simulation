@@ -1,361 +1,361 @@
 ,0,run,name
-q_batch_input,0.0,0,V12.1 Intervals CONT
-q_sample_receipt,46407.0,0,V12.1 Intervals CONT
-q_sample_prep,1581.0,0,V12.1 Intervals CONT
-q_heat,2604.0,0,V12.1 Intervals CONT
-q_heat_collation,279.0,0,V12.1 Intervals CONT
-q_heat_split,0.0,0,V12.1 Intervals CONT
-q_rna_extraction,558.0,0,V12.1 Intervals CONT
-q_pcr_collation,558.0,0,V12.1 Intervals CONT
-q_pcr_prep,1116.0,0,V12.1 Intervals CONT
-q_pcr,372.0,0,V12.1 Intervals CONT
-q_data_analysis,372.0,0,V12.1 Intervals CONT
-q_completed,18228.0,0,V12.1 Intervals CONT
-q_batch_input,0.0,1,V12.1 Intervals CONT
-q_sample_receipt,46314.0,1,V12.1 Intervals CONT
-q_sample_prep,1581.0,1,V12.1 Intervals CONT
-q_heat,4836.0,1,V12.1 Intervals CONT
-q_heat_collation,372.0,1,V12.1 Intervals CONT
-q_heat_split,744.0,1,V12.1 Intervals CONT
-q_rna_extraction,465.0,1,V12.1 Intervals CONT
-q_pcr_collation,465.0,1,V12.1 Intervals CONT
-q_pcr_prep,744.0,1,V12.1 Intervals CONT
-q_pcr,372.0,1,V12.1 Intervals CONT
-q_data_analysis,372.0,1,V12.1 Intervals CONT
-q_completed,16740.0,1,V12.1 Intervals CONT
-q_batch_input,0.0,2,V12.1 Intervals CONT
-q_sample_receipt,46779.0,2,V12.1 Intervals CONT
-q_sample_prep,2511.0,2,V12.1 Intervals CONT
-q_heat,1488.0,2,V12.1 Intervals CONT
-q_heat_collation,372.0,2,V12.1 Intervals CONT
-q_heat_split,372.0,2,V12.1 Intervals CONT
-q_rna_extraction,651.0,2,V12.1 Intervals CONT
-q_pcr_collation,465.0,2,V12.1 Intervals CONT
-q_pcr_prep,1488.0,2,V12.1 Intervals CONT
-q_pcr,372.0,2,V12.1 Intervals CONT
-q_data_analysis,372.0,2,V12.1 Intervals CONT
-q_completed,17484.0,2,V12.1 Intervals CONT
-q_batch_input,0.0,3,V12.1 Intervals CONT
-q_sample_receipt,46128.0,3,V12.1 Intervals CONT
-q_sample_prep,2976.0,3,V12.1 Intervals CONT
-q_heat,1488.0,3,V12.1 Intervals CONT
-q_heat_collation,372.0,3,V12.1 Intervals CONT
-q_heat_split,372.0,3,V12.1 Intervals CONT
-q_rna_extraction,372.0,3,V12.1 Intervals CONT
-q_pcr_collation,558.0,3,V12.1 Intervals CONT
-q_pcr_prep,744.0,3,V12.1 Intervals CONT
-q_pcr,372.0,3,V12.1 Intervals CONT
-q_data_analysis,372.0,3,V12.1 Intervals CONT
-q_completed,19344.0,3,V12.1 Intervals CONT
-q_batch_input,0.0,4,V12.1 Intervals CONT
-q_sample_receipt,45477.0,4,V12.1 Intervals CONT
-q_sample_prep,7161.0,4,V12.1 Intervals CONT
-q_heat,6324.0,4,V12.1 Intervals CONT
-q_heat_collation,372.0,4,V12.1 Intervals CONT
-q_heat_split,0.0,4,V12.1 Intervals CONT
-q_rna_extraction,186.0,4,V12.1 Intervals CONT
-q_pcr_collation,279.0,4,V12.1 Intervals CONT
-q_pcr_prep,0.0,4,V12.1 Intervals CONT
-q_pcr,372.0,4,V12.1 Intervals CONT
-q_data_analysis,744.0,4,V12.1 Intervals CONT
-q_completed,13392.0,4,V12.1 Intervals CONT
-q_batch_input,0.0,5,V12.1 Intervals CONT
-q_sample_receipt,46500.0,5,V12.1 Intervals CONT
-q_sample_prep,4371.0,5,V12.1 Intervals CONT
-q_heat,2976.0,5,V12.1 Intervals CONT
-q_heat_collation,372.0,5,V12.1 Intervals CONT
-q_heat_split,0.0,5,V12.1 Intervals CONT
-q_rna_extraction,651.0,5,V12.1 Intervals CONT
-q_pcr_collation,558.0,5,V12.1 Intervals CONT
-q_pcr_prep,1116.0,5,V12.1 Intervals CONT
-q_pcr,372.0,5,V12.1 Intervals CONT
-q_data_analysis,744.0,5,V12.1 Intervals CONT
-q_completed,16740.0,5,V12.1 Intervals CONT
-q_batch_input,0.0,6,V12.1 Intervals CONT
-q_sample_receipt,46500.0,6,V12.1 Intervals CONT
-q_sample_prep,2883.0,6,V12.1 Intervals CONT
-q_heat,10044.0,6,V12.1 Intervals CONT
-q_heat_collation,372.0,6,V12.1 Intervals CONT
-q_heat_split,0.0,6,V12.1 Intervals CONT
-q_rna_extraction,372.0,6,V12.1 Intervals CONT
-q_pcr_collation,372.0,6,V12.1 Intervals CONT
-q_pcr_prep,744.0,6,V12.1 Intervals CONT
-q_pcr,0.0,6,V12.1 Intervals CONT
-q_data_analysis,372.0,6,V12.1 Intervals CONT
-q_completed,10044.0,6,V12.1 Intervals CONT
-q_batch_input,0.0,7,V12.1 Intervals CONT
-q_sample_receipt,46314.0,7,V12.1 Intervals CONT
-q_sample_prep,1302.0,7,V12.1 Intervals CONT
-q_heat,1860.0,7,V12.1 Intervals CONT
-q_heat_collation,465.0,7,V12.1 Intervals CONT
-q_heat_split,372.0,7,V12.1 Intervals CONT
-q_rna_extraction,837.0,7,V12.1 Intervals CONT
-q_pcr_collation,465.0,7,V12.1 Intervals CONT
-q_pcr_prep,1116.0,7,V12.1 Intervals CONT
-q_pcr,372.0,7,V12.1 Intervals CONT
-q_data_analysis,372.0,7,V12.1 Intervals CONT
-q_completed,18972.0,7,V12.1 Intervals CONT
-q_batch_input,0.0,8,V12.1 Intervals CONT
-q_sample_receipt,45756.0,8,V12.1 Intervals CONT
-q_sample_prep,2790.0,8,V12.1 Intervals CONT
-q_heat,1116.0,8,V12.1 Intervals CONT
-q_heat_collation,372.0,8,V12.1 Intervals CONT
-q_heat_split,372.0,8,V12.1 Intervals CONT
-q_rna_extraction,372.0,8,V12.1 Intervals CONT
-q_pcr_collation,558.0,8,V12.1 Intervals CONT
-q_pcr_prep,744.0,8,V12.1 Intervals CONT
-q_pcr,0.0,8,V12.1 Intervals CONT
-q_data_analysis,372.0,8,V12.1 Intervals CONT
-q_completed,19716.0,8,V12.1 Intervals CONT
-q_batch_input,0.0,9,V12.1 Intervals CONT
-q_sample_receipt,45477.0,9,V12.1 Intervals CONT
-q_sample_prep,7626.0,9,V12.1 Intervals CONT
-q_heat,3720.0,9,V12.1 Intervals CONT
-q_heat_collation,372.0,9,V12.1 Intervals CONT
-q_heat_split,372.0,9,V12.1 Intervals CONT
-q_rna_extraction,372.0,9,V12.1 Intervals CONT
-q_pcr_collation,558.0,9,V12.1 Intervals CONT
-q_pcr_prep,372.0,9,V12.1 Intervals CONT
-q_pcr,372.0,9,V12.1 Intervals CONT
-q_data_analysis,372.0,9,V12.1 Intervals CONT
-q_completed,15624.0,9,V12.1 Intervals CONT
-q_batch_input,0.0,10,V12.1 Intervals CONT
-q_sample_receipt,46965.0,10,V12.1 Intervals CONT
-q_sample_prep,6324.0,10,V12.1 Intervals CONT
-q_heat,2976.0,10,V12.1 Intervals CONT
-q_heat_collation,372.0,10,V12.1 Intervals CONT
-q_heat_split,0.0,10,V12.1 Intervals CONT
-q_rna_extraction,744.0,10,V12.1 Intervals CONT
-q_pcr_collation,558.0,10,V12.1 Intervals CONT
-q_pcr_prep,744.0,10,V12.1 Intervals CONT
-q_pcr,372.0,10,V12.1 Intervals CONT
-q_data_analysis,372.0,10,V12.1 Intervals CONT
-q_completed,16740.0,10,V12.1 Intervals CONT
-q_batch_input,0.0,11,V12.1 Intervals CONT
-q_sample_receipt,46407.0,11,V12.1 Intervals CONT
-q_sample_prep,1953.0,11,V12.1 Intervals CONT
-q_heat,1116.0,11,V12.1 Intervals CONT
-q_heat_collation,372.0,11,V12.1 Intervals CONT
-q_heat_split,372.0,11,V12.1 Intervals CONT
-q_rna_extraction,558.0,11,V12.1 Intervals CONT
-q_pcr_collation,744.0,11,V12.1 Intervals CONT
-q_pcr_prep,744.0,11,V12.1 Intervals CONT
-q_pcr,372.0,11,V12.1 Intervals CONT
-q_data_analysis,372.0,11,V12.1 Intervals CONT
-q_completed,20832.0,11,V12.1 Intervals CONT
-q_batch_input,0.0,12,V12.1 Intervals CONT
-q_sample_receipt,46128.0,12,V12.1 Intervals CONT
-q_sample_prep,7812.0,12,V12.1 Intervals CONT
-q_heat,744.0,12,V12.1 Intervals CONT
-q_heat_collation,279.0,12,V12.1 Intervals CONT
-q_heat_split,372.0,12,V12.1 Intervals CONT
-q_rna_extraction,186.0,12,V12.1 Intervals CONT
-q_pcr_collation,558.0,12,V12.1 Intervals CONT
-q_pcr_prep,2976.0,12,V12.1 Intervals CONT
-q_pcr,372.0,12,V12.1 Intervals CONT
-q_data_analysis,372.0,12,V12.1 Intervals CONT
-q_completed,17856.0,12,V12.1 Intervals CONT
-q_batch_input,0.0,13,V12.1 Intervals CONT
-q_sample_receipt,46221.0,13,V12.1 Intervals CONT
-q_sample_prep,7905.0,13,V12.1 Intervals CONT
-q_heat,1860.0,13,V12.1 Intervals CONT
-q_heat_collation,465.0,13,V12.1 Intervals CONT
-q_heat_split,372.0,13,V12.1 Intervals CONT
-q_rna_extraction,279.0,13,V12.1 Intervals CONT
-q_pcr_collation,465.0,13,V12.1 Intervals CONT
-q_pcr_prep,372.0,13,V12.1 Intervals CONT
-q_pcr,0.0,13,V12.1 Intervals CONT
-q_data_analysis,372.0,13,V12.1 Intervals CONT
-q_completed,17856.0,13,V12.1 Intervals CONT
-q_batch_input,0.0,14,V12.1 Intervals CONT
-q_sample_receipt,46779.0,14,V12.1 Intervals CONT
-q_sample_prep,1116.0,14,V12.1 Intervals CONT
-q_heat,6324.0,14,V12.1 Intervals CONT
-q_heat_collation,372.0,14,V12.1 Intervals CONT
-q_heat_split,744.0,14,V12.1 Intervals CONT
-q_rna_extraction,744.0,14,V12.1 Intervals CONT
-q_pcr_collation,558.0,14,V12.1 Intervals CONT
-q_pcr_prep,1488.0,14,V12.1 Intervals CONT
-q_pcr,372.0,14,V12.1 Intervals CONT
-q_data_analysis,372.0,14,V12.1 Intervals CONT
-q_completed,15624.0,14,V12.1 Intervals CONT
-q_batch_input,0.0,15,V12.1 Intervals CONT
-q_sample_receipt,47058.0,15,V12.1 Intervals CONT
-q_sample_prep,4092.0,15,V12.1 Intervals CONT
-q_heat,2232.0,15,V12.1 Intervals CONT
-q_heat_collation,372.0,15,V12.1 Intervals CONT
-q_heat_split,372.0,15,V12.1 Intervals CONT
-q_rna_extraction,372.0,15,V12.1 Intervals CONT
-q_pcr_collation,465.0,15,V12.1 Intervals CONT
-q_pcr_prep,744.0,15,V12.1 Intervals CONT
-q_pcr,372.0,15,V12.1 Intervals CONT
-q_data_analysis,372.0,15,V12.1 Intervals CONT
-q_completed,17856.0,15,V12.1 Intervals CONT
-q_batch_input,0.0,16,V12.1 Intervals CONT
-q_sample_receipt,46779.0,16,V12.1 Intervals CONT
-q_sample_prep,2604.0,16,V12.1 Intervals CONT
-q_heat,744.0,16,V12.1 Intervals CONT
-q_heat_collation,372.0,16,V12.1 Intervals CONT
-q_heat_split,372.0,16,V12.1 Intervals CONT
-q_rna_extraction,372.0,16,V12.1 Intervals CONT
-q_pcr_collation,279.0,16,V12.1 Intervals CONT
-q_pcr_prep,372.0,16,V12.1 Intervals CONT
-q_pcr,372.0,16,V12.1 Intervals CONT
-q_data_analysis,372.0,16,V12.1 Intervals CONT
-q_completed,19344.0,16,V12.1 Intervals CONT
-q_batch_input,0.0,17,V12.1 Intervals CONT
-q_sample_receipt,46779.0,17,V12.1 Intervals CONT
-q_sample_prep,1116.0,17,V12.1 Intervals CONT
-q_heat,5580.0,17,V12.1 Intervals CONT
-q_heat_collation,372.0,17,V12.1 Intervals CONT
-q_heat_split,372.0,17,V12.1 Intervals CONT
-q_rna_extraction,465.0,17,V12.1 Intervals CONT
-q_pcr_collation,279.0,17,V12.1 Intervals CONT
-q_pcr_prep,1116.0,17,V12.1 Intervals CONT
-q_pcr,372.0,17,V12.1 Intervals CONT
-q_data_analysis,0.0,17,V12.1 Intervals CONT
-q_completed,15624.0,17,V12.1 Intervals CONT
-q_batch_input,0.0,18,V12.1 Intervals CONT
-q_sample_receipt,45942.0,18,V12.1 Intervals CONT
-q_sample_prep,1860.0,18,V12.1 Intervals CONT
-q_heat,744.0,18,V12.1 Intervals CONT
-q_heat_collation,465.0,18,V12.1 Intervals CONT
-q_heat_split,372.0,18,V12.1 Intervals CONT
-q_rna_extraction,558.0,18,V12.1 Intervals CONT
-q_pcr_collation,372.0,18,V12.1 Intervals CONT
-q_pcr_prep,744.0,18,V12.1 Intervals CONT
-q_pcr,372.0,18,V12.1 Intervals CONT
-q_data_analysis,372.0,18,V12.1 Intervals CONT
-q_completed,21204.0,18,V12.1 Intervals CONT
-q_batch_input,0.0,19,V12.1 Intervals CONT
-q_sample_receipt,43152.0,19,V12.1 Intervals CONT
-q_sample_prep,8277.0,19,V12.1 Intervals CONT
-q_heat,3720.0,19,V12.1 Intervals CONT
-q_heat_collation,372.0,19,V12.1 Intervals CONT
-q_heat_split,0.0,19,V12.1 Intervals CONT
-q_rna_extraction,558.0,19,V12.1 Intervals CONT
-q_pcr_collation,465.0,19,V12.1 Intervals CONT
-q_pcr_prep,372.0,19,V12.1 Intervals CONT
-q_pcr,372.0,19,V12.1 Intervals CONT
-q_data_analysis,0.0,19,V12.1 Intervals CONT
-q_completed,15624.0,19,V12.1 Intervals CONT
-q_batch_input,0.0,20,V12.1 Intervals CONT
-q_sample_receipt,45756.0,20,V12.1 Intervals CONT
-q_sample_prep,3534.0,20,V12.1 Intervals CONT
-q_heat,4092.0,20,V12.1 Intervals CONT
-q_heat_collation,372.0,20,V12.1 Intervals CONT
-q_heat_split,372.0,20,V12.1 Intervals CONT
-q_rna_extraction,372.0,20,V12.1 Intervals CONT
-q_pcr_collation,558.0,20,V12.1 Intervals CONT
-q_pcr_prep,1116.0,20,V12.1 Intervals CONT
-q_pcr,372.0,20,V12.1 Intervals CONT
-q_data_analysis,372.0,20,V12.1 Intervals CONT
-q_completed,17484.0,20,V12.1 Intervals CONT
-q_batch_input,0.0,21,V12.1 Intervals CONT
-q_sample_receipt,45012.0,21,V12.1 Intervals CONT
-q_sample_prep,7347.0,21,V12.1 Intervals CONT
-q_heat,1860.0,21,V12.1 Intervals CONT
-q_heat_collation,465.0,21,V12.1 Intervals CONT
-q_heat_split,0.0,21,V12.1 Intervals CONT
-q_rna_extraction,372.0,21,V12.1 Intervals CONT
-q_pcr_collation,744.0,21,V12.1 Intervals CONT
-q_pcr_prep,744.0,21,V12.1 Intervals CONT
-q_pcr,372.0,21,V12.1 Intervals CONT
-q_data_analysis,372.0,21,V12.1 Intervals CONT
-q_completed,17856.0,21,V12.1 Intervals CONT
-q_batch_input,0.0,22,V12.1 Intervals CONT
-q_sample_receipt,46965.0,22,V12.1 Intervals CONT
-q_sample_prep,3534.0,22,V12.1 Intervals CONT
-q_heat,2976.0,22,V12.1 Intervals CONT
-q_heat_collation,372.0,22,V12.1 Intervals CONT
-q_heat_split,372.0,22,V12.1 Intervals CONT
-q_rna_extraction,372.0,22,V12.1 Intervals CONT
-q_pcr_collation,558.0,22,V12.1 Intervals CONT
-q_pcr_prep,744.0,22,V12.1 Intervals CONT
-q_pcr,0.0,22,V12.1 Intervals CONT
-q_data_analysis,744.0,22,V12.1 Intervals CONT
-q_completed,16368.0,22,V12.1 Intervals CONT
-q_batch_input,0.0,23,V12.1 Intervals CONT
-q_sample_receipt,46500.0,23,V12.1 Intervals CONT
-q_sample_prep,8370.0,23,V12.1 Intervals CONT
-q_heat,3348.0,23,V12.1 Intervals CONT
-q_heat_collation,372.0,23,V12.1 Intervals CONT
-q_heat_split,0.0,23,V12.1 Intervals CONT
-q_rna_extraction,93.0,23,V12.1 Intervals CONT
-q_pcr_collation,558.0,23,V12.1 Intervals CONT
-q_pcr_prep,1116.0,23,V12.1 Intervals CONT
-q_pcr,0.0,23,V12.1 Intervals CONT
-q_data_analysis,372.0,23,V12.1 Intervals CONT
-q_completed,14136.0,23,V12.1 Intervals CONT
-q_batch_input,0.0,24,V12.1 Intervals CONT
-q_sample_receipt,46872.0,24,V12.1 Intervals CONT
-q_sample_prep,2139.0,24,V12.1 Intervals CONT
-q_heat,1116.0,24,V12.1 Intervals CONT
-q_heat_collation,372.0,24,V12.1 Intervals CONT
-q_heat_split,372.0,24,V12.1 Intervals CONT
-q_rna_extraction,372.0,24,V12.1 Intervals CONT
-q_pcr_collation,279.0,24,V12.1 Intervals CONT
-q_pcr_prep,372.0,24,V12.1 Intervals CONT
-q_pcr,372.0,24,V12.1 Intervals CONT
-q_data_analysis,372.0,24,V12.1 Intervals CONT
-q_completed,19344.0,24,V12.1 Intervals CONT
-q_batch_input,0.0,25,V12.1 Intervals CONT
-q_sample_receipt,45477.0,25,V12.1 Intervals CONT
-q_sample_prep,3627.0,25,V12.1 Intervals CONT
-q_heat,3348.0,25,V12.1 Intervals CONT
-q_heat_collation,372.0,25,V12.1 Intervals CONT
-q_heat_split,0.0,25,V12.1 Intervals CONT
-q_rna_extraction,744.0,25,V12.1 Intervals CONT
-q_pcr_collation,558.0,25,V12.1 Intervals CONT
-q_pcr_prep,744.0,25,V12.1 Intervals CONT
-q_pcr,744.0,25,V12.1 Intervals CONT
-q_data_analysis,372.0,25,V12.1 Intervals CONT
-q_completed,17112.0,25,V12.1 Intervals CONT
-q_batch_input,0.0,26,V12.1 Intervals CONT
-q_sample_receipt,46593.0,26,V12.1 Intervals CONT
-q_sample_prep,2511.0,26,V12.1 Intervals CONT
-q_heat,744.0,26,V12.1 Intervals CONT
-q_heat_collation,465.0,26,V12.1 Intervals CONT
-q_heat_split,372.0,26,V12.1 Intervals CONT
-q_rna_extraction,372.0,26,V12.1 Intervals CONT
-q_pcr_collation,558.0,26,V12.1 Intervals CONT
-q_pcr_prep,744.0,26,V12.1 Intervals CONT
-q_pcr,372.0,26,V12.1 Intervals CONT
-q_data_analysis,372.0,26,V12.1 Intervals CONT
-q_completed,20088.0,26,V12.1 Intervals CONT
-q_batch_input,0.0,27,V12.1 Intervals CONT
-q_sample_receipt,44826.0,27,V12.1 Intervals CONT
-q_sample_prep,4929.0,27,V12.1 Intervals CONT
-q_heat,4092.0,27,V12.1 Intervals CONT
-q_heat_collation,279.0,27,V12.1 Intervals CONT
-q_heat_split,0.0,27,V12.1 Intervals CONT
-q_rna_extraction,372.0,27,V12.1 Intervals CONT
-q_pcr_collation,465.0,27,V12.1 Intervals CONT
-q_pcr_prep,1116.0,27,V12.1 Intervals CONT
-q_pcr,372.0,27,V12.1 Intervals CONT
-q_data_analysis,372.0,27,V12.1 Intervals CONT
-q_completed,16740.0,27,V12.1 Intervals CONT
-q_batch_input,0.0,28,V12.1 Intervals CONT
-q_sample_receipt,45477.0,28,V12.1 Intervals CONT
-q_sample_prep,3720.0,28,V12.1 Intervals CONT
-q_heat,4464.0,28,V12.1 Intervals CONT
-q_heat_collation,372.0,28,V12.1 Intervals CONT
-q_heat_split,372.0,28,V12.1 Intervals CONT
-q_rna_extraction,651.0,28,V12.1 Intervals CONT
-q_pcr_collation,837.0,28,V12.1 Intervals CONT
-q_pcr_prep,372.0,28,V12.1 Intervals CONT
-q_pcr,372.0,28,V12.1 Intervals CONT
-q_data_analysis,372.0,28,V12.1 Intervals CONT
-q_completed,14880.0,28,V12.1 Intervals CONT
-q_batch_input,0.0,29,V12.1 Intervals CONT
-q_sample_receipt,46872.0,29,V12.1 Intervals CONT
-q_sample_prep,1116.0,29,V12.1 Intervals CONT
-q_heat,1860.0,29,V12.1 Intervals CONT
-q_heat_collation,372.0,29,V12.1 Intervals CONT
-q_heat_split,372.0,29,V12.1 Intervals CONT
-q_rna_extraction,558.0,29,V12.1 Intervals CONT
-q_pcr_collation,558.0,29,V12.1 Intervals CONT
-q_pcr_prep,1116.0,29,V12.1 Intervals CONT
-q_pcr,372.0,29,V12.1 Intervals CONT
-q_data_analysis,372.0,29,V12.1 Intervals CONT
-q_completed,18972.0,29,V12.1 Intervals CONT
+q_batch_input,0.0,0,base
+q_sample_receipt,28179.0,0,base
+q_sample_prep,28737.0,0,base
+q_heat,1860.0,0,base
+q_heat_collation,465.0,0,base
+q_heat_split,744.0,0,base
+q_rna_extraction,930.0,0,base
+q_pcr_collation,558.0,0,base
+q_pcr_prep,1116.0,0,base
+q_pcr,372.0,0,base
+q_data_analysis,744.0,0,base
+q_completed,95232.0,0,base
+q_batch_input,0.0,1,base
+q_sample_receipt,28179.0,1,base
+q_sample_prep,30039.0,1,base
+q_heat,1860.0,1,base
+q_heat_collation,465.0,1,base
+q_heat_split,372.0,1,base
+q_rna_extraction,930.0,1,base
+q_pcr_collation,651.0,1,base
+q_pcr_prep,372.0,1,base
+q_pcr,744.0,1,base
+q_data_analysis,744.0,1,base
+q_completed,93000.0,1,base
+q_batch_input,0.0,2,base
+q_sample_receipt,28179.0,2,base
+q_sample_prep,27807.0,2,base
+q_heat,8184.0,2,base
+q_heat_collation,465.0,2,base
+q_heat_split,372.0,2,base
+q_rna_extraction,1023.0,2,base
+q_pcr_collation,930.0,2,base
+q_pcr_prep,1488.0,2,base
+q_pcr,2604.0,2,base
+q_data_analysis,372.0,2,base
+q_completed,95604.0,2,base
+q_batch_input,0.0,3,base
+q_sample_receipt,28179.0,3,base
+q_sample_prep,29760.0,3,base
+q_heat,1860.0,3,base
+q_heat_collation,465.0,3,base
+q_heat_split,744.0,3,base
+q_rna_extraction,744.0,3,base
+q_pcr_collation,558.0,3,base
+q_pcr_prep,744.0,3,base
+q_pcr,1116.0,3,base
+q_data_analysis,744.0,3,base
+q_completed,95604.0,3,base
+q_batch_input,0.0,4,base
+q_sample_receipt,28179.0,4,base
+q_sample_prep,28737.0,4,base
+q_heat,2604.0,4,base
+q_heat_collation,558.0,4,base
+q_heat_split,744.0,4,base
+q_rna_extraction,930.0,4,base
+q_pcr_collation,744.0,4,base
+q_pcr_prep,1116.0,4,base
+q_pcr,372.0,4,base
+q_data_analysis,372.0,4,base
+q_completed,93744.0,4,base
+q_batch_input,0.0,5,base
+q_sample_receipt,28179.0,5,base
+q_sample_prep,28179.0,5,base
+q_heat,1860.0,5,base
+q_heat_collation,465.0,5,base
+q_heat_split,372.0,5,base
+q_rna_extraction,837.0,5,base
+q_pcr_collation,558.0,5,base
+q_pcr_prep,744.0,5,base
+q_pcr,744.0,5,base
+q_data_analysis,744.0,5,base
+q_completed,96348.0,5,base
+q_batch_input,0.0,6,base
+q_sample_receipt,28179.0,6,base
+q_sample_prep,27714.0,6,base
+q_heat,6696.0,6,base
+q_heat_collation,465.0,6,base
+q_heat_split,372.0,6,base
+q_rna_extraction,744.0,6,base
+q_pcr_collation,558.0,6,base
+q_pcr_prep,1860.0,6,base
+q_pcr,1116.0,6,base
+q_data_analysis,372.0,6,base
+q_completed,95976.0,6,base
+q_batch_input,0.0,7,base
+q_sample_receipt,28179.0,7,base
+q_sample_prep,28737.0,7,base
+q_heat,2604.0,7,base
+q_heat_collation,465.0,7,base
+q_heat_split,744.0,7,base
+q_rna_extraction,744.0,7,base
+q_pcr_collation,651.0,7,base
+q_pcr_prep,1116.0,7,base
+q_pcr,744.0,7,base
+q_data_analysis,372.0,7,base
+q_completed,94860.0,7,base
+q_batch_input,0.0,8,base
+q_sample_receipt,28179.0,8,base
+q_sample_prep,29109.0,8,base
+q_heat,5208.0,8,base
+q_heat_collation,372.0,8,base
+q_heat_split,744.0,8,base
+q_rna_extraction,651.0,8,base
+q_pcr_collation,744.0,8,base
+q_pcr_prep,744.0,8,base
+q_pcr,372.0,8,base
+q_data_analysis,372.0,8,base
+q_completed,95232.0,8,base
+q_batch_input,0.0,9,base
+q_sample_receipt,28179.0,9,base
+q_sample_prep,30411.0,9,base
+q_heat,3720.0,9,base
+q_heat_collation,465.0,9,base
+q_heat_split,744.0,9,base
+q_rna_extraction,837.0,9,base
+q_pcr_collation,558.0,9,base
+q_pcr_prep,744.0,9,base
+q_pcr,1488.0,9,base
+q_data_analysis,372.0,9,base
+q_completed,94488.0,9,base
+q_batch_input,0.0,10,base
+q_sample_receipt,28179.0,10,base
+q_sample_prep,28830.0,10,base
+q_heat,3720.0,10,base
+q_heat_collation,465.0,10,base
+q_heat_split,744.0,10,base
+q_rna_extraction,651.0,10,base
+q_pcr_collation,837.0,10,base
+q_pcr_prep,1116.0,10,base
+q_pcr,744.0,10,base
+q_data_analysis,372.0,10,base
+q_completed,93744.0,10,base
+q_batch_input,0.0,11,base
+q_sample_receipt,28179.0,11,base
+q_sample_prep,28551.0,11,base
+q_heat,2604.0,11,base
+q_heat_collation,465.0,11,base
+q_heat_split,372.0,11,base
+q_rna_extraction,837.0,11,base
+q_pcr_collation,465.0,11,base
+q_pcr_prep,1116.0,11,base
+q_pcr,372.0,11,base
+q_data_analysis,744.0,11,base
+q_completed,93744.0,11,base
+q_batch_input,0.0,12,base
+q_sample_receipt,28179.0,12,base
+q_sample_prep,28272.0,12,base
+q_heat,1860.0,12,base
+q_heat_collation,465.0,12,base
+q_heat_split,744.0,12,base
+q_rna_extraction,1116.0,12,base
+q_pcr_collation,744.0,12,base
+q_pcr_prep,1116.0,12,base
+q_pcr,1116.0,12,base
+q_data_analysis,744.0,12,base
+q_completed,97092.0,12,base
+q_batch_input,0.0,13,base
+q_sample_receipt,28179.0,13,base
+q_sample_prep,27621.0,13,base
+q_heat,2232.0,13,base
+q_heat_collation,465.0,13,base
+q_heat_split,372.0,13,base
+q_rna_extraction,1023.0,13,base
+q_pcr_collation,558.0,13,base
+q_pcr_prep,744.0,13,base
+q_pcr,372.0,13,base
+q_data_analysis,744.0,13,base
+q_completed,95232.0,13,base
+q_batch_input,0.0,14,base
+q_sample_receipt,28179.0,14,base
+q_sample_prep,29388.0,14,base
+q_heat,2232.0,14,base
+q_heat_collation,465.0,14,base
+q_heat_split,372.0,14,base
+q_rna_extraction,837.0,14,base
+q_pcr_collation,1302.0,14,base
+q_pcr_prep,1116.0,14,base
+q_pcr,744.0,14,base
+q_data_analysis,744.0,14,base
+q_completed,95604.0,14,base
+q_batch_input,0.0,15,base
+q_sample_receipt,28179.0,15,base
+q_sample_prep,29202.0,15,base
+q_heat,1860.0,15,base
+q_heat_collation,465.0,15,base
+q_heat_split,744.0,15,base
+q_rna_extraction,558.0,15,base
+q_pcr_collation,1302.0,15,base
+q_pcr_prep,1116.0,15,base
+q_pcr,372.0,15,base
+q_data_analysis,372.0,15,base
+q_completed,94860.0,15,base
+q_batch_input,0.0,16,base
+q_sample_receipt,28179.0,16,base
+q_sample_prep,30039.0,16,base
+q_heat,3348.0,16,base
+q_heat_collation,465.0,16,base
+q_heat_split,744.0,16,base
+q_rna_extraction,651.0,16,base
+q_pcr_collation,744.0,16,base
+q_pcr_prep,1116.0,16,base
+q_pcr,744.0,16,base
+q_data_analysis,372.0,16,base
+q_completed,93000.0,16,base
+q_batch_input,0.0,17,base
+q_sample_receipt,28179.0,17,base
+q_sample_prep,29109.0,17,base
+q_heat,2976.0,17,base
+q_heat_collation,372.0,17,base
+q_heat_split,744.0,17,base
+q_rna_extraction,651.0,17,base
+q_pcr_collation,744.0,17,base
+q_pcr_prep,744.0,17,base
+q_pcr,744.0,17,base
+q_data_analysis,744.0,17,base
+q_completed,95232.0,17,base
+q_batch_input,0.0,18,base
+q_sample_receipt,28179.0,18,base
+q_sample_prep,27993.0,18,base
+q_heat,5952.0,18,base
+q_heat_collation,372.0,18,base
+q_heat_split,372.0,18,base
+q_rna_extraction,744.0,18,base
+q_pcr_collation,558.0,18,base
+q_pcr_prep,3348.0,18,base
+q_pcr,744.0,18,base
+q_data_analysis,744.0,18,base
+q_completed,90768.0,18,base
+q_batch_input,0.0,19,base
+q_sample_receipt,28179.0,19,base
+q_sample_prep,29481.0,19,base
+q_heat,5952.0,19,base
+q_heat_collation,465.0,19,base
+q_heat_split,744.0,19,base
+q_rna_extraction,465.0,19,base
+q_pcr_collation,558.0,19,base
+q_pcr_prep,1116.0,19,base
+q_pcr,1488.0,19,base
+q_data_analysis,744.0,19,base
+q_completed,94488.0,19,base
+q_batch_input,0.0,20,base
+q_sample_receipt,28179.0,20,base
+q_sample_prep,28644.0,20,base
+q_heat,1488.0,20,base
+q_heat_collation,558.0,20,base
+q_heat_split,372.0,20,base
+q_rna_extraction,651.0,20,base
+q_pcr_collation,837.0,20,base
+q_pcr_prep,1116.0,20,base
+q_pcr,744.0,20,base
+q_data_analysis,372.0,20,base
+q_completed,95604.0,20,base
+q_batch_input,0.0,21,base
+q_sample_receipt,28179.0,21,base
+q_sample_prep,28272.0,21,base
+q_heat,2604.0,21,base
+q_heat_collation,465.0,21,base
+q_heat_split,372.0,21,base
+q_rna_extraction,1395.0,21,base
+q_pcr_collation,558.0,21,base
+q_pcr_prep,1860.0,21,base
+q_pcr,3720.0,21,base
+q_data_analysis,372.0,21,base
+q_completed,95976.0,21,base
+q_batch_input,0.0,22,base
+q_sample_receipt,28179.0,22,base
+q_sample_prep,30597.0,22,base
+q_heat,1860.0,22,base
+q_heat_collation,465.0,22,base
+q_heat_split,372.0,22,base
+q_rna_extraction,651.0,22,base
+q_pcr_collation,558.0,22,base
+q_pcr_prep,1116.0,22,base
+q_pcr,744.0,22,base
+q_data_analysis,372.0,22,base
+q_completed,94860.0,22,base
+q_batch_input,0.0,23,base
+q_sample_receipt,28179.0,23,base
+q_sample_prep,29388.0,23,base
+q_heat,1488.0,23,base
+q_heat_collation,558.0,23,base
+q_heat_split,744.0,23,base
+q_rna_extraction,744.0,23,base
+q_pcr_collation,744.0,23,base
+q_pcr_prep,1116.0,23,base
+q_pcr,744.0,23,base
+q_data_analysis,744.0,23,base
+q_completed,95604.0,23,base
+q_batch_input,0.0,24,base
+q_sample_receipt,28179.0,24,base
+q_sample_prep,29667.0,24,base
+q_heat,1860.0,24,base
+q_heat_collation,465.0,24,base
+q_heat_split,744.0,24,base
+q_rna_extraction,1116.0,24,base
+q_pcr_collation,744.0,24,base
+q_pcr_prep,744.0,24,base
+q_pcr,1116.0,24,base
+q_data_analysis,744.0,24,base
+q_completed,94860.0,24,base
+q_batch_input,0.0,25,base
+q_sample_receipt,28179.0,25,base
+q_sample_prep,31062.0,25,base
+q_heat,11160.0,25,base
+q_heat_collation,465.0,25,base
+q_heat_split,372.0,25,base
+q_rna_extraction,1395.0,25,base
+q_pcr_collation,744.0,25,base
+q_pcr_prep,1860.0,25,base
+q_pcr,1116.0,25,base
+q_data_analysis,372.0,25,base
+q_completed,84816.0,25,base
+q_batch_input,0.0,26,base
+q_sample_receipt,28179.0,26,base
+q_sample_prep,28644.0,26,base
+q_heat,2976.0,26,base
+q_heat_collation,465.0,26,base
+q_heat_split,744.0,26,base
+q_rna_extraction,930.0,26,base
+q_pcr_collation,558.0,26,base
+q_pcr_prep,1860.0,26,base
+q_pcr,744.0,26,base
+q_data_analysis,744.0,26,base
+q_completed,94488.0,26,base
+q_batch_input,0.0,27,base
+q_sample_receipt,28179.0,27,base
+q_sample_prep,27807.0,27,base
+q_heat,1488.0,27,base
+q_heat_collation,465.0,27,base
+q_heat_split,372.0,27,base
+q_rna_extraction,837.0,27,base
+q_pcr_collation,744.0,27,base
+q_pcr_prep,744.0,27,base
+q_pcr,372.0,27,base
+q_data_analysis,372.0,27,base
+q_completed,96720.0,27,base
+q_batch_input,0.0,28,base
+q_sample_receipt,28179.0,28,base
+q_sample_prep,28923.0,28,base
+q_heat,1488.0,28,base
+q_heat_collation,465.0,28,base
+q_heat_split,744.0,28,base
+q_rna_extraction,651.0,28,base
+q_pcr_collation,930.0,28,base
+q_pcr_prep,1116.0,28,base
+q_pcr,744.0,28,base
+q_data_analysis,744.0,28,base
+q_completed,95232.0,28,base
+q_batch_input,0.0,29,base
+q_sample_receipt,28179.0,29,base
+q_sample_prep,28551.0,29,base
+q_heat,2604.0,29,base
+q_heat_collation,465.0,29,base
+q_heat_split,372.0,29,base
+q_rna_extraction,372.0,29,base
+q_pcr_collation,558.0,29,base
+q_pcr_prep,1488.0,29,base
+q_pcr,372.0,29,base
+q_data_analysis,744.0,29,base
+q_completed,95232.0,29,base
