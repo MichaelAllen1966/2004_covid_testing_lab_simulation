@@ -46,7 +46,8 @@ class Process:
             'q_rna_extraction': [],
             'q_rna_extraction_split': [],
             'q_sample_receipt': [],
-            'q_sample_prep': []
+            'q_sample_prep': [],
+            'q_transit_1': []
         }
 
         # Queue monitor (lists of time/time out tuples)
@@ -62,7 +63,8 @@ class Process:
             'q_rna_extraction': [],
             'q_rna_extraction_split': [],
             'q_sample_prep': [],
-            'q_sample_receipt': []
+            'q_sample_receipt': [],
+            'q_transit_1': []
         }
 
         # Process step counters
@@ -75,6 +77,7 @@ class Process:
             'sample_prep_auto': 0,
             'sample_prep_manual': 0,
             'sample_receipt': 0,
+            'q_transit_1': 0
         }
 
         # Link from process priorities to process assign calls
@@ -286,10 +289,17 @@ class Process:
     def set_up_process_steps(self):
         self.process_steps = ProcessSteps(self)
 
+    
     def split_after_heat(self):
         self.process_steps.split(
-            self._params.heat_batch_size, 'q_heat_split', 'q_rna_collation')
+            self._params.heat_batch_size, 'q_heat_split', 'q_transit_1')
 
     def split_after_rna_extraction(self):
         self.process_steps.split(self._params.rna_extraction_batch_size,
                                  'q_rna_extraction_split', 'q_pcr_collation')
+        
+
+        
+            
+            
+    
