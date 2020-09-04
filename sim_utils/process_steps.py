@@ -976,8 +976,9 @@ class ProcessSteps:
             transfer_time = self._params.transit_1['transfer_time']
             yield self._env.timeout(transfer_time)
             # Transfer plates
+            # Update queue length (in case changed during transfer time)
+            transfer_queue_length = len(self._queues[from_queue])
             number_to_transfer = min(transfer_queue_length, transfer_capacity)
-            # Use updated queue length in case of overlapping process calls
-            for i in range(len(self._queues[from_queue])):
+            for i in range(number_to_transfer):
                 plate = self._queues[from_queue].pop()
                 self._queues[to_queue].append(plate)
