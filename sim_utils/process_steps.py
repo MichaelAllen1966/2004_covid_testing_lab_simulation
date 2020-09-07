@@ -965,20 +965,30 @@ class ProcessSteps:
                 
     
     def transit_1(self):
-        """Tansit between heat inactivation and RNA extraction"""
-
-        from_queue = 'q_transit_1'
-        to_queue = 'q_rna_collation'
-        transfer_capacity = self._params.transit_1['max_capacity']
-        transfer_queue_length = len(self._queues[from_queue])
-        if transfer_queue_length > 0:
-            # Add transfer time            
-            transfer_time = self._params.transit_1['transfer_time']
-            yield self._env.timeout(transfer_time)
-            # Transfer plates
-            # Update queue length (in case changed during transfer time)
+        """Tansit between heat inactivation and RNA extraction.
+        
+        TODO: Recode as a proper process, but with different call interval"""
+        
+        # Check time
+        time_of_day = self._env.now % self._params.day_duration
+        # Check whether time is within shift operating times
+        shift = self._params.resource_shifts['transfer']
+        shift_available = shift[0] <= time_of_day < shift[1]
+        # Run transfer process if within shift time
+        if shift_available:
+            from_queue = 'q_transit_1'
+            to_queue = 'q_rna_collation'
+            transfer_capacity = self._params.transit_1['max_capacity']
             transfer_queue_length = len(self._queues[from_queue])
-            number_to_transfer = min(transfer_queue_length, transfer_capacity)
-            for i in range(number_to_transfer):
-                plate = self._queues[from_queue].pop()
-                self._queues[to_queue].append(plate)
+            if transfer_queue_length > 0:
+                # Add transfer time            
+                transfer_time = self._params.transit_1['transfer_time']
+                yield self._env.timeout(transfer_time)
+                # Transfer plates
+                # Update queue length (in case changed during transfer time)
+                transfer_queue_length = len(self._queues[from_queue])
+                number_to_transfer = min(
+                    transfer_queue_length, transfer_capacity)
+                for i in range(number_to_transfer):
+                    plate = self._queues[from_queue].pop()
+                    self._queues[to_queue].append(plate)

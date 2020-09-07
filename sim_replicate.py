@@ -35,7 +35,8 @@ scenarios['V12.1 Intervals CONT'] = Scenario(
         'beckman_rna_extraction': 11,  # 16
         'pcr_plate_stamper': 4,
         'pcr_plate_reader': 8,
-        'sample_prep_automation': 3  # 3
+        'sample_prep_automation': 3,
+        'transfer': 0  # 3
     },
 
     workstation_capacity={
@@ -76,6 +77,7 @@ scenarios['V12.1 Intervals CONT'] = Scenario(
         'pcr_plate_stamper': 0.08,
         'pcr_plate_reader': 0.02,
         'sample_prep_automation': 0.04,
+        'transfer': 0,
         'dummy': 0
     },
 
@@ -93,6 +95,7 @@ scenarios['V12.1 Intervals CONT'] = Scenario(
         'pcr_plate_stamper': (1.5, 18.0),
         'pcr_plate_reader': (1.5, 20),  # 18, 20
         'sample_prep_automation': (1.5, 18.0),
+        'transfer': (0.0, 18.0),
         'dummy': (1.5, 24.0)
     },
 
