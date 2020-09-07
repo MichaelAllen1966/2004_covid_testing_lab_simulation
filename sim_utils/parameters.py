@@ -52,7 +52,8 @@ class Scenario(object):
             'beckman_rna_extraction': 28,
             'pcr_plate_stamper': 9,
             'pcr_plate_reader': 15,
-            'sample_prep_automation': 5
+            'sample_prep_automation': 5,
+            'transfer': 1
             }
         
         self.workstation_capacity =  {
@@ -81,6 +82,7 @@ class Scenario(object):
             'pcr_plate_stamper': (0.0, 18.0),
             'pcr_plate_reader': (0.0, 20.0),
             'sample_prep_automation': (0.0, 18.0),
+            'transfer': (0.0, 18.0),
             'dummy': (0.0, 24.0)
             }
 
@@ -99,6 +101,7 @@ class Scenario(object):
             'pcr_plate_stamper': 0.08,
             'pcr_plate_reader': 0.02,
             'sample_prep_automation': 0.04,
+            'transfer': 0.0,
             'dummy': 0
             }
         
