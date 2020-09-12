@@ -171,6 +171,17 @@ class Scenario(object):
             'transfer_1': 30
         }
 
+        # Process call interval if not 1 minute, integer multiple of 1 (minute)
+        self.process_call_intervals = {
+            'transfer_1': 20
+        }
+
+        # Process capacity min and max
+        # # (will handle these number of units in same process)
+        self.capacity = {
+            'transfer_1': (1, 4)
+        }
+
         # Process resources = tuple of different resources needed and lists of
         # alternatives. Remember to put , after a single list to maintain tuple
         # format! tuple of two or more elements will require resources from each

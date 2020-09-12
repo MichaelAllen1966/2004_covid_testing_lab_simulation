@@ -94,6 +94,16 @@ class Process:
 
     def assign(self, queue, process):
 
+        # Check process interval time
+        if process in self._params.process_call_intervals:
+            process_interval = self._params.process_call_intervals[process]
+        else:
+            process_interval = 1
+
+        if int(self._env.now) % process_interval != 0:
+            # Process call interval not reached
+            return
+
         process_func = self.process_steps.process_step_funcs[process]
         # Assign sample_receipts
         new_unallocated_queue = []
