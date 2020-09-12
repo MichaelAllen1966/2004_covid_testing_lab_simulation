@@ -149,8 +149,7 @@ class Audit:
             'q_pcr_prep': self._params.basic_batch_size * 4,
             'q_pcr': self._params.basic_batch_size * 4,
             'q_data_analysis': self._params.basic_batch_size * 4,
-            'q_completed': self._params.basic_batch_size * 4,
-            'q_transfer_1': self._params.basic_batch_size
+            'q_completed': self._params.basic_batch_size * 4
         }
 
         queued_units = pd.DataFrame()
