@@ -124,13 +124,13 @@ class Scenario(object):
         # times (set up, automated, clean down)
         self.process_duration = {
             'batch_input': ([0, 0, 0],),
-            'sample_receipt': ([16, 0, 0],),
+            'sample_receipt': ([22, 0, 0],),
             'sample_prep_manual': ([45, 0, 0],),
             'sample_prep_auto': ([20, 0, 0], [8, 0, 0], [11, 0, 0]),
             'sample_heat': ([2, 0, 0], [20, 0, 0], [2, 0, 0]),
             'pcr_prep': ([12.5, 0, 0], [5, 0, 0], [17, 0, 0]),
             'pcr': ([8, 0, 0], [90, 0, 0], [5, 0, 0]),
-            'rna_extraction': ([5, 0, 0], [85, 0, 0], [2, 0, 0]),
+            'rna_extraction': ([5, 0, 0], [115, 0, 0], [2, 0, 0]),
             'data_analysis': ([0, 0, 0],),
             'transfer_1': ([6, 0, 0],)
         }
@@ -141,6 +141,7 @@ class Scenario(object):
         # Batch sizing for stages (collate for job then re-split)
         self.heat_batch_size = 4
         self.rna_extraction_batch_size = 3
+        self.transfer_1_batch_size = 4
 
         # Add a triangular distribution of extra time per process
         # Average extra time with be 1/4 of this
@@ -171,15 +172,10 @@ class Scenario(object):
             'transfer_1': 30
         }
 
-        # Process call interval if not 1 minute, integer multiple of 1 (minute)
-        self.process_call_intervals = {
-            'transfer_1': 20
-        }
-
-        # Process capacity min and max
-        # # (will handle these number of units in same process)
-        self.capacity = {
-            'transfer_1': (1, 4)
+        # Process check intervals (if not 1 minute)
+        # Must be integer multiple of 1
+        self.process_intervals = {
+            'transfer_1': 10
         }
 
         # Process resources = tuple of different resources needed and lists of
@@ -288,9 +284,7 @@ class Scenario(object):
         # kanban groups have start process, end process, max samples,
         # current samples
         self.kanban_groups = {
-            0: ['sample_receipt',
-                'pcr',
-                99999999]
+            0: ['sample_receipt', 'pcr', 99999999]
         }
 
         # Overwrite default values

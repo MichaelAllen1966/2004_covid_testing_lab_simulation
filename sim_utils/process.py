@@ -47,7 +47,9 @@ class Process:
             'q_rna_extraction_split': [],
             'q_sample_receipt': [],
             'q_sample_prep': [],
-            'q_transfer_1': []
+            'q_transfer_1': [],
+            'q_transfer_1_collation': [],
+            'q_transfer_1_split': []
         }
 
         # Queue monitor (lists of time/time out tuples)
@@ -64,7 +66,9 @@ class Process:
             'q_rna_extraction_split': [],
             'q_sample_prep': [],
             'q_sample_receipt': [],
-            'q_transfer_1': []
+            'q_transfer_1': [],
+            'q_transfer_1_collation': [],
+            'q_transfer_1_split': []
         }
 
         # Process step counters
@@ -94,14 +98,10 @@ class Process:
 
     def assign(self, queue, process):
 
-        # Check process interval time
-        if process in self._params.process_call_intervals:
-            process_interval = self._params.process_call_intervals[process]
-        else:
-            process_interval = 1
-
-        if int(self._env.now) % process_interval != 0:
-            # Process call interval not reached
+        # Check process intervals
+        interval = (self._params.process_intervals[process] if process in
+                    self._params.process_intervals else 1)
+        if int(self._env.now) % interval != 0:
             return
 
         process_func = self.process_steps.process_step_funcs[process]
@@ -186,7 +186,7 @@ class Process:
         shift = self._params.process_start_hours['sample_heat']
         if shift[0] * 60 <= time_of_day <= shift[1] * 60:
             # Assign sample_receipts
-            q = 'q_heat';
+            q = 'q_heat'
             process = 'sample_heat'
             self.assign(q, process)
 
@@ -232,6 +232,11 @@ class Process:
         self.process_steps.collate(self._params.rna_extraction_batch_size,
                                    'q_rna_collation', 'q_rna_extraction')
 
+    def collate_for_transfer_1(self):
+        # Process multiple plates for RNA extraction (will be split after)
+        self.process_steps.collate(self._params.transfer_1_batch_size,
+                                   'q_transfer_1_collation', 'q_transfer_1')
+
     def control_process(self):
         yield self._env.timeout(5)
         while True:
@@ -246,6 +251,8 @@ class Process:
             self.collate_for_pcr()
             self.collate_for_rna_extraction()
             self.split_after_rna_extraction()
+            self.collate_for_transfer_1()
+            self.split_after_transfer_1()
             self.collate_for_heat()
             self.split_after_heat()
 
@@ -308,8 +315,13 @@ class Process:
 
     def split_after_heat(self):
         self.process_steps.split(
-            self._params.heat_batch_size, 'q_heat_split', 'q_transfer_1')
+            self._params.heat_batch_size,
+            'q_heat_split', 'q_transfer_1_collation')
 
     def split_after_rna_extraction(self):
         self.process_steps.split(self._params.rna_extraction_batch_size,
                                  'q_rna_extraction_split', 'q_pcr_collation')
+
+    def split_after_transfer_1(self):
+        self.process_steps.split(self._params.transfer_1_batch_size,
+                                 'q_transfer_1_split', 'q_rna_collation')

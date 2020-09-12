@@ -144,13 +144,21 @@ class Audit:
             'q_heat_collation': self._params.basic_batch_size,
             'q_heat_split': self._params.basic_batch_size * \
                             self._params.heat_batch_size,
-            'q_rna_extraction': self._params.basic_batch_size,
+            'q_rna_collation': self._params.basic_batch_size,
+            'q_rna_extraction': self._params.basic_batch_size * \
+                                self._params.rna_extraction_batch_size,
+            'q_rna_extraction_split': self._params.basic_batch_size * \
+                                      self._params.rna_extraction_batch_size,
             'q_pcr_collation': self._params.basic_batch_size,
             'q_pcr_prep': self._params.basic_batch_size * 4,
             'q_pcr': self._params.basic_batch_size * 4,
             'q_data_analysis': self._params.basic_batch_size * 4,
             'q_completed': self._params.basic_batch_size * 4,
-            'q_transfer_1': self._params.basic_batch_size
+            'q_transfer_1': self._params.basic_batch_size * \
+                            self._params.transfer_1_batch_size,
+            'q_transfer_1_collation': self._params.basic_batch_size,
+            'q_transfer_1_split': self._params.basic_batch_size * \
+                                  self._params.transfer_1_batch_size
         }
 
         queued_units = pd.DataFrame()

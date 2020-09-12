@@ -145,8 +145,7 @@ class ProcessSteps:
 
     def collate(self, batch_size, from_queue, to_queue):
         """ Admin step that requires no time or resources.
-        Use the first (oldest) entity form each batch for the batch id and
-        time in."""
+        Use the first entity form each batch for the batch id and time in."""
         while len(self._queues[from_queue]) >= batch_size:
             parent_ids = []
             new_batch_size = 0
@@ -160,7 +159,7 @@ class ProcessSteps:
                 self.record_queuing_time(
                     ent.last_queue, ent.last_queue_time_in, self._env.now)
 
-                # Use inital batch id and time in from first (oldest) entity
+                # Use inital batch id and time in from first entity
                 if i == 0:
                     batch_id = ent.batch_id
                     time_in = ent.time_in
@@ -963,11 +962,8 @@ class ProcessSteps:
         """
 
         # Job is a single input entity
-        num_entities = 1
 
-        transfer_capacity = self._params.capacity['transfer_1'][1]
-        transfer_queue_length = len(self._queues['q_transfer_1'])
-        number_to_transfer = min(transfer_capacity,transfer_queue_length)
+        num_entities = 1
 
         # Get resources required (a tuple of list of required alternative
         # resources)
@@ -983,36 +979,26 @@ class ProcessSteps:
 
         process_priority = self._params.process_priorities['transfer_1']
 
-        # Loop through jobs: set process time to zero for all but first entity
-        # And set priority to zero (highest) for subsequent entitiies
+        # Generate new entity (one output entity per job)
+        self._id_count += 1
 
-        for sub_job in range(number_to_transfer):
+        entity = Entity(_env=self._env,
+                        _params=self._params,
+                        batch_id=job.batch_id,
+                        batch_size=self._params.basic_batch_size,
+                        entity_id=self._id_count,
+                        entity_type='plates in transfer',
+                        last_queue='q_transfer_1_split',
+                        last_queue_time_in=self._env.now,
+                        parent_ids=[job.entity_id],
+                        time_in=job.time_in)
 
-            # Once first job processed set process time and priority to zero
-            if sub_job == 1:
-                process_time = 0
-                process_priority = 0
+        self._env.process(self.occupy_resources_single_subprocess(
+            workstation=workstation, resources_required=resources_required,
+            process_time=process_time, priority=process_priority,
+            entity_to_create=entity,
+            queue_to_add_new_entity='q_transfer_1_split',
+            process_step='transfer_1'))
 
-            # Generate new entity (one output entity per job)
-            self._id_count += 1
-
-            entity = Entity(_env=self._env,
-                            _params=self._params,
-                            batch_id=job.batch_id,
-                            batch_size=self._params.basic_batch_size,
-                            entity_id=self._id_count,
-                            entity_type='plates in transfer',
-                            last_queue='q_rna_collation',
-                            last_queue_time_in=self._env.now,
-                            parent_ids=[job.entity_id],
-                            time_in=job.time_in)
-
-            self._env.process(self.occupy_resources_single_subprocess(
-                workstation=workstation, resources_required=resources_required,
-                process_time=process_time, priority=process_priority,
-                entity_to_create=entity,
-                queue_to_add_new_entity='q_rna_collation',
-                process_step='transfer_1'))
-
-            self.record_queuing_time(
-                'q_transfer_1', job.last_queue_time_in, self._env.now)
+        self.record_queuing_time(
+            'q_transfer_1', job.last_queue_time_in, self._env.now)
