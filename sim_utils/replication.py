@@ -98,8 +98,7 @@ class Replicator:
             aggfunc = [np.mean],
             margins=False)
         self.tracker_pivot = self.tracker_pivot['mean']
-        
-  
+
         
     def plot_trackers(self):
         df = self.tracker_pivot.copy()

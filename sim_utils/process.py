@@ -47,7 +47,7 @@ class Process:
             'q_rna_extraction_split': [],
             'q_sample_receipt': [],
             'q_sample_prep': [],
-            'q_transit_1': []
+            'q_transfer_1': []
         }
 
         # Queue monitor (lists of time/time out tuples)
@@ -64,7 +64,7 @@ class Process:
             'q_rna_extraction_split': [],
             'q_sample_prep': [],
             'q_sample_receipt': [],
-            'q_transit_1': []
+            'q_transfer_1': []
         }
 
         # Process step counters
@@ -77,7 +77,7 @@ class Process:
             'sample_prep_auto': 0,
             'sample_prep_manual': 0,
             'sample_receipt': 0,
-            'q_transit_1': 0
+            'transfer_1': 0
         }
 
         # Link from process priorities to process assign calls
@@ -88,7 +88,8 @@ class Process:
             'sample_heat': self.assign_sample_heat,
             'sample_prep_auto': self.assign_sample_prep,
             'sample_prep_manual': self.assign_sample_prep,
-            'sample_receipt': self.assign_sample_receipt
+            'sample_receipt': self.assign_sample_receipt,
+            'transfer_1': self.assign_transfer_1
         }
 
     def assign(self, queue, process):
@@ -125,9 +126,8 @@ class Process:
 
             # All relevant kanban limits OK -  proceed to assign job
             job = self.queues[queue].pop()
-            workstation = self.indentify_workstation(process)
+            workstation = self.identify_workstation(process)
             if workstation != 'none':
-                # Allocate job to sample_receipt process
                 process_func(workstation, job)
                 self.workstation_assigned_jobs[workstation] += 1
             else:
@@ -201,6 +201,13 @@ class Process:
                 process = 'sample_prep_manual'
                 self.assign(q, process)
 
+    def assign_transfer_1(self, time_of_day, time_left):
+        shift = self._params.process_start_hours['transfer_1']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            q = 'q_transfer_1'
+            process = 'transfer_1'
+            self.assign(q, process)
+
     def collate_for_heat(self):
         # Takes plates from sample receipt (will be split after)
         self.process_steps.collate(self._params.heat_batch_size,
@@ -232,7 +239,7 @@ class Process:
             self.collate_for_heat()
             self.split_after_heat()
 
-            for key in self._params.process_priorites.keys():
+            for key in self._params.process_priorities.keys():
                 self.process_assign_calls[key](time_of_day, time_left)
 
             # Time before next control loop
@@ -251,7 +258,7 @@ class Process:
         self.audit.summarise_queue_times()
         self.audit.summarise_trackers()
 
-    def indentify_workstation(self, process):
+    def identify_workstation(self, process):
         """
         Loops through workstations that can perform a process. Looks for 
         workstation with greatest remaining capacity. If no workstation has
@@ -289,17 +296,10 @@ class Process:
     def set_up_process_steps(self):
         self.process_steps = ProcessSteps(self)
 
-    
     def split_after_heat(self):
         self.process_steps.split(
-            self._params.heat_batch_size, 'q_heat_split', 'q_transit_1')
+            self._params.heat_batch_size, 'q_heat_split', 'q_transfer_1')
 
     def split_after_rna_extraction(self):
         self.process_steps.split(self._params.rna_extraction_batch_size,
                                  'q_rna_extraction_split', 'q_pcr_collation')
-        
-
-        
-            
-            
-    

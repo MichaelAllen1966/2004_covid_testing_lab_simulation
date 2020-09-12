@@ -1,16 +1,16 @@
 import numpy as np
 
-class Scenario(object):
-    '''
-    Model scenario parameters
-         
-    '''
-    
-    def __init__(self, *initial_data, **kwargs):
-        
-        # Set default values
-        # 16/4/2020 Adjust paramters so that day starts with FTE arrival
 
+class Scenario(object):
+    """
+    Model scenario parameters
+
+    """
+
+    def __init__(self, *initial_data, **kwargs):
+
+        # Set default values
+        # 16/4/2020 Adjust parameters so that day starts with FTE arrival
 
         # Work arrival
         self.samples_per_day = 30132
@@ -23,18 +23,18 @@ class Scenario(object):
         self.day_duration = 1440
         self.run_days = 1
         self.warm_up_days = 0
-        
+
         # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)
-        self.tea_break_times = [2*60, 16*60]
-        self.meal_break_times = [6.5*60, 14*60]
+        self.tea_break_times = [2 * 60, 16 * 60]
+        self.meal_break_times = [6.5 * 60, 14 * 60]
         # Spread start of break for people randomly after set start times
         self.break_start_spread = 60
-                
+
         # break duration is a uniform distribution between min and max
         self.tea_break_duration = [25, 35]
         self.meal_break_duration = [45, 60]
-        
+
         # Audit parameters
         self.audit_interval = 15
 
@@ -54,9 +54,9 @@ class Scenario(object):
             'pcr_plate_reader': 15,
             'sample_prep_automation': 5,
             'transfer': 1
-            }
-        
-        self.workstation_capacity =  {
+        }
+
+        self.workstation_capacity = {
             'workstation_0': 9999,
             'workstation_1a': 21,
             'workstation_1b_man': 25,
@@ -64,8 +64,9 @@ class Scenario(object):
             'workstation_1c': 10,
             'workstation_2': 26,
             'workstation_3': 9,
-            'workstation_4': 15
-            }
+            'workstation_4': 15,
+            'transfer': 99
+        }
 
         # Resource available hours (use hours)
         self.resource_shift_hours = {
@@ -84,7 +85,7 @@ class Scenario(object):
             'sample_prep_automation': (0.0, 18.0),
             'transfer': (0.0, 18.0),
             'dummy': (0.0, 24.0)
-            }
+        }
 
         # Resource unavailability on any whole day due to breakdown
         self.resource_breakdown_unavailability = {
@@ -101,10 +102,10 @@ class Scenario(object):
             'pcr_plate_stamper': 0.08,
             'pcr_plate_reader': 0.02,
             'sample_prep_automation': 0.04,
-            'transfer': 0.0,
+            'transfer': 0,
             'dummy': 0
-            }
-        
+        }
+
         # FTE resources (these will take breaks!)
         self.fte_resources = [
             'human_sample_receipt_1',
@@ -114,28 +115,30 @@ class Scenario(object):
             'human_pcr_1',
             'human_pcr_2',
             'human_rna_prep_1',
-            'human_rna_prep_2'
-            ]
-        
+            'human_rna_prep_2',
+            'transfer'
+        ]
+
         # Process duration. Tuple of fixed time, time per entity, and time per
         # item in entity. Multi-step automated processes have three sets of
         # times (set up, automated, clean down)
         self.process_duration = {
-             'batch_input': ([0,0,0],),
-             'sample_receipt': ([16, 0, 0],),
-             'sample_prep_manual': ([45, 0, 0],),
-             'sample_prep_auto': ([20, 0, 0], [8, 0, 0], [11, 0, 0]),
-             'sample_heat':  ([2, 0, 0], [20, 0, 0], [2, 0, 0]),
-             'pcr_prep': ([12.5,0,0],[5,0,0],[17,0,0]),
-             'pcr': ([8,0,0],[90,0,0],[5,0,0]),
-             'rna_extraction': ([5, 0, 0], [85, 0, 0], [2, 0, 0]),
-             'data_analysis': ([0,0,0],)
-             }
+            'batch_input': ([0, 0, 0],),
+            'sample_receipt': ([16, 0, 0],),
+            'sample_prep_manual': ([45, 0, 0],),
+            'sample_prep_auto': ([20, 0, 0], [8, 0, 0], [11, 0, 0]),
+            'sample_heat': ([2, 0, 0], [20, 0, 0], [2, 0, 0]),
+            'pcr_prep': ([12.5, 0, 0], [5, 0, 0], [17, 0, 0]),
+            'pcr': ([8, 0, 0], [90, 0, 0], [5, 0, 0]),
+            'rna_extraction': ([5, 0, 0], [85, 0, 0], [2, 0, 0]),
+            'data_analysis': ([0, 0, 0],),
+            'transfer_1': ([6, 0, 0],)
+        }
 
         # Allow manual sample prep (automated prep will be chosen first if free)
         self.allow_manual_sample_prep = True
 
-        # Batch sizing for stages (collate for job then resplit)
+        # Batch sizing for stages (collate for job then re-split)
         self.heat_batch_size = 4
         self.rna_extraction_batch_size = 3
 
@@ -144,7 +147,7 @@ class Scenario(object):
         # (e.g. 0.25 = 6.25% added length on average)
         self.additional_time_manual = 0.25
         self.additional_time_auto = 0.10
-                
+
         # Range of times new jobs may start
         self.process_start_hours = {
             'sample_receipt': (0.0, 17.2),
@@ -152,20 +155,22 @@ class Scenario(object):
             'sample_prep': (0.0, 16.9),
             'rna_extraction': (0.0, 16.4),
             'pcr_prep': (0.0, 17.3),
-            'pcr': (0.0, 20)
-            }
+            'pcr': (0.0, 20.0),
+            'transfer_1': (0.0, 20.0)
+        }
 
         # Process priories (lower number -> higher priority)
-        self.process_priorites = {
+        self.process_priorities = {
             'sample_receipt': 100,
             'sample_prep_manual': 90,
             'sample_prep_auto': 80,
             'sample_heat': 70,
             'rna_extraction': 60,
             'pcr_prep': 50,
-            'pcr': 40
-            }
-        
+            'pcr': 40,
+            'transfer_1': 30
+        }
+
         # Process resources = tuple of different resources needed and lists of
         # alternatives. Remember to put , after a single list to maintain tuple
         # format! tuple of two or more elements will require resources from each
@@ -244,26 +249,30 @@ class Scenario(object):
                                ['tracker_pcr_fte']),
                 'machine_list': (['pcr_plate_reader'],
                                  ['tracker_pcr_jobs'])},
+
+            'transfer_1': {
+                'process_type': 'manual',
+                'human_list': (['transfer'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_transfer_fte'],
+                               ['tracker_transfer_jobs']),
+                'machine_list': ([],)},
         }
-        
+
         # Workstation (used to limit work in progress)
+
         self.process_workstations = {
             'data_analysis': ['workstation_0'],
             'batch_input': ['workstation_0'],
             'sample_receipt': ['workstation_1a'],
-            'sample_prep_manual' : ['workstation_1b_man'],
-            'sample_prep_auto' : ['workstation_1b_auto'],
+            'sample_prep_manual': ['workstation_1b_man'],
+            'sample_prep_auto': ['workstation_1b_auto'],
             'sample_heat': ['workstation_1c'],
             'rna_extraction': ['workstation_2'],
             'pcr_prep': ['workstation_3'],
-            'pcr': ['workstation_4']
-            }
-        
-        # Set up transfer 
-        self.transit_1 = {
-            'interval': 20, # Time between transits
-            'transfer_time': 3, # One way transfer time
-            'max_capacity': 4}
+            'pcr': ['workstation_4'],
+            'transfer_1': ['transfer']
+        }
 
         # kanban groups have start process, end process, max samples,
         # current samples
@@ -271,20 +280,17 @@ class Scenario(object):
             0: ['sample_receipt',
                 'pcr',
                 99999999]
-                }
-
-        #self.kanban_groups = {}
-
+        }
 
         # Overwrite default values
-        
+
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])
-        
+
         for key in kwargs:
             setattr(self, key, kwargs[key])
-            
+
         # Calculations
 
         # Add dummy resources
@@ -292,28 +298,27 @@ class Scenario(object):
         self.resource_shift_hours['dummy'] = (0, 24)
         self.resource_breakdown_unavailability['dummy'] = 0
 
-
         # Set arrival batch size and round (down) to nearest basic batch size
         deliveries_per_day = len(self.delivery_times)
         self.arrival_batch_size = self.samples_per_day / deliveries_per_day
         self.arrival_batch_size = (np.floor(
             self.arrival_batch_size / self.basic_batch_size) *
-            self.basic_batch_size)
+                                   self.basic_batch_size)
 
         # Set warm up and run length
         self.audit_warm_up = self.day_duration * self.warm_up_days
         self.run_length = self.run_days * self.day_duration + self.audit_warm_up
 
         # Sort priority dictionary by value
-        self.process_priorites = {key: value for key, value in sorted(
-            self.process_priorites.items(), key=lambda item: item[1])}
-        
+        self.process_priorities = {key: value for key, value in sorted(
+            self.process_priorities.items(), key=lambda item: item[1])}
+
         # Set up kanban group counts and dictionaries for start.end
         self.kanban_group_counts = dict()
         self.kanban_group_max = dict()
         self.kanban_start = dict()
         self.kanban_end = dict()
-        
+
         # Set up dictionaries based on process
         for key in self.process_duration.keys():
             self.kanban_start[key] = []
@@ -321,12 +326,12 @@ class Scenario(object):
 
         # Update dictionaries if kanban groups exist        
         if len(self.kanban_groups) > 0:
-            
+
             # Add process start and ends to dictionaries
             for key, value in self.kanban_groups.items():
                 self.kanban_start[value[0]].append(key)
                 self.kanban_end[value[1]].append(key)
-            
+
             # Set up kanban group counts
             for key, value in self.kanban_groups.items():
                 self.kanban_group_counts[key] = 0
@@ -346,7 +351,9 @@ class Scenario(object):
             'tracker_sample_prep_jobs': 1000,
             'tracker_sample_prep_fte': 1000,
             'tracker_sample_receipt_fte': 1000,
-            'tracker_sample_receipt_jobs': 1000
+            'tracker_sample_receipt_jobs': 1000,
+            'tracker_transfer_fte': 1000,
+            'tracker_transfer_jobs': 1000
         }
 
         self.resource_numbers.update(tracker_resource_numbers)
@@ -364,7 +371,9 @@ class Scenario(object):
             'tracker_sample_prep_fte': (0.0, 24.0),
             'tracker_sample_prep_jobs': (0.0, 24.0),
             'tracker_sample_receipt_fte': (0.0, 24.0),
-            'tracker_sample_receipt_jobs': (0.0, 24.0)
+            'tracker_sample_receipt_jobs': (0.0, 24.0),
+            'tracker_transfer_fte': (0.0, 24.0),
+            'tracker_transfer_jobs': (0.0, 24.0)
         }
 
         self.resource_shift_hours.update(tracker_shifts)
@@ -382,7 +391,9 @@ class Scenario(object):
             'tracker_sample_prep_fte': 0,
             'tracker_sample_prep_jobs': 0,
             'tracker_sample_receipt_fte': 0,
-            'tracker_sample_receipt_jobs': 0
+            'tracker_sample_receipt_jobs': 0,
+            'tracker_transfer_fte': 0,
+            'tracker_transfer_jobs': 0
         }
 
         self.resource_breakdown_unavailability.update(tracker_unavailability)

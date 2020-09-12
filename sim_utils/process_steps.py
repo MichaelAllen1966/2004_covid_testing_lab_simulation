@@ -44,7 +44,7 @@ class ProcessSteps:
         Splits a single entity into multipel entitites
         Admin step that requires no time or resources.
 
-    
+
     """
 
     def __init__(self, _process):
@@ -74,7 +74,8 @@ class ProcessSteps:
             'sample_heat': self.sample_heat,
             'sample_prep_auto': self.sample_prep_auto,
             'sample_prep_manual': self.sample_prep_manual,
-            'sample_receipt': self.sample_receipt
+            'sample_receipt': self.sample_receipt,
+            'transfer_1': self.transfer_1
         }
 
     def batch_input(self, workstation, job):
@@ -318,18 +319,7 @@ class ProcessSteps:
 
             # Schedule next admission
             yield self._env.timeout(self._params.day_duration)
-            
 
-    def generate_transits(self):
-        """Continuous loop of transit steps"""
-        
-        # Transit 1
-        interval = self._params.transit_1['interval']
-        while True:
-            yield self._env.timeout(interval)
-            self._env.process(self.transit_1())
-
-        
     def occupy_resources_automated_subprocess(self, workstation,
                                               human_resources,
                                               machine_resources,
@@ -507,7 +497,6 @@ class ProcessSteps:
 
         # Reduce kanban counts as necessary
         self.reduce_kanban_counts(process_step, entity_to_create.batch_size)
-        
 
     def occupy_resources_single_subprocess(self, workstation,
                                            resources_required, process_time,
@@ -602,7 +591,7 @@ class ProcessSteps:
                             stage[2] * num_entities * job.batch_size)
             stage_process_times.append(process_time)
 
-        process_priority = self._params.process_priorites['pcr']
+        process_priority = self._params.process_priorities['pcr']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -650,7 +639,7 @@ class ProcessSteps:
                             stage[2] * num_entities * job.batch_size)
             stage_process_times.append(process_time)
 
-        process_priority = self._params.process_priorites['pcr_prep']
+        process_priority = self._params.process_priorities['pcr_prep']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -712,7 +701,7 @@ class ProcessSteps:
                             stage[2] * num_entities * job.batch_size)
             stage_process_times.append(process_time)
 
-        process_priority = self._params.process_priorites['rna_extraction']
+        process_priority = self._params.process_priorities['rna_extraction']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -762,7 +751,7 @@ class ProcessSteps:
                             stage[2] * num_entities * job.batch_size)
             stage_process_times.append(process_time)
 
-        process_priority = self._params.process_priorites['sample_heat']
+        process_priority = self._params.process_priorities['sample_heat']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -815,7 +804,7 @@ class ProcessSteps:
                             stage[2] * num_entities * job.batch_size)
             stage_process_times.append(process_time)
 
-        process_priority = self._params.process_priorites['sample_prep_auto']
+        process_priority = self._params.process_priorities['sample_prep_auto']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -865,7 +854,7 @@ class ProcessSteps:
                         process_times[1] * num_entities +
                         process_times[2] * num_entities * job.batch_size)
 
-        process_priority = self._params.process_priorites['sample_prep_manual']
+        process_priority = self._params.process_priorities['sample_prep_manual']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -916,7 +905,7 @@ class ProcessSteps:
                         process_times[1] * num_entities +
                         process_times[2] * num_entities * job.batch_size)
 
-        process_priority = self._params.process_priorites['sample_receipt']
+        process_priority = self._params.process_priorities['sample_receipt']
 
         # Generate new entity (one output entity per job)
         self._id_count += 1
@@ -962,33 +951,53 @@ class ProcessSteps:
                                  time_in=ent.time_in)
                 # Add to queue
                 self._queues[to_queue].append(new_ent)
-                
-    
-    def transit_1(self):
-        """Tansit between heat inactivation and RNA extraction.
-        
-        TODO: Recode as a proper process, but with different call interval"""
-        
-        # Check time
-        time_of_day = self._env.now % self._params.day_duration
-        # Check whether time is within shift operating times
-        shift = self._params.resource_shifts['transfer']
-        shift_available = shift[0] <= time_of_day < shift[1]
-        # Run transfer process if within shift time
-        if shift_available:
-            from_queue = 'q_transit_1'
-            to_queue = 'q_rna_collation'
-            transfer_capacity = self._params.transit_1['max_capacity']
-            transfer_queue_length = len(self._queues[from_queue])
-            if transfer_queue_length > 0:
-                # Add transfer time            
-                transfer_time = self._params.transit_1['transfer_time']
-                yield self._env.timeout(transfer_time)
-                # Transfer plates
-                # Update queue length (in case changed during transfer time)
-                transfer_queue_length = len(self._queues[from_queue])
-                number_to_transfer = min(
-                    transfer_queue_length, transfer_capacity)
-                for i in range(number_to_transfer):
-                    plate = self._queues[from_queue].pop()
-                    self._queues[to_queue].append(plate)
+
+
+
+    def transfer_1(self, workstation, job):
+        """
+        Process as described:
+            Transfer
+
+        """
+
+        # Job is a single input entity
+
+        num_entities = 1
+
+        # Get resources required (a tuple of list of required alternative
+        # resources)
+        resources_required = self._params.process_resources['transfer_1'][
+            'human_list']
+
+        # Process time
+        process_times = self._params.process_duration['transfer_1'][0]
+
+        process_time = (process_times[0] +
+                        process_times[1] * num_entities +
+                        process_times[2] * num_entities * job.batch_size)
+
+        process_priority = self._params.process_priorities['transfer_1']
+
+        # Generate new entity (one output entity per job)
+        self._id_count += 1
+
+        entity = Entity(_env=self._env,
+                        _params=self._params,
+                        batch_id=job.batch_id,
+                        batch_size=self._params.basic_batch_size,
+                        entity_id=self._id_count,
+                        entity_type='plates in transfer',
+                        last_queue='q_sample_prep',
+                        last_queue_time_in=self._env.now,
+                        parent_ids=[job.entity_id],
+                        time_in=job.time_in)
+
+        self._env.process(self.occupy_resources_single_subprocess(
+            workstation=workstation, resources_required=resources_required,
+            process_time=process_time, priority=process_priority,
+            entity_to_create=entity, queue_to_add_new_entity='q_rna_collation',
+            process_step='transfer_1'))
+
+        self.record_queuing_time(
+            'q_transfer_1', job.last_queue_time_in, self._env.now)
