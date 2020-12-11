@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 
 from sim_utils.entity import Entity
@@ -51,6 +52,7 @@ class ProcessSteps:
 
         self._env = _process._env
         self._batch_id_count = _process.batch_id_count
+        self._completed_count = 0
         self._count_in = _process.count_in
         self._count_out = _process.count_out
         self._fte_on_break = _process.fte_on_break
@@ -79,13 +81,15 @@ class ProcessSteps:
         }
 
     def batch_input(self, workstation, job):
-        """Create job batches of samples for model (not a physcial step; 
+        """Create job batches of samples for model (not a physical step;
         does not need resources)."""
 
         orginal_batch_size = job.batch_size
         # Round batches up to complete  batches
         new_batches = int(
             np.ceil(orginal_batch_size / self._params.basic_batch_size))
+
+        job.time_stamps['time_in_batched'] = self._env.now
 
         if new_batches > 1:
             for _batch in range(new_batches):
@@ -99,7 +103,8 @@ class ProcessSteps:
                                 last_queue='q_sample_receipt',
                                 last_queue_time_in=self._env.now,
                                 parent_ids=[job.entity_id],
-                                time_in=job.time_in)
+                                time_in=job.time_in,
+                                time_stamps=job.time_stamps)
 
                 # Add to sample_accesion queue
                 self._queues['q_sample_receipt'].append(entity)
@@ -159,10 +164,11 @@ class ProcessSteps:
                 self.record_queuing_time(
                     ent.last_queue, ent.last_queue_time_in, self._env.now)
 
-                # Use inital batch id and time in from first entity
+                # Use initial batch id and time in from first entity
                 if i == 0:
                     batch_id = ent.batch_id
                     time_in = ent.time_in
+                    time_stamps = ent.time_stamps
 
             # Generate new entity    
             self._id_count += 1
@@ -175,7 +181,8 @@ class ProcessSteps:
                              last_queue=to_queue,
                              last_queue_time_in=self._env.now,
                              parent_ids=parent_ids,
-                             time_in=time_in)
+                             time_in=time_in,
+                             time_stamps=time_stamps)
             # Add to queue
             self._queues[to_queue].append(new_ent)
 
@@ -186,7 +193,15 @@ class ProcessSteps:
         output_log = [job.batch_id, self._env.now, job.batch_size, job.time_in,
                       self._env.now + time_for_data_analysis]
         self._count_out.append(output_log)
-        self._queues['q_completed'].append(job)
+
+        # Create final entity for analysis
+        self._completed_count += 1
+        final_entity = Entity(
+               completed_id=self._completed_count,
+               time_in=job.time_in,
+               time_stamps=job.time_stamps.copy())
+
+        self._queues['q_completed'].append(final_entity)
         self._workstation_assigned_jobs[workstation] -= 1
 
         self.record_queuing_time(
@@ -298,6 +313,8 @@ class ProcessSteps:
             # generate new entity and add to list of current entities
             self._id_count += 1
             self._batch_id_count += 1
+            time_stamps=dict()
+            time_stamps['time_in'] = self._env.now
             arrival_ent = Entity(_env=self._env,
                                  _params=self._params,
                                  batch_id=self._batch_id_count,
@@ -307,7 +324,8 @@ class ProcessSteps:
                                  parent_ids=[],
                                  last_queue='q_batch_input',
                                  last_queue_time_in=self._env.now,
-                                 time_in=self._env.now)
+                                 time_in=self._env.now,
+                                 time_stamps=time_stamps)
 
             # Add to queue for batching input
             self._queues['q_batch_input'].append(arrival_ent)
@@ -320,12 +338,8 @@ class ProcessSteps:
             # Schedule next admission
             yield self._env.timeout(self._params.day_duration)
 
-    def occupy_resources_automated_subprocess(self, workstation,
-                                              human_resources,
-                                              machine_resources,
-                                              stage_process_times, priority,
-                                              entity_to_create,
-                                              queue_to_add_new_entity,
+    def occupy_resources_automated_subprocess(self, workstation, human_resources, machine_resources,
+                                              stage_process_times, priority, entity_to_create, queue_to_add_new_entity,
                                               process_step):
 
         """Obtains and occupied resources for a process step involving 3 steps:
@@ -335,11 +349,15 @@ class ProcessSteps:
         We assume that the clean down can be done by a different human to the
         set up."""
 
+        # Record time in
+        key = process_step + '_in'
+        entity_to_create.time_stamps[key] = self._env.now
+
         # Add random 10 second delay (to avoid jobs asking for resources at
         # exactly the same time)
 
         delay = np.random.random() * 10
-        delay = delay / (1440 * 60) # Convert to seconds
+        delay = delay / (1440 * 60)  # Convert to seconds
         yield self._env.timeout(delay)
 
         search_for_resources = True
@@ -347,7 +365,7 @@ class ProcessSteps:
         # continue looking for resources until all available
         while search_for_resources:
 
-            # Search for macine and human resoucres
+            # Search for machine and human resources
             machine_resources_found, machine_resources_selected = \
                 self.check_resourse_availability(machine_resources)
 
@@ -362,7 +380,7 @@ class ProcessSteps:
                 # Not all resources found wait for 1 min continue loop
                 yield self._env.timeout(1)
 
-        # Steps to take after finding all resoucres
+        # Steps to take after finding all resources
 
         self.process_step_counters[process_step] += 1
 
@@ -401,7 +419,7 @@ class ProcessSteps:
         process_time *= np.random.triangular(
             1.0, 1.0, 1 + self._params.additional_time_manual)
 
-        # All resources commited: run process
+        # All resources committed: run process
         yield self._env.timeout(process_time)
 
         # release human resources
@@ -462,7 +480,7 @@ class ProcessSteps:
         process_time *= np.random.triangular(
             1.0, 1.0, 1 + self._params.additional_time_manual)
 
-        # All resources commited: run process
+        # All resources committed: run process
         yield self._env.timeout(process_time)
 
         ########################################################################
@@ -487,7 +505,11 @@ class ProcessSteps:
             self._resources_available[chosen_resource] += 1
             self._resources_occupied[chosen_resource] -= 1
 
-        # Add entitiy to queue
+        # Record time out
+        key = process_step + '_out'
+        entity_to_create.time_stamps[key] = self._env.now
+
+        # Add entity to queue
         entity_to_create.last_queue_time_in = self._env.now
         self._queues[queue_to_add_new_entity].append(entity_to_create)
 
@@ -498,18 +520,22 @@ class ProcessSteps:
         # Reduce kanban counts as necessary
         self.reduce_kanban_counts(process_step, entity_to_create.batch_size)
 
-    def occupy_resources_single_subprocess(self, workstation,
-                                           resources_required, process_time,
-                                           priority, entity_to_create,
-                                           queue_to_add_new_entity,
-                                           process_step):
+    def occupy_resources_single_subprocess(self, workstation, resources_required, process_time, priority,
+                                           entity_to_create, queue_to_add_new_entity, process_step):
 
         """Obtains and occupied resources for a single process step (e.g manual
         or semi-automated process). c.f. Multi-step process which has machine
         set up, automation, and machine clean-down. """
 
+        # Record time in
+        key = process_step + '_in'
+        entity_to_create.time_stamps[key] = self._env.now
+
+        # Add random 10 second delay (to avoid jobs asking for resources at
+        # exactly the same time)
+
         delay = np.random.random() * 10
-        delay = delay / (1440 * 60) # Convert to seconds
+        delay = delay / (1440 * 60)  # Convert to seconds
         yield self._env.timeout(delay)
 
         search_for_resources = True
@@ -548,7 +574,7 @@ class ProcessSteps:
         process_time *= np.random.triangular(
             1.0, 1.0, 1 + self._params.additional_time_manual)
 
-        # All resources commited: run process
+        # All resources committed: run process
         yield self._env.timeout(process_time)
 
         # release resources
@@ -560,7 +586,11 @@ class ProcessSteps:
             self._resources_available[chosen_resource] += 1
             self._resources_occupied[chosen_resource] -= 1
 
-        # Add entitiy to queue
+        # Record time out
+        key = process_step + '_out'
+        entity_to_create.time_stamps[key] = self._env.now
+
+        # Add entity to queue
         entity_to_create.last_queue_time_in = self._env.now
         self._queues[queue_to_add_new_entity].append(entity_to_create)
 
@@ -605,7 +635,8 @@ class ProcessSteps:
                         last_queue='q_data_analysis',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         self._env.process(self.occupy_resources_automated_subprocess(
             workstation=workstation, human_resources=human_resources,
@@ -653,7 +684,8 @@ class ProcessSteps:
                         last_queue='q_pcr',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         self._env.process(self.occupy_resources_automated_subprocess(
             workstation=workstation, human_resources=human_resources,
@@ -678,7 +710,6 @@ class ProcessSteps:
         if len(relevant_kanban_groups) > 0:
             for kanban_group in relevant_kanban_groups:
                 self._params.kanban_group_counts[kanban_group] -= quantity
-
 
     def rna_extraction(self, workstation, job):
 
@@ -715,7 +746,8 @@ class ProcessSteps:
                         last_queue='q_rna_extraction_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         self._env.process(self.occupy_resources_automated_subprocess(
             workstation=workstation, human_resources=human_resources,
@@ -727,7 +759,6 @@ class ProcessSteps:
 
         self.record_queuing_time(
             'q_rna_extraction', job.last_queue_time_in, self._env.now)
-
 
     def sample_heat(self, workstation, job):
         # Job is a single input entity
@@ -766,7 +797,8 @@ class ProcessSteps:
                         last_queue='q_heat_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         # Define queue to add new entity to
         self._env.process(self.occupy_resources_automated_subprocess(
@@ -819,7 +851,8 @@ class ProcessSteps:
                         last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         # Define queue to add new entitiy to
         self._env.process(self.occupy_resources_automated_subprocess(
@@ -869,7 +902,8 @@ class ProcessSteps:
                         last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         # Define queue to add new entitiy to
         self._env.process(self.occupy_resources_single_subprocess(
@@ -919,7 +953,8 @@ class ProcessSteps:
                         last_queue='q_sample_prep',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         self._env.process(self.occupy_resources_single_subprocess(
             workstation=workstation, resources_required=resources_required,
@@ -929,7 +964,6 @@ class ProcessSteps:
 
         self.record_queuing_time(
             'q_sample_receipt', job.last_queue_time_in, self._env.now)
-
 
     def split(self, batch_size, from_queue, to_queue):
         """ Admin step that requires no time or resources"""
@@ -948,11 +982,10 @@ class ProcessSteps:
                                  last_queue=to_queue,
                                  last_queue_time_in=self._env.now,
                                  parent_ids=ent.entity_id,
-                                 time_in=ent.time_in)
+                                 time_in=ent.time_in,
+                                 time_stamps=ent.time_stamps)
                 # Add to queue
                 self._queues[to_queue].append(new_ent)
-
-
 
     def transfer_1(self, workstation, job):
         """
@@ -991,7 +1024,8 @@ class ProcessSteps:
                         last_queue='q_transfer_1_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
-                        time_in=job.time_in)
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
 
         self._env.process(self.occupy_resources_single_subprocess(
             workstation=workstation, resources_required=resources_required,

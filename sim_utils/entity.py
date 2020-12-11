@@ -19,20 +19,20 @@ class Entity(object):
     
     
     """
-    
- 
-    
+
     def __init__(self,
-                 _env,
-                 _params,
+                 _env=None,
+                 _params=None,
                  batch_id = 0,
                  batch_size = 1,
+                 completed_id=None,
                  entity_id = 0,
                  entity_type = 'generic',
                  last_queue = '',
                  last_queue_time_in = 0,
                  parent_ids = [],
                  process_step = 0,
+                 time_stamps = None,
                  time_in = 0,
                  time_out = 0
                  ):
@@ -73,6 +73,7 @@ class Entity(object):
         self._params = _params
         self.batch_id = batch_id
         self.batch_size = batch_size
+        self.completed_id = completed_id
         self.entity_id = entity_id
         self.entity_type = entity_type
         self.last_queue = last_queue
@@ -80,3 +81,4 @@ class Entity(object):
         self.parent_ids = parent_ids
         self.time_in = time_in
         self.time_out = time_out
+        self.time_stamps = time_stamps

@@ -1,3 +1,4 @@
+import pandas as pd
 from sim_utils.process_steps import ProcessSteps
 from sim_utils.audit import Audit
 
@@ -274,6 +275,7 @@ class Process:
         self.audit.summarise_queues()
         self.audit.summarise_queue_times()
         self.audit.summarise_trackers()
+        self.process_completed()
 
     def identify_workstation(self, process):
         """
@@ -296,6 +298,41 @@ class Process:
                 selected_workstation = workstation
 
         return selected_workstation
+
+    def process_completed(self):
+
+        processed_entities = []
+
+        keys = [
+            'time_in',
+            'sample_receipt_in',
+            'sample_receipt_out',
+            'sample_prep_auto_in',
+            'sample_prep_auto_out',
+            'sample_prep_manual_in',
+            'sample_prep_manual_out',
+            'sample_heat_in',
+            'sample_heat_out',
+            'rna_extraction_in',
+            'rna_extraction_out',
+            'pcr_prep_in',
+            'pcr_prep_out',
+            'pcr_in',
+            'pcr_out',
+            'data_analysis_in'
+            'data_analysis_out'
+            ]
+
+        for ent in self.process_steps._queues['q_completed']:
+            new_ent = dict()
+            for key in keys:
+                try:
+                    new_ent[key] = ent.time_stamps[key] - ent.time_stamps['time_in']
+                except:
+                    new_ent[key] = None
+            processed_entities.append(new_ent)
+
+        self.time_stamp_df = pd.DataFrame(processed_entities, columns=keys)
 
     def set_up_audit(self):
         self.audit = Audit(self)
