@@ -334,6 +334,22 @@ class Process:
 
         self.time_stamp_df = pd.DataFrame(processed_entities, columns=keys)
 
+        # Get median values for key time points
+        fields = ['sample_receipt_in', 'sample_receipt_out',
+                  'sample_prep_auto_in', 'sample_prep_auto_out',
+                  'sample_prep_manual_in', 'sample_prep_manual_out',
+                  'sample_heat_in', 'sample_heat_out',
+                  'rna_extraction_in', 'rna_extraction_out',
+                  'pcr_prep_in', 'pcr_prep_out',
+                  'pcr_in', 'pcr_out']
+
+        # Get summary
+        df_summary = self.time_stamp_df.describe().T['50%']
+        df_summary = df_summary.loc[fields]
+        df_summary = df_summary.round(0)
+        df_summary.rename('median', inplace=True)
+        self.audit.time_stamp_medians = df_summary
+
     def set_up_audit(self):
         self.audit = Audit(self)
 
