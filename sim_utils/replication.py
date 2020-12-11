@@ -24,6 +24,7 @@ class Replicator:
         self.summary_max_queues = pd.DataFrame()
         self.output_pivot = pd.DataFrame()
         self.resources_pivot = pd.DataFrame()
+        self.summary_time_stamps = pd.DataFrame()
 
 
     def pivot_results(self):
@@ -98,6 +99,38 @@ class Replicator:
             aggfunc = [np.mean],
             margins=False)
         self.tracker_pivot = self.tracker_pivot['mean']
+
+        # Time stamps summary
+        df = self.summary_time_stamps.copy()
+        df.drop('run', inplace=True, axis=1)
+        df = df.round(0)
+        # Rename for sorting
+        dict = {
+                'sample_receipt_in': '01_sample_receipt_in',
+                'sample_receipt_out': '02_sample_receipt_out',
+                'sample_prep_auto_in': '03_sample_prep_auto_in',
+                'sample_prep_auto_out': '04_sample_prep_auto_out',
+                'sample_prep_manual_in': '05_sample_prep_manual_in',
+                'sample_prep_manual_out': '06_sample_prep_manual_out',
+                'sample_heat_in': '07_sample_heat_in',
+                'sample_heat_out': '08_sample_heat_out',
+                'rna_extraction_in': '09_rna_extraction_in',
+                'rna_extraction_out': '10_rna_extraction_out',
+                'pcr_prep_in': '11_pcr_prep_in',
+                'pcr_prep_out': '12_pcr_prep_out',
+                'pcr_in': '13_pcr_in',
+                'pcr_out': '14_pcr_out'
+                }
+        df.rename(dict, axis=0, inplace=True)
+        df['stage'] = list(df.index)
+
+        self.time_stamp_pivot = df.pivot_table(
+            index = ['stage', 'name'],
+            aggfunc = [np.mean],
+            margins=False)
+        self.time_stamp_pivot = self.time_stamp_pivot['mean']
+        self.time_stamp_pivot = self.time_stamp_pivot.round(0)
+
 
         
     def plot_trackers(self):
@@ -192,6 +225,13 @@ class Replicator:
         print('Results describe maximum queueing across runs')
         print(self.max_queue_pivot)
         print('\n\n')
+        print('Median time stamps throughout process')
+        print('-------------------------------------')
+        print(self.time_stamp_pivot)
+        print('\n\n')
+
+
+
 
     def run_scenarios(self):
         
@@ -252,7 +292,8 @@ class Replicator:
             'resources': model.process.audit.summary_resources,
             'max_queues': model.process.audit.max_queue_sizes,
             'queue_times': model.process.audit.queue_times,
-            'tracker': model.process.audit.tracker_results
+            'tracker': model.process.audit.tracker_results,
+            'time_stamps': model.process.audit.time_stamp_medians
                    }
         
         return results
@@ -305,6 +346,13 @@ class Replicator:
             result_item['name'] = name
             self.summary_tracker = \
                 self.summary_tracker.append(result_item)
+
+            # Time stamps summaries (medians)
+            result_item = pd.DataFrame(results[run]['time_stamps'])
+            result_item['run'] = run
+            result_item['name'] = name
+            self.summary_time_stamps = \
+                self.summary_time_stamps.append(result_item)
 
 
 
