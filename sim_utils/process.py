@@ -18,7 +18,6 @@ class Process:
     def __init__(self, _env, _params, resources, resources_available,
                  resources_occupied, workstation_assigned_jobs):
 
-        # Question: do we need a dictionary of all enitites in model?
         self._env = _env
         self._params = _params
         self.batch_id_count = 0
@@ -87,6 +86,7 @@ class Process:
 
         # Link from process priorities to process assign calls
         self.process_assign_calls = {
+            'data_analysis': self.assign_analysis,
             'pcr': self.assign_pcr,
             'pcr_prep': self.assign_pcr_prep,
             'rna_extraction': self.assign_rna_extraction,
@@ -101,7 +101,7 @@ class Process:
 
         # Check process intervals
         interval = (self._params.process_intervals[process] if process in
-                    self._params.process_intervals else 1)
+                                                               self._params.process_intervals else 1)
         if int(self._env.now) % interval != 0:
             return
 
@@ -149,11 +149,13 @@ class Process:
 
         self.queues[queue] = new_unallocated_queue
 
-    def assign_analysis(self):
+    def assign_analysis(self, time_of_day, time_left):
         # pass any new input to process_step.batch_input
-        q = 'q_data_analysis';
-        process = 'data_analysis'
-        self.assign(q, process)
+        shift = self._params.process_start_hours['data_analysis']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            q = 'q_data_analysis'
+            process = 'data_analysis'
+            self.assign(q, process)
 
     def assign_batch_input(self):
         # pass any new input to process_step.batch_input
@@ -248,7 +250,6 @@ class Process:
 
             # Model admin jobs (no resources needed)
             self.assign_batch_input()
-            self.assign_analysis()
             self.collate_for_pcr()
             self.collate_for_rna_extraction()
             self.split_after_rna_extraction()
@@ -319,9 +320,9 @@ class Process:
             'pcr_prep_out',
             'pcr_in',
             'pcr_out',
-            'data_analysis_in'
+            'data_analysis_in',
             'data_analysis_out'
-            ]
+        ]
 
         # Calculate time from time in
         for ent in self.process_steps._queues['q_completed']:
@@ -344,7 +345,8 @@ class Process:
                   'sample_heat_in', 'sample_heat_out',
                   'rna_extraction_in', 'rna_extraction_out',
                   'pcr_prep_in', 'pcr_prep_out',
-                  'pcr_in', 'pcr_out']
+                  'pcr_in', 'pcr_out',
+                  'data_analysis_in', 'data_analysis_out']
 
         # Restrict time stamps to after warm up
         cutoff = self._params.day_duration * self._params.warm_up_days

@@ -107,19 +107,21 @@ class Replicator:
         # Rename for sorting
         dict = {
                 'sample_receipt_in': '01_sample_receipt_in',
-                'sample_receipt_out': '02_sample_receipt_out',
-                'sample_prep_auto_in': '03_sample_prep_auto_in',
-                'sample_prep_auto_out': '04_sample_prep_auto_out',
-                'sample_prep_manual_in': '05_sample_prep_manual_in',
-                'sample_prep_manual_out': '06_sample_prep_manual_out',
-                'sample_heat_in': '07_sample_heat_in',
-                'sample_heat_out': '08_sample_heat_out',
-                'rna_extraction_in': '09_rna_extraction_in',
-                'rna_extraction_out': '10_rna_extraction_out',
-                'pcr_prep_in': '11_pcr_prep_in',
-                'pcr_prep_out': '12_pcr_prep_out',
-                'pcr_in': '13_pcr_in',
-                'pcr_out': '14_pcr_out'
+                'sample_receipt_out': '01_sample_receipt_out',
+                'sample_prep_auto_in': '02_sample_prep_auto_in',
+                'sample_prep_auto_out': '02_sample_prep_auto_out',
+                'sample_prep_manual_in': '03_sample_prep_manual_in',
+                'sample_prep_manual_out': '03_sample_prep_manual_out',
+                'sample_heat_in': '04_sample_heat_in',
+                'sample_heat_out': '04_sample_heat_out',
+                'rna_extraction_in': '05_rna_extraction_in',
+                'rna_extraction_out': '05_rna_extraction_out',
+                'pcr_prep_in': '06_pcr_prep_in',
+                'pcr_prep_out': '06_pcr_prep_out',
+                'pcr_in': '07_pcr_in',
+                'pcr_out': '07_pcr_out',
+                'data_analysis_in': '08_data_analysis_in',
+                'data_analysis_out': '08_data_analysis_out'
                 }
         df.rename(dict, axis=0, inplace=True)
         df['stage'] = list(df.index)
@@ -353,9 +355,3 @@ class Replicator:
             result_item['name'] = name
             self.summary_time_stamps = \
                 self.summary_time_stamps.append(result_item)
-
-
-
-            
-        
-    

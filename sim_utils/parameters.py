@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 class Scenario(object):
     """
@@ -13,16 +13,16 @@ class Scenario(object):
         # 16/4/2020 Adjust parameters so that day starts with FTE arrival
 
         # Work arrival
-        self.samples_per_day = 9300
+        self.samples_per_day = 18600
         # List of sample arrival times (hours from start of day)
-        self.delivery_times = [0]
+        self.delivery_schedule_name = 'Single'
         self.basic_batch_size = 93
 
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
         self.day_duration = 1440
-        self.run_days = 1
-        self.warm_up_days = 0
+        self.run_days = 2
+        self.warm_up_days = 2
 
         # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)
@@ -48,6 +48,7 @@ class Scenario(object):
             'human_rna_prep_2': 10,
             'human_pcr_1': 35,
             'human_pcr_2': 25,
+            'human_data_analysis': 10,
             'sample_heat_incubator': 10,
             'beckman_rna_extraction': 28,
             'pcr_plate_stamper': 9,
@@ -65,6 +66,7 @@ class Scenario(object):
             'workstation_2': 26,
             'workstation_3': 9,
             'workstation_4': 15,
+            'workstation_5': 999,
             'transfer': 99
         }
 
@@ -76,8 +78,9 @@ class Scenario(object):
             'human_sample_prep_2': (9.01, 18.0),
             'human_rna_prep_1': (0.00, 9.00),
             'human_rna_prep_2': (9.01, 18.0),
-            'human_pcr_1': (0.00, 9.00),
+            'human_pcr_1': (0.0, 9.00),
             'human_pcr_2': (9.01, 18.0),
+            'human_data_analysis': (0.0, 18.0),
             'sample_heat_incubator': (0.0, 18.0),
             'beckman_rna_extraction': (0.0, 18.0),
             'pcr_plate_stamper': (0.0, 18.0),
@@ -97,6 +100,7 @@ class Scenario(object):
             'human_rna_prep_2': 0,
             'human_pcr_1': 0,
             'human_pcr_2': 0,
+            'human_data_analysis': 0,
             'sample_heat_incubator': 0,
             'beckman_rna_extraction': 0.04,
             'pcr_plate_stamper': 0.08,
@@ -116,6 +120,7 @@ class Scenario(object):
             'human_pcr_2',
             'human_rna_prep_1',
             'human_rna_prep_2',
+            'human_data_analysis',
             'transfer'
         ]
 
@@ -131,7 +136,7 @@ class Scenario(object):
             'pcr_prep': ([12.5, 0, 0], [5, 0, 0], [17, 0, 0]),
             'pcr': ([8, 0, 0], [90, 0, 0], [5, 0, 0]),
             'rna_extraction': ([5, 0, 0], [115, 0, 0], [2, 0, 0]),
-            'data_analysis': ([0, 0, 0],),
+            'data_analysis': ([10, 0, 0],),
             'transfer_1': ([6, 0, 0],)
         }
 
@@ -157,6 +162,7 @@ class Scenario(object):
             'rna_extraction': (0.0, 16.4),
             'pcr_prep': (0.0, 17.3),
             'pcr': (0.0, 20.0),
+            'data_analysis': (0.0, 20.0),
             'transfer_1': (0.0, 20.0)
         }
 
@@ -169,7 +175,8 @@ class Scenario(object):
             'rna_extraction': 60,
             'pcr_prep': 50,
             'pcr': 40,
-            'transfer_1': 30
+            'data_analysis': 30,
+            'transfer_1': 20
         }
 
         # Process check intervals (if not 1 minute)
@@ -257,6 +264,14 @@ class Scenario(object):
                 'machine_list': (['pcr_plate_reader'],
                                  ['tracker_pcr_jobs'])},
 
+            'data_analysis': {
+                'process_type': 'manual',
+                'human_list': (['human_data_analysis'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_data_analysis_jobs'],
+                               ['tracker_data_analysis_fte']),
+                'machine_list': ([],)},
+
             'transfer_1': {
                 'process_type': 'manual',
                 'human_list': (['transfer'],
@@ -278,6 +293,7 @@ class Scenario(object):
             'rna_extraction': ['workstation_2'],
             'pcr_prep': ['workstation_3'],
             'pcr': ['workstation_4'],
+            'data_analysis': ['workstation_5'],
             'transfer_1': ['transfer']
         }
 
@@ -296,6 +312,15 @@ class Scenario(object):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+        # Load delivery schedule, normalise to 1, and add to parameters
+        df = pd.read_csv('deliveries.csv', index_col='Hour')
+        for col in list(df):
+            total = df[col].sum()
+            values = df[col] / total
+            df[col] = values
+
+        self.delivery_schedule = df
+
         # Calculations
 
         # Add dummy resources
@@ -303,12 +328,14 @@ class Scenario(object):
         self.resource_shift_hours['dummy'] = (0, 24)
         self.resource_breakdown_unavailability['dummy'] = 0
 
-        # Set arrival batch size and round (down) to nearest basic batch size
-        deliveries_per_day = len(self.delivery_times)
-        self.arrival_batch_size = self.samples_per_day / deliveries_per_day
-        self.arrival_batch_size = (np.floor(
-            self.arrival_batch_size / self.basic_batch_size) *
-                                   self.basic_batch_size)
+        # Set arrival batch size and round to nearest basic batch size
+        self.delivery_times = list(range(24))
+        self.delivery_batch_sizes = (
+                self.delivery_schedule[self.delivery_schedule_name] * self.samples_per_day)
+        self.delivery_batch_sizes = (
+                np.round(self.delivery_batch_sizes / self.basic_batch_size, 0) *
+                self.basic_batch_size)
+        self.delivery_batch_sizes = list(self.delivery_batch_sizes.values)
 
         # Set warm up and run length
         self.audit_warm_up = self.day_duration * self.warm_up_days
@@ -345,6 +372,8 @@ class Scenario(object):
         # Add tracker resources
         tracker_resource_numbers = {
             'tracker_all_jobs_fte': 1000,
+            'tracker_data_analysis_fte': 1000,
+            'tracker_data_analysis_jobs': 1000,
             'tracker_heat_fte': 1000,
             'tracker_heat_jobs': 1000,
             'tracker_pcr_prep_fte': 1000,
@@ -365,6 +394,8 @@ class Scenario(object):
 
         tracker_shifts = {
             'tracker_all_jobs_fte': (0.0, 24.0),
+            'tracker_data_analysis_fte': (0.0, 24.0),
+            'tracker_data_analysis_jobs': (0.0, 24.0),
             'tracker_heat_fte': (0.0, 24.0),
             'tracker_heat_jobs': (0.0, 24.0),
             'tracker_pcr_prep_fte': (0.0, 24.0),
@@ -385,6 +416,8 @@ class Scenario(object):
 
         tracker_unavailability = {
             'tracker_all_jobs_fte': 0,
+            'tracker_data_analysis_jobs': 0,
+            'tracker_data_analysis_fte': 0,
             'tracker_heat_fte': 0,
             'tracker_heat_jobs': 0,
             'tracker_pcr_prep_fte': 0,
