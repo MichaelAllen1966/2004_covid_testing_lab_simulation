@@ -313,7 +313,7 @@ class ProcessSteps:
             # generate new entity and add to list of current entities
             self._id_count += 1
             self._batch_id_count += 1
-            time_stamps=dict()
+            time_stamps = dict()
             time_stamps['time_in'] = self._env.now
             arrival_ent = Entity(_env=self._env,
                                  _params=self._params,

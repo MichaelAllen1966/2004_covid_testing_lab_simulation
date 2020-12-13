@@ -13,7 +13,7 @@ class Scenario(object):
         # 16/4/2020 Adjust parameters so that day starts with FTE arrival
 
         # Work arrival
-        self.samples_per_day = 30132
+        self.samples_per_day = 9300
         # List of sample arrival times (hours from start of day)
         self.delivery_times = [0]
         self.basic_batch_size = 93
