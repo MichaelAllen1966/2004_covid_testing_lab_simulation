@@ -187,25 +187,56 @@ class ProcessSteps:
             self._queues[to_queue].append(new_ent)
 
     def data_analysis(self, workstation, job):
-        """Data analysis process step. No resources currently used."""
+        """Data analysis process step. """
 
-        time_for_data_analysis = 0
-        output_log = [job.batch_id, self._env.now, job.batch_size, job.time_in,
-                      self._env.now + time_for_data_analysis]
-        self._count_out.append(output_log)
+        # Job is a single input entity
 
-        # Create final entity for analysis
-        self._completed_count += 1
-        final_entity = Entity(
-               completed_id=self._completed_count,
-               time_in=job.time_in,
-               time_stamps=job.time_stamps.copy())
+        num_entities = 1
 
-        self._queues['q_completed'].append(final_entity)
-        self._workstation_assigned_jobs[workstation] -= 1
+        # Get resources required (a tuple of list of required alternative
+        # resources)
+
+        resources_required = \
+            self._params.process_resources['data_analysis']['human_list']
+
+        # Process time
+        process_times = self._params.process_duration['data_analysis'][0]
+
+        process_time = (process_times[0] +
+                        process_times[1] * num_entities +
+                        process_times[2] * num_entities * job.batch_size)
+
+        process_priority = self._params.process_priorities['data_analysis']
+
+        # Generate new entity (one output entity per job)
+        self._id_count += 1
+
+        entity = Entity(_env=self._env,
+                        _params=self._params,
+                        batch_id=job.batch_id,
+                        batch_size=self._params.basic_batch_size * 4,
+                        entity_id=self._id_count,
+                        entity_type='data analysis',
+                        last_queue='q_completed',
+                        last_queue_time_in=self._env.now,
+                        parent_ids=[job.entity_id],
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
+
+        self._env.process(self.occupy_resources_single_subprocess(
+            workstation=workstation, resources_required=resources_required,
+            process_time=process_time,
+            priority=process_priority, entity_to_create=entity,
+            queue_to_add_new_entity='q_completed', process_step='data_analysis'))
 
         self.record_queuing_time(
             'q_data_analysis', job.last_queue_time_in, self._env.now)
+
+        # This is the last stage - add to output log
+        output_log = [job.batch_id, self._env.now, job.batch_size, job.time_in,
+                      self._env.now]
+        self._count_out.append(output_log)
+
 
     def fte_break(self, resource, break_time):
         """FTE break process step. Used for tea and coffee breaks. Breaks are
