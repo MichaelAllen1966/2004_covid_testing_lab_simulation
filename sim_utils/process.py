@@ -18,7 +18,6 @@ class Process:
     def __init__(self, _env, _params, resources, resources_available,
                  resources_occupied, workstation_assigned_jobs):
 
-        # Question: do we need a dictionary of all enitites in model?
         self._env = _env
         self._params = _params
         self.batch_id_count = 0

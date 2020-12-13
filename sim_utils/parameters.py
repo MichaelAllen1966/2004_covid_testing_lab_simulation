@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 class Scenario(object):
     """
@@ -13,16 +13,16 @@ class Scenario(object):
         # 16/4/2020 Adjust parameters so that day starts with FTE arrival
 
         # Work arrival
-        self.samples_per_day = 9300
+        self.samples_per_day = 18600
         # List of sample arrival times (hours from start of day)
-        self.delivery_times = [0]
+        self.delivery_schedule_name = 'Single'
         self.basic_batch_size = 93
 
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
         self.day_duration = 1440
-        self.run_days = 1
-        self.warm_up_days = 0
+        self.run_days = 2
+        self.warm_up_days = 2
 
         # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)
@@ -312,6 +312,15 @@ class Scenario(object):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+        # Load delivery schedule, normalise to 1, and add to parameters
+        df = pd.read_csv('deliveries.csv', index_col='Hour')
+        for col in list(df):
+            total = df[col].sum()
+            values = df[col] / total
+            df[col] = values
+
+        self.delivery_schedule = df
+
         # Calculations
 
         # Add dummy resources
@@ -319,12 +328,14 @@ class Scenario(object):
         self.resource_shift_hours['dummy'] = (0, 24)
         self.resource_breakdown_unavailability['dummy'] = 0
 
-        # Set arrival batch size and round (down) to nearest basic batch size
-        deliveries_per_day = len(self.delivery_times)
-        self.arrival_batch_size = self.samples_per_day / deliveries_per_day
-        self.arrival_batch_size = (np.floor(
-            self.arrival_batch_size / self.basic_batch_size) *
-                                   self.basic_batch_size)
+        # Set arrival batch size and round to nearest basic batch size
+        self.delivery_times = list(range(24))
+        self.delivery_batch_sizes = (
+                self.delivery_schedule[self.delivery_schedule_name] * self.samples_per_day)
+        self.delivery_batch_sizes = (
+                np.round(self.delivery_batch_sizes / self.basic_batch_size, 0) *
+                self.basic_batch_size)
+        self.delivery_batch_sizes = list(self.delivery_batch_sizes.values)
 
         # Set warm up and run length
         self.audit_warm_up = self.day_duration * self.warm_up_days

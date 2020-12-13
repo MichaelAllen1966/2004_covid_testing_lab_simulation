@@ -341,6 +341,11 @@ class ProcessSteps:
         yield self._env.timeout(arrival_time)
         # While loop continues generating new patients throughout model run
         while True:
+            # Get delivery batch size based on hour
+            hours = int(self._env.now / 60)
+            day = int(hours / 24)
+            hour = hours - (day * 24)
+            delivery_size = self._params.delivery_batch_sizes[hour]
             # generate new entity and add to list of current entities
             self._id_count += 1
             self._batch_id_count += 1
@@ -349,7 +354,7 @@ class ProcessSteps:
             arrival_ent = Entity(_env=self._env,
                                  _params=self._params,
                                  batch_id=self._batch_id_count,
-                                 batch_size=self._params.arrival_batch_size,
+                                 batch_size=delivery_size,
                                  entity_id=self._id_count,
                                  entity_type='arrival batch',
                                  parent_ids=[],
@@ -362,8 +367,7 @@ class ProcessSteps:
             self._queues['q_batch_input'].append(arrival_ent)
 
             # Log input
-            input_log = [self._batch_id_count, self._env.now,
-                         self._params.arrival_batch_size]
+            input_log = [self._batch_id_count, self._env.now, delivery_size]
             self._count_in.append(input_log)
 
             # Schedule next admission
