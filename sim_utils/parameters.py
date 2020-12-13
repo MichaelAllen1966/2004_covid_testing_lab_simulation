@@ -21,8 +21,8 @@ class Scenario(object):
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
         self.day_duration = 1440
-        self.run_days = 2
-        self.warm_up_days = 2
+        self.run_days = 1
+        self.warm_up_days = 0
 
         # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)
