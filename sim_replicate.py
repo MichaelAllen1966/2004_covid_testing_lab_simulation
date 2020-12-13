@@ -12,9 +12,13 @@ scenarios = {}
 # Set parameters that differ from defaults in sim_utils/parameters_[date].py
 # Note: Resource shifts are in hours and fractions of hours. e.g. 14.5 is 2.30pm
 
-# Baseline sceanrio (model defaults)
+# Baseline scenario (model defaults)
+# Deliveries may be Singl, Even, or Dist
 
-scenarios['test'] = Scenario()
+scenarios['test'] = Scenario(
+    delivery_schedule_name='Dist'
+)
+
 # Set up and call replicator
 replications = 30
 replications = Replicator(scenarios, replications)
