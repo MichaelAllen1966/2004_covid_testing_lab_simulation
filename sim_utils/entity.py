@@ -1,3 +1,5 @@
+import random
+
 class Entity(object):
     """
     Entities (widgets, people, etc) handled by the simulation
@@ -32,6 +34,7 @@ class Entity(object):
                  last_queue_time_in = 0,
                  parent_ids = [],
                  process_step = 0,
+                 priority = 999,
                  time_stamps = None,
                  time_in = 0,
                  time_out = 0
@@ -79,6 +82,7 @@ class Entity(object):
         self.last_queue = last_queue
         self.last_queue_time_in = last_queue_time_in
         self.parent_ids = parent_ids
+        self.priority = priority
         self.time_in = time_in
         self.time_out = time_out
         self.time_stamps = time_stamps

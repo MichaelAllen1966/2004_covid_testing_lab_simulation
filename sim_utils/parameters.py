@@ -12,6 +12,9 @@ class Scenario(object):
         # Set default values
         # 16/4/2020 Adjust parameters so that day starts with FTE arrival
 
+        # Proportion high priority
+        self.high_priority = 0.25
+
         # Work arrival
         self.samples_per_day = 18600
         # List of sample arrival times (hours from start of day)

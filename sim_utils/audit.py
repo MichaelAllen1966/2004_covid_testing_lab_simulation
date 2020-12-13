@@ -28,7 +28,7 @@ class Audit:
 
     def audit_queue(self):
         day = self._env.now
-        audit_counts = {key: len(value) for key, value in self._queues.items()}
+        audit_counts = {key: value.qsize() for key, value in self._queues.items()}
         audit_counts['day'] = day / self._params.day_duration
         self.queue_audit = self.queue_audit.append(
             audit_counts, ignore_index=True)

@@ -16,7 +16,7 @@ scenarios = {}
 # Deliveries may be Singl, Even, or Dist
 
 scenarios['test'] = Scenario(
-    delivery_schedule_name='Dist'
+    delivery_schedule_name='Custom'
 )
 
 # Set up and call replicator
