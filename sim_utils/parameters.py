@@ -13,7 +13,7 @@ class Scenario(object):
         # 16/4/2020 Adjust parameters so that day starts with FTE arrival
 
         # Work arrival
-        self.samples_per_day = 30132
+        self.samples_per_day = 9300
         # List of sample arrival times (hours from start of day)
         self.delivery_times = [0]
         self.basic_batch_size = 93
@@ -21,8 +21,8 @@ class Scenario(object):
         # Day and run parameters
         # 16/4/2020 Model is designed to run primarily in single days
         self.day_duration = 1440
-        self.run_days = 1
-        self.warm_up_days = 0
+        self.run_days = 2
+        self.warm_up_days = 2
 
         # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)

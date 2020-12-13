@@ -323,6 +323,7 @@ class Process:
             'data_analysis_out'
             ]
 
+        # Calculate time from time in
         for ent in self.process_steps._queues['q_completed']:
             new_ent = dict()
             for key in keys:
@@ -330,6 +331,8 @@ class Process:
                     new_ent[key] = ent.time_stamps[key] - ent.time_stamps['time_in']
                 except:
                     new_ent[key] = None
+            # Add back original time in
+            new_ent['time_in'] = ent.time_stamps['time_in']
             processed_entities.append(new_ent)
 
         self.time_stamp_df = pd.DataFrame(processed_entities, columns=keys)
@@ -342,6 +345,11 @@ class Process:
                   'rna_extraction_in', 'rna_extraction_out',
                   'pcr_prep_in', 'pcr_prep_out',
                   'pcr_in', 'pcr_out']
+
+        # Restrict time stamps to after warm up
+        cutoff = self._params.day_duration * self._params.warm_up_days
+        mask = self.time_stamp_df['time_in'] >= cutoff
+        self.time_stamp_df = self.time_stamp_df[mask]
 
         # Get summary
         df_summary = self.time_stamp_df.describe().T['50%']
