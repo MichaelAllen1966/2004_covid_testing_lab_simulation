@@ -268,7 +268,7 @@ class Replicator:
         print('--------------------------------------------------')
         print(self.time_stamp_by_priority_pct_50_pivot.unstack())
         print('\n\n')
-        print('90th percentile time stamps throughout process, by priority')
+        print('95th percentile time stamps throughout process, by priority')
         print('-----------------------------------------------------------')
         print(self.time_stamp_by_priority_pct_95_pivot.unstack())
         print('\n\n')
