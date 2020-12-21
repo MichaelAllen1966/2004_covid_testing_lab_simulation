@@ -25,6 +25,8 @@ class Replicator:
         self.output_pivot = pd.DataFrame()
         self.resources_pivot = pd.DataFrame()
         self.summary_time_stamps = pd.DataFrame()
+        self.summary_time_stamps_by_priority_pct_50 = pd.DataFrame()
+        self.summary_time_stamps_by_priority_pct_95 = pd.DataFrame()
 
 
     def pivot_results(self):
@@ -123,6 +125,7 @@ class Replicator:
                 'data_analysis_in': '08_data_analysis_in',
                 'data_analysis_out': '08_data_analysis_out'
                 }
+
         df.rename(dict, axis=0, inplace=True)
         df['stage'] = list(df.index)
 
@@ -134,7 +137,38 @@ class Replicator:
         self.time_stamp_pivot = self.time_stamp_pivot.round(0)
 
 
-        
+        # Time stamp by priority - median
+        df = self.summary_time_stamps_by_priority_pct_50.copy()
+        df.drop('run', inplace=True, axis=1)
+        df = df.round(0)
+        df.rename(dict, axis=0, inplace=True)
+        df['stage'] = list(df.index)
+
+        self.time_stamp_by_priority_pct_50_pivot = df.pivot_table(
+            index = ['stage', 'name', 'priority'],
+            aggfunc = [np.mean],
+            margins=False)
+        self.time_stamp_by_priority_pct_50_pivot = \
+            self.time_stamp_by_priority_pct_50_pivot['mean']
+        self.time_stamp_by_priority_pct_50_pivot = \
+            self.time_stamp_by_priority_pct_50_pivot.round(0)
+
+        # Time stamp by priority - 95th percentile
+        df = self.summary_time_stamps_by_priority_pct_95.copy()
+        df.drop('run', inplace=True, axis=1)
+        df = df.round(0)
+        df.rename(dict, axis=0, inplace=True)
+        df['stage'] = list(df.index)
+
+        self.time_stamp_by_priority_pct_95_pivot = df.pivot_table(
+            index = ['stage', 'name', 'priority'],
+            aggfunc = [np.mean],
+            margins=False)
+        self.time_stamp_by_priority_pct_95_pivot = \
+            self.time_stamp_by_priority_pct_95_pivot['mean']
+        self.time_stamp_by_priority_pct_95_pivot = \
+            self.time_stamp_by_priority_pct_95_pivot.round(0)
+
     def plot_trackers(self):
         df = self.tracker_pivot.copy()
         # remove 'tracker_' from column titles
@@ -203,7 +237,6 @@ class Replicator:
             plt.tight_layout(pad=2)
             plt.savefig(f'output/tracker_{scenario}.png', dpi=600)
             plt.show()
-            
 
         
    
@@ -231,8 +264,14 @@ class Replicator:
         print('-------------------------------------')
         print(self.time_stamp_pivot)
         print('\n\n')
-
-
+        print('Median time stamps throughout process, by priority')
+        print('--------------------------------------------------')
+        print(self.time_stamp_by_priority_pct_50_pivot.unstack())
+        print('\n\n')
+        print('90th percentile time stamps throughout process, by priority')
+        print('-----------------------------------------------------------')
+        print(self.time_stamp_by_priority_pct_95_pivot.unstack())
+        print('\n\n')
 
 
     def run_scenarios(self):
@@ -279,7 +318,7 @@ class Replicator:
         self.summary_resources.to_csv('./output/resources.csv')
         self.summary_max_queues.to_csv('./output/max_queues.csv')
         self.output_pivot.to_csv('./output/output_summary.csv')
-        self.resources_pivot.to_csv('./output/resouces.summary.csv')
+        self.resources_pivot.to_csv('./output/resources.summary.csv')
     
     
     def single_run(self, scenario, i=0):
@@ -295,17 +334,17 @@ class Replicator:
             'max_queues': model.process.audit.max_queue_sizes,
             'queue_times': model.process.audit.queue_times,
             'tracker': model.process.audit.tracker_results,
-            'time_stamps': model.process.audit.time_stamp_medians
+            'time_stamps': model.process.audit.time_stamp_medians,
+            'time_stamp_by_priority_pct_50':
+                model.process.audit.time_stamp_by_priority_pct_50,
+            'time_stamp_by_priority_pct_95':
+                model.process.audit.time_stamp_by_priority_pct_95
                    }
         
         return results
-        
-    
-
 
 
     def unpack_trial_results(self, name, results):
-        
 
         for run in range(self.replications):
             
@@ -355,3 +394,18 @@ class Replicator:
             result_item['name'] = name
             self.summary_time_stamps = \
                 self.summary_time_stamps.append(result_item)
+
+            # Time stamps by priority
+            result_item = pd.DataFrame(
+                results[run]['time_stamp_by_priority_pct_50'])
+            result_item['run'] = run
+            result_item['name'] = name
+            self.summary_time_stamps_by_priority_pct_50 = \
+                self.summary_time_stamps_by_priority_pct_50.append(result_item)
+
+            result_item = pd.DataFrame(
+                results[run]['time_stamp_by_priority_pct_95'])
+            result_item['run'] = run
+            result_item['name'] = name
+            self.summary_time_stamps_by_priority_pct_95 = \
+                self.summary_time_stamps_by_priority_pct_95.append(result_item)

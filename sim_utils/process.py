@@ -337,8 +337,10 @@ class Process:
                     new_ent[key] = None
             # Add back original time in
             new_ent['time_in'] = ent.time_stamps['time_in']
+            new_ent['priority'] = int(ent.priority/100) + 1
             processed_entities.append(new_ent)
 
+        keys.append('priority')
         self.time_stamp_df = pd.DataFrame(processed_entities, columns=keys)
 
         # Get median values for key time points
@@ -362,6 +364,21 @@ class Process:
         df_summary = df_summary.round(0)
         df_summary.rename('median', inplace=True)
         self.audit.time_stamp_medians = df_summary
+
+        # Get medians and 95 percentiles by priority
+        medians = self.time_stamp_df.groupby(['priority']).median()
+        medians = medians[fields].T.round(0)
+        medians['process'] = medians.index
+        medians = medians.melt(id_vars='process')
+        medians.set_index('process', inplace=True)
+        self.audit.time_stamp_by_priority_pct_50 = medians
+
+        pct_95 = self.time_stamp_df.groupby(['priority']).quantile(0.95)
+        pct_95 = pct_95[fields].T.round(0)
+        pct_95['process'] = pct_95.index
+        pct_95 = pct_95.melt(id_vars='process')
+        pct_95.set_index('process', inplace=True)
+        self.audit.time_stamp_by_priority_pct_95 = pct_95
 
     def set_up_audit(self):
         self.audit = Audit(self)
