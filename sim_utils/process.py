@@ -1,4 +1,5 @@
 import pandas as pd
+import queue
 from sim_utils.process_steps import ProcessSteps
 from sim_utils.audit import Audit
 
@@ -33,23 +34,23 @@ class Process:
 
         # Queues for assignment
         self.queues = {
-            'q_batch_input': [],
-            'q_completed': [],
-            'q_data_analysis': [],
-            'q_heat': [],
-            'q_heat_collation': [],
-            'q_heat_split': [],
-            'q_pcr': [],
-            'q_pcr_collation': [],
-            'q_pcr_prep': [],
-            'q_rna_collation': [],
-            'q_rna_extraction': [],
-            'q_rna_extraction_split': [],
-            'q_sample_receipt': [],
-            'q_sample_prep': [],
-            'q_transfer_1': [],
-            'q_transfer_1_collation': [],
-            'q_transfer_1_split': []
+            'q_batch_input': queue.PriorityQueue(),
+            'q_completed': queue.PriorityQueue(),
+            'q_data_analysis': queue.PriorityQueue(),
+            'q_heat': queue.PriorityQueue(),
+            'q_heat_collation': queue.PriorityQueue(),
+            'q_heat_split': queue.PriorityQueue(),
+            'q_pcr': queue.PriorityQueue(),
+            'q_pcr_collation': queue.PriorityQueue(),
+            'q_pcr_prep': queue.PriorityQueue(),
+            'q_rna_collation': queue.PriorityQueue(),
+            'q_rna_extraction': queue.PriorityQueue(),
+            'q_rna_extraction_split': queue.PriorityQueue(),
+            'q_sample_receipt': queue.PriorityQueue(),
+            'q_sample_prep': queue.PriorityQueue(),
+            'q_transfer_1': queue.PriorityQueue(),
+            'q_transfer_1_collation': queue.PriorityQueue(),
+            'q_transfer_1_split': queue.PriorityQueue(),
         }
 
         # Queue monitor (lists of time/time out tuples)
@@ -109,9 +110,12 @@ class Process:
         # Assign sample_receipts
         new_unallocated_queue = []
 
-        while (len(self.queues[queue]) > 0):
-            # Check kanban limits 
-            job_size = self.queues[queue][-1].batch_size
+        while not self.queues[queue].empty():
+            # Check kanban limits
+            # Get job size by getting next item, inspecting and replacing
+            priority, next_job = self.queues[queue].get()
+            job_size = next_job.batch_size
+            self.queues[queue].put((priority, next_job))
             relevant_kanban_groups = self._params.kanban_start[process]
             if len(relevant_kanban_groups) > 0:
                 # Check any relavant kanban group limits are OK
@@ -136,18 +140,16 @@ class Process:
                             job_size
 
             # All relevant kanban limits OK -  proceed to assign job
-            job = self.queues[queue].pop()
+            job = self.queues[queue].get()[1]
             workstation = self.identify_workstation(process)
             if workstation != 'none':
                 process_func(workstation, job)
                 self.workstation_assigned_jobs[workstation] += 1
             else:
-                # Process workstations full, move all remaining jobs to
-                # unallocated job queue
-                new_unallocated_queue = [job] + self.queues[queue]
-                self.queues[queue] = []
-
-        self.queues[queue] = new_unallocated_queue
+                # Process workstations full, replace job and stop loop
+                item = (job.priority, job)
+                self.queues[queue].put(item)
+                break
 
     def assign_analysis(self, time_of_day, time_left):
         # pass any new input to process_step.batch_input
@@ -325,7 +327,8 @@ class Process:
         ]
 
         # Calculate time from time in
-        for ent in self.process_steps._queues['q_completed']:
+        while not self.process_steps._queues['q_completed'].empty():
+            ent = self.process_steps._queues['q_completed'].get()[1]
             new_ent = dict()
             for key in keys:
                 try:
@@ -334,8 +337,10 @@ class Process:
                     new_ent[key] = None
             # Add back original time in
             new_ent['time_in'] = ent.time_stamps['time_in']
+            new_ent['priority'] = int(ent.priority/100) + 1
             processed_entities.append(new_ent)
 
+        keys.append('priority')
         self.time_stamp_df = pd.DataFrame(processed_entities, columns=keys)
 
         # Get median values for key time points
@@ -359,6 +364,21 @@ class Process:
         df_summary = df_summary.round(0)
         df_summary.rename('median', inplace=True)
         self.audit.time_stamp_medians = df_summary
+
+        # Get medians and 95 percentiles by priority
+        medians = self.time_stamp_df.groupby(['priority']).median()
+        medians = medians[fields].T.round(0)
+        medians['process'] = medians.index
+        medians = medians.melt(id_vars='process')
+        medians.set_index('process', inplace=True)
+        self.audit.time_stamp_by_priority_pct_50 = medians
+
+        pct_95 = self.time_stamp_df.groupby(['priority']).quantile(0.95)
+        pct_95 = pct_95[fields].T.round(0)
+        pct_95['process'] = pct_95.index
+        pct_95 = pct_95.melt(id_vars='process')
+        pct_95.set_index('process', inplace=True)
+        self.audit.time_stamp_by_priority_pct_95 = pct_95
 
     def set_up_audit(self):
         self.audit = Audit(self)

@@ -13,10 +13,12 @@ scenarios = {}
 # Note: Resource shifts are in hours and fractions of hours. e.g. 14.5 is 2.30pm
 
 # Baseline scenario (model defaults)
-# Deliveries may be Singl, Even, or Dist
+# Deliveries may be Single, Even, or Dist
 
 scenarios['test'] = Scenario(
-    delivery_schedule_name='Dist'
+    run_days = 10,
+    delivery_schedule_name='Single'
+
 )
 
 # Set up and call replicator

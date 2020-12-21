@@ -1,5 +1,5 @@
-import copy
 import numpy as np
+import random
 
 from sim_utils.entity import Entity
 
@@ -94,6 +94,12 @@ class ProcessSteps:
         if new_batches > 1:
             for _batch in range(new_batches):
                 self._id_count += 1
+                # Set priority
+                if random.random() < self._params.high_priority:
+                    priority = 0
+                else:
+                    priority = 100
+
                 entity = Entity(_env=self._env,
                                 _params=self._params,
                                 batch_id=job.batch_id,
@@ -103,11 +109,14 @@ class ProcessSteps:
                                 last_queue='q_sample_receipt',
                                 last_queue_time_in=self._env.now,
                                 parent_ids=[job.entity_id],
+                                priority=priority + self._id_count/1e4,
                                 time_in=job.time_in,
                                 time_stamps=job.time_stamps)
 
-                # Add to sample_accesion queue
-                self._queues['q_sample_receipt'].append(entity)
+                # Add to sample_accession queue
+                # Keep all priority different - use id
+                item = (entity.priority, entity)
+                self._queues['q_sample_receipt'].put(item)
 
         self._workstation_assigned_jobs[workstation] -= 1
 
@@ -151,12 +160,14 @@ class ProcessSteps:
     def collate(self, batch_size, from_queue, to_queue):
         """ Admin step that requires no time or resources.
         Use the first entity form each batch for the batch id and time in."""
-        while len(self._queues[from_queue]) >= batch_size:
+        while self._queues[from_queue].qsize() >= batch_size:
             parent_ids = []
             new_batch_size = 0
+            # Priority will be set to highest priority in batch (lowest #)
+            priority = 9999
             # Get entities to combine
             for i in range(batch_size):
-                ent = self._queues[from_queue].pop()
+                ent = self._queues[from_queue].get()[1]
                 new_batch_size += ent.batch_size
                 parent_ids.append(ent.entity_id)
 
@@ -170,6 +181,10 @@ class ProcessSteps:
                     time_in = ent.time_in
                     time_stamps = ent.time_stamps
 
+                # Adjust priority if new higher priority batch found
+                if ent.priority < priority:
+                    priority = ent.priority
+
             # Generate new entity    
             self._id_count += 1
             new_ent = Entity(_env=self._env,
@@ -181,10 +196,11 @@ class ProcessSteps:
                              last_queue=to_queue,
                              last_queue_time_in=self._env.now,
                              parent_ids=parent_ids,
+                             priority=priority,
                              time_in=time_in,
                              time_stamps=time_stamps)
             # Add to queue
-            self._queues[to_queue].append(new_ent)
+            self._queues[to_queue].put((priority, new_ent))
 
     def data_analysis(self, workstation, job):
         """Data analysis process step. """
@@ -220,6 +236,7 @@ class ProcessSteps:
                         last_queue='q_completed',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -236,7 +253,6 @@ class ProcessSteps:
         output_log = [job.batch_id, self._env.now, job.batch_size, job.time_in,
                       self._env.now]
         self._count_out.append(output_log)
-
 
     def fte_break(self, resource, break_time):
         """FTE break process step. Used for tea and coffee breaks. Breaks are
@@ -358,13 +374,14 @@ class ProcessSteps:
                                  entity_id=self._id_count,
                                  entity_type='arrival batch',
                                  parent_ids=[],
+                                 priority=99999,
                                  last_queue='q_batch_input',
                                  last_queue_time_in=self._env.now,
                                  time_in=self._env.now,
                                  time_stamps=time_stamps)
 
             # Add to queue for batching input
-            self._queues['q_batch_input'].append(arrival_ent)
+            self._queues['q_batch_input'].put((1, arrival_ent))
 
             # Log input
             input_log = [self._batch_id_count, self._env.now, delivery_size]
@@ -383,6 +400,9 @@ class ProcessSteps:
             3) Machine clean down (requires machine + human)
         We assume that the clean down can be done by a different human to the
         set up."""
+
+        # Add job priority to process priority
+        priority += entity_to_create.priority
 
         # Record time in
         key = process_step + '_in'
@@ -546,7 +566,8 @@ class ProcessSteps:
 
         # Add entity to queue
         entity_to_create.last_queue_time_in = self._env.now
-        self._queues[queue_to_add_new_entity].append(entity_to_create)
+        self._queues[queue_to_add_new_entity].put(
+            (entity_to_create.priority, entity_to_create))
 
         # Free workstation
         self._workstation_assigned_jobs[workstation] -= 1
@@ -561,6 +582,9 @@ class ProcessSteps:
         """Obtains and occupied resources for a single process step (e.g manual
         or semi-automated process). c.f. Multi-step process which has machine
         set up, automation, and machine clean-down. """
+
+        # Add job priority to process priority
+        priority += entity_to_create.priority
 
         # Record time in
         key = process_step + '_in'
@@ -627,7 +651,11 @@ class ProcessSteps:
 
         # Add entity to queue
         entity_to_create.last_queue_time_in = self._env.now
-        self._queues[queue_to_add_new_entity].append(entity_to_create)
+        try:
+            self._queues[queue_to_add_new_entity].put(
+                (entity_to_create.priority, entity_to_create))
+        except:
+            print()
 
         # Free workstation
         self._workstation_assigned_jobs[workstation] -= 1
@@ -670,6 +698,7 @@ class ProcessSteps:
                         last_queue='q_data_analysis',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -719,6 +748,7 @@ class ProcessSteps:
                         last_queue='q_pcr',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -781,6 +811,7 @@ class ProcessSteps:
                         last_queue='q_rna_extraction_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -832,6 +863,7 @@ class ProcessSteps:
                         last_queue='q_heat_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -886,6 +918,7 @@ class ProcessSteps:
                         last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -937,6 +970,7 @@ class ProcessSteps:
                         last_queue='q_heat_collation',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -988,6 +1022,7 @@ class ProcessSteps:
                         last_queue='q_sample_prep',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
@@ -1002,8 +1037,8 @@ class ProcessSteps:
 
     def split(self, batch_size, from_queue, to_queue):
         """ Admin step that requires no time or resources"""
-        while len(self._queues[from_queue]) > 0:
-            ent = self._queues[from_queue].pop()
+        while not self._queues[from_queue].empty():
+            ent = self._queues[from_queue].get()[1]
             # Generate new entities
             new_batch_size = int(ent.batch_size / batch_size)
             for i in range(batch_size):
@@ -1017,10 +1052,12 @@ class ProcessSteps:
                                  last_queue=to_queue,
                                  last_queue_time_in=self._env.now,
                                  parent_ids=ent.entity_id,
+                                 # Tweak priority to avoid clash of priorities
+                                 priority=ent.priority + i/1e6,
                                  time_in=ent.time_in,
                                  time_stamps=ent.time_stamps)
                 # Add to queue
-                self._queues[to_queue].append(new_ent)
+                self._queues[to_queue].put((new_ent.priority, new_ent))
 
     def transfer_1(self, workstation, job):
         """
@@ -1059,6 +1096,7 @@ class ProcessSteps:
                         last_queue='q_transfer_1_split',
                         last_queue_time_in=self._env.now,
                         parent_ids=[job.entity_id],
+                        priority=job.priority,
                         time_in=job.time_in,
                         time_stamps=job.time_stamps.copy())
 
