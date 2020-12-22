@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import queue
 from sim_utils.process_steps import ProcessSteps
@@ -373,6 +374,9 @@ class Process:
         mask = self.time_stamp_df['time_in'] >= cutoff
         self.time_stamp_df = self.time_stamp_df[mask]
 
+        # temp save
+        self.time_stamp_df.to_csv('temp_time_stamp.csv')
+
         # Get summary
         df_summary = self.time_stamp_df.describe().T['50%']
         df_summary = df_summary.loc[fields]
@@ -394,6 +398,20 @@ class Process:
         pct_95 = pct_95.melt(id_vars='process')
         pct_95.set_index('process', inplace=True)
         self.audit.time_stamp_by_priority_pct_95 = pct_95
+
+        # Get percent completed in 1 day
+
+        complete_in_24hrs = pd.DataFrame()
+        complete_in_24hrs['priority'] = self.time_stamp_df['priority']
+        complete_in_24hrs['complete_24_hrs'] = \
+            self.time_stamp_df['data_analysis_out'] <= self._params.day_duration
+        pivot = complete_in_24hrs.pivot_table(
+            index='priority',
+            values='complete_24_hrs',
+            aggfunc=[np.mean],
+            margins=True)
+        pivot = pivot['mean']
+        self.audit.complete_in_24hrs = pivot
 
     def set_up_audit(self):
         self.audit = Audit(self)
