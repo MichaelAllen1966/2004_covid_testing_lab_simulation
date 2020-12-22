@@ -74,6 +74,7 @@ class ProcessSteps:
             'pcr_prep': self.pcr_prep,
             'rna_extraction': self.rna_extraction,
             'sample_heat': self.sample_heat,
+            'sample_preprocess': self.sample_preprocess,
             'sample_prep_auto': self.sample_prep_auto,
             'sample_prep_manual': self.sample_prep_manual,
             'sample_receipt': self.sample_receipt,
@@ -105,8 +106,8 @@ class ProcessSteps:
                                 batch_id=job.batch_id,
                                 batch_size=self._params.basic_batch_size,
                                 entity_id=self._id_count,
-                                entity_type='registered sample tubes',
-                                last_queue='q_sample_receipt',
+                                entity_type='sample tubes',
+                                last_queue='q_sample_preprocess',
                                 last_queue_time_in=self._env.now,
                                 parent_ids=[job.entity_id],
                                 priority=priority + self._id_count/1e4,
@@ -116,7 +117,7 @@ class ProcessSteps:
                 # Add to sample_accession queue
                 # Keep all priority different - use id
                 item = (entity.priority, entity)
-                self._queues['q_sample_receipt'].put(item)
+                self._queues['q_sample_preprocess'].put(item)
 
         self._workstation_assigned_jobs[workstation] -= 1
 
@@ -983,6 +984,57 @@ class ProcessSteps:
 
         self.record_queuing_time(
             'q_sample_prep', job.last_queue_time_in, self._env.now)
+
+    def sample_preprocess(self, workstation, job):
+        """
+        Process as described:
+            Takes batches of 250 samples. Log and rack into racks of samples.
+            Time taken = 133 min
+
+        """
+
+        # Job is a single input entity
+
+        num_entities = 1
+
+        # Get resources required (a tuple of list of required alternative
+        # resources)
+        resources_required = self._params.process_resources['sample_preprocess'][
+            'human_list']
+
+        # Process time
+        process_times = self._params.process_duration['sample_preprocess'][0]
+
+        process_time = (process_times[0] +
+                        process_times[1] * num_entities +
+                        process_times[2] * num_entities * job.batch_size)
+
+        process_priority = self._params.process_priorities['sample_preprocess']
+
+        # Generate new entity (one output entity per job)
+        self._id_count += 1
+
+        entity = Entity(_env=self._env,
+                        _params=self._params,
+                        batch_id=job.batch_id,
+                        batch_size=self._params.basic_batch_size,
+                        entity_id=self._id_count,
+                        entity_type='registered samples',
+                        last_queue='q_sample_receipt',
+                        last_queue_time_in=self._env.now,
+                        parent_ids=[job.entity_id],
+                        priority=job.priority,
+                        time_in=job.time_in,
+                        time_stamps=job.time_stamps.copy())
+
+        self._env.process(self.occupy_resources_single_subprocess(
+            workstation=workstation, resources_required=resources_required,
+            process_time=process_time, priority=process_priority,
+            entity_to_create=entity, queue_to_add_new_entity='q_sample_receipt',
+            process_step='sample_preprocess'))
+
+        self.record_queuing_time(
+            'q_sample_preprocess', job.last_queue_time_in, self._env.now)
 
     def sample_receipt(self, workstation, job):
         """

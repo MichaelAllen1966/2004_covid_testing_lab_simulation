@@ -46,6 +46,7 @@ class Process:
             'q_rna_collation': queue.PriorityQueue(),
             'q_rna_extraction': queue.PriorityQueue(),
             'q_rna_extraction_split': queue.PriorityQueue(),
+            'q_sample_preprocess': queue.PriorityQueue(),
             'q_sample_receipt': queue.PriorityQueue(),
             'q_sample_prep': queue.PriorityQueue(),
             'q_transfer_1': queue.PriorityQueue(),
@@ -66,6 +67,7 @@ class Process:
             'q_rna_extraction': [],
             'q_rna_extraction_split': [],
             'q_sample_prep': [],
+            'q_sample_preprocess': [],
             'q_sample_receipt': [],
             'q_transfer_1': [],
             'q_transfer_1_collation': [],
@@ -81,6 +83,7 @@ class Process:
             'sample_heat': 0,
             'sample_prep_auto': 0,
             'sample_prep_manual': 0,
+            'sample_preprocess': 0,
             'sample_receipt': 0,
             'transfer_1': 0
         }
@@ -94,6 +97,7 @@ class Process:
             'sample_heat': self.assign_sample_heat,
             'sample_prep_auto': self.assign_sample_prep,
             'sample_prep_manual': self.assign_sample_prep,
+            'sample_preprocess': self.assign_sample_preprocess,
             'sample_receipt': self.assign_sample_receipt,
             'transfer_1': self.assign_transfer_1
         }
@@ -193,6 +197,14 @@ class Process:
             # Assign sample_receipts
             q = 'q_heat'
             process = 'sample_heat'
+            self.assign(q, process)
+
+    def assign_sample_preprocess(self, time_of_day, time_left):
+        shift = self._params.process_start_hours['sample_preprocess']
+        if shift[0] * 60 <= time_of_day <= shift[1] * 60:
+            # Assign sample_receipts
+            q = 'q_sample_preprocess'
+            process = 'sample_preprocess'
             self.assign(q, process)
 
     def assign_sample_receipt(self, time_of_day, time_left):
@@ -308,6 +320,8 @@ class Process:
 
         keys = [
             'time_in',
+            'sample_preprocess_in',
+            'sample_preprocess_out',
             'sample_receipt_in',
             'sample_receipt_out',
             'sample_prep_auto_in',
@@ -344,7 +358,8 @@ class Process:
         self.time_stamp_df = pd.DataFrame(processed_entities, columns=keys)
 
         # Get median values for key time points
-        fields = ['sample_receipt_in', 'sample_receipt_out',
+        fields = ['sample_preprocess_in', 'sample_preprocess_out',
+                  'sample_receipt_in', 'sample_receipt_out',
                   'sample_prep_auto_in', 'sample_prep_auto_out',
                   'sample_prep_manual_in', 'sample_prep_manual_out',
                   'sample_heat_in', 'sample_heat_out',

@@ -43,6 +43,8 @@ class Scenario(object):
 
         # Resource numbers        
         self.resource_numbers = {
+            'human_sample_preprocess_1': 10,
+            'human_sample_preprocess_2': 10,
             'human_sample_receipt_1': 30,
             'human_sample_receipt_2': 10,
             'human_sample_prep_1': 35,
@@ -70,11 +72,14 @@ class Scenario(object):
             'workstation_3': 9,
             'workstation_4': 15,
             'workstation_5': 999,
+            'workstation_6': 10,
             'transfer': 99
         }
 
         # Resource available hours (use hours)
         self.resource_shift_hours = {
+            'human_sample_preprocess_1': (0.00, 9.00),
+            'human_sample_preprocess_2': (9.01, 18.00),
             'human_sample_receipt_1': (0.00, 9.00),
             'human_sample_receipt_2': (9.01, 18.0),
             'human_sample_prep_1': (0.00, 9.00),
@@ -95,6 +100,8 @@ class Scenario(object):
 
         # Resource unavailability on any whole day due to breakdown
         self.resource_breakdown_unavailability = {
+            'human_sample_preprocess_1': 0,
+            'human_sample_preprocess_2': 0,
             'human_sample_receipt_1': 0,
             'human_sample_receipt_2': 0,
             'human_sample_prep_1': 0,
@@ -115,6 +122,8 @@ class Scenario(object):
 
         # FTE resources (these will take breaks!)
         self.fte_resources = [
+            'human_sample_preprocess_1',
+            'human_sample_preprocess_2',
             'human_sample_receipt_1',
             'human_sample_receipt_2',
             'human_sample_prep_1',
@@ -132,6 +141,7 @@ class Scenario(object):
         # times (set up, automated, clean down)
         self.process_duration = {
             'batch_input': ([0, 0, 0],),
+            'sample_preprocess': ([10, 0, 0],),
             'sample_receipt': ([22, 0, 0],),
             'sample_prep_manual': ([45, 0, 0],),
             'sample_prep_auto': ([20, 0, 0], [8, 0, 0], [11, 0, 0]),
@@ -159,6 +169,7 @@ class Scenario(object):
 
         # Range of times new jobs may start
         self.process_start_hours = {
+            'sample_preprocess': (0.0, 17.0),
             'sample_receipt': (0.0, 17.2),
             'sample_heat': (0.0, 17.3),
             'sample_prep': (0.0, 16.9),
@@ -171,6 +182,7 @@ class Scenario(object):
 
         # Process priories (lower number -> higher priority)
         self.process_priorities = {
+            'sample_preprocess': 110,
             'sample_receipt': 100,
             'sample_prep_manual': 90,
             'sample_prep_auto': 80,
@@ -193,6 +205,15 @@ class Scenario(object):
         # format! tuple of two or more elements will require resources from each
         # tuple element
         self.process_resources = {
+            'sample_preprocess': {
+                'process_type': 'manual',
+                'human_list': (['human_sample_preprocess_1',
+                                'human_sample_preprocess_2'],
+                               ['tracker_all_jobs_fte'],
+                               ['tracker_sample_preprocess_jobs'],
+                               ['tracker_sample_preprocess_fte']),
+                'machine_list': ([],)},
+
             'sample_receipt': {
                 'process_type': 'manual',
                 'human_list': (['human_sample_receipt_1',
@@ -287,6 +308,7 @@ class Scenario(object):
         # Workstation (used to limit work in progress)
 
         self.process_workstations = {
+            'sample_preprocess': ['workstation_6'],
             'data_analysis': ['workstation_0'],
             'batch_input': ['workstation_0'],
             'sample_receipt': ['workstation_1a'],
@@ -385,6 +407,8 @@ class Scenario(object):
             'tracker_pcr_jobs': 1000,
             'tracker_rna_prep_fte': 1000,
             'tracker_rna_prep_jobs': 1000,
+            'tracker_sample_preprocess_jobs': 1000,
+            'tracker_sample_preprocess_fte': 1000,
             'tracker_sample_prep_jobs': 1000,
             'tracker_sample_prep_fte': 1000,
             'tracker_sample_receipt_fte': 1000,
@@ -407,6 +431,8 @@ class Scenario(object):
             'tracker_pcr_jobs': (0.0, 24.0),
             'tracker_rna_prep_fte': (0.0, 24.0),
             'tracker_rna_prep_jobs': (0.0, 24.0),
+            'tracker_sample_preprocess_jobs': (0.0, 24.0),
+            'tracker_sample_preprocess_fte': (0.0, 24.0),
             'tracker_sample_prep_fte': (0.0, 24.0),
             'tracker_sample_prep_jobs': (0.0, 24.0),
             'tracker_sample_receipt_fte': (0.0, 24.0),
@@ -429,6 +455,8 @@ class Scenario(object):
             'tracker_pcr_jobs': 0,
             'tracker_rna_prep_fte': 0,
             'tracker_rna_prep_jobs': 0,
+            'tracker_sample_preprocess_jobs': 0,
+            'tracker_sample_preprocess_fte': 0,
             'tracker_sample_prep_fte': 0,
             'tracker_sample_prep_jobs': 0,
             'tracker_sample_receipt_fte': 0,
