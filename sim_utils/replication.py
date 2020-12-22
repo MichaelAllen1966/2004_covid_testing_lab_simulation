@@ -108,22 +108,24 @@ class Replicator:
         df = df.round(0)
         # Rename for sorting
         dict = {
-                'sample_receipt_in': '01_sample_receipt_in',
-                'sample_receipt_out': '01_sample_receipt_out',
-                'sample_prep_auto_in': '02_sample_prep_auto_in',
-                'sample_prep_auto_out': '02_sample_prep_auto_out',
-                'sample_prep_manual_in': '03_sample_prep_manual_in',
-                'sample_prep_manual_out': '03_sample_prep_manual_out',
-                'sample_heat_in': '04_sample_heat_in',
-                'sample_heat_out': '04_sample_heat_out',
-                'rna_extraction_in': '05_rna_extraction_in',
-                'rna_extraction_out': '05_rna_extraction_out',
-                'pcr_prep_in': '06_pcr_prep_in',
-                'pcr_prep_out': '06_pcr_prep_out',
-                'pcr_in': '07_pcr_in',
-                'pcr_out': '07_pcr_out',
-                'data_analysis_in': '08_data_analysis_in',
-                'data_analysis_out': '08_data_analysis_out'
+                'sample_preprocess_in': '01_sample_preprocess_in',
+                'sample_preprocess_out': '01_sample_preprocess_out',
+                'sample_receipt_in': '02_sample_receipt_in',
+                'sample_receipt_out': '02_sample_receipt_out',
+                'sample_prep_auto_in': '03_sample_prep_auto_in',
+                'sample_prep_auto_out': '03_sample_prep_auto_out',
+                'sample_prep_manual_in': '04_sample_prep_manual_in',
+                'sample_prep_manual_out': '04_sample_prep_manual_out',
+                'sample_heat_in': '05_sample_heat_in',
+                'sample_heat_out': '05_sample_heat_out',
+                'rna_extraction_in': '06_rna_extraction_in',
+                'rna_extraction_out': '06_rna_extraction_out',
+                'pcr_prep_in': '07_pcr_prep_in',
+                'pcr_prep_out': '07_pcr_prep_out',
+                'pcr_in': '08_pcr_in',
+                'pcr_out': '08_pcr_out',
+                'data_analysis_in': '09_data_analysis_in',
+                'data_analysis_out': '09_data_analysis_out'
                 }
 
         df.rename(dict, axis=0, inplace=True)
@@ -317,6 +319,11 @@ class Replicator:
         self.summary_output_by_day.to_csv('./output/output_by_day.csv')
         self.summary_resources.to_csv('./output/resources.csv')
         self.summary_max_queues.to_csv('./output/max_queues.csv')
+        self.summary_time_stamps.to_csv('./output/time_stamps.csv')
+        self.summary_time_stamps_by_priority_pct_50.to_csv(
+            './output/time_stamps_by_priority_median.csv')
+        self.summary_time_stamps_by_priority_pct_95.to_csv(
+            './output/time_stamps_by_priority_95pct.csv')
         self.output_pivot.to_csv('./output/output_summary.csv')
         self.resources_pivot.to_csv('./output/resources.summary.csv')
     

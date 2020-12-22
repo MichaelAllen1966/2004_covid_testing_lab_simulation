@@ -137,6 +137,7 @@ class Audit:
 
         queue_units = {
             'q_batch_input': 0,
+            'q_sample_preprocess': self._params.basic_batch_size,
             'q_sample_receipt': self._params.basic_batch_size,
             'q_sample_prep': self._params.basic_batch_size,
             'q_heat': self._params.basic_batch_size * \
