@@ -169,15 +169,15 @@ class Scenario(object):
 
         # Range of times new jobs may start
         self.process_start_hours = {
-            'sample_preprocess': (0.0, 17.0),
-            'sample_receipt': (0.0, 17.2),
-            'sample_heat': (0.0, 17.3),
-            'sample_prep': (0.0, 16.9),
-            'rna_extraction': (0.0, 16.4),
-            'pcr_prep': (0.0, 17.3),
-            'pcr': (0.0, 20.0),
-            'data_analysis': (0.0, 20.0),
-            'transfer_1': (0.0, 20.0)
+            'sample_preprocess': (0.0, 24.0),
+            'sample_receipt': (0.0, 24.0),
+            'sample_heat': (0.0, 24.0),
+            'sample_prep': (0.0, 24.0),
+            'rna_extraction': (0.0, 24.0),
+            'pcr_prep': (0.0, 24.0),
+            'pcr': (0.0, 24.0),
+            'data_analysis': (0.0, 24.0),
+            'transfer_1': (0.0, 24.0)
         }
 
         # Process priories (lower number -> higher priority)

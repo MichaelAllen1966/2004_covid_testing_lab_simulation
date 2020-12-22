@@ -27,7 +27,7 @@ class Replicator:
         self.summary_time_stamps = pd.DataFrame()
         self.summary_time_stamps_by_priority_pct_50 = pd.DataFrame()
         self.summary_time_stamps_by_priority_pct_95 = pd.DataFrame()
-
+        self.summary_complete_in_24hrs = pd.DataFrame()
 
     def pivot_results(self):
         """Summarise results across multiple scenario replicates. """
@@ -171,6 +171,21 @@ class Replicator:
         self.time_stamp_by_priority_pct_95_pivot = \
             self.time_stamp_by_priority_pct_95_pivot.round(0)
 
+        # Complete in 24 hours
+        df = self.summary_complete_in_24hrs.copy()
+        df['priority'] = df.index
+        df.index.rename('index', inplace=True)
+
+        pivot = df.pivot_table(
+            index = ['priority', 'name'],
+            values = ['complete_24_hrs'],
+            aggfunc = [np.mean],
+            margins=False)
+
+        pivot = pivot['mean'].round(3)
+        self.complete_in_24hr_pivot = pivot
+
+
     def plot_trackers(self):
         df = self.tracker_pivot.copy()
         # remove 'tracker_' from column titles
@@ -239,9 +254,6 @@ class Replicator:
             plt.tight_layout(pad=2)
             plt.savefig(f'output/tracker_{scenario}.png', dpi=600)
             plt.show()
-
-        
-   
  
     def print_results(self):
                 
@@ -273,6 +285,10 @@ class Replicator:
         print('95th percentile time stamps throughout process, by priority')
         print('-----------------------------------------------------------')
         print(self.time_stamp_by_priority_pct_95_pivot.unstack())
+        print('\n\n')
+        print('Complete in 24 hours, by priority')
+        print('---------------------------------')
+        print(self.complete_in_24hr_pivot)
         print('\n\n')
 
 
@@ -345,7 +361,8 @@ class Replicator:
             'time_stamp_by_priority_pct_50':
                 model.process.audit.time_stamp_by_priority_pct_50,
             'time_stamp_by_priority_pct_95':
-                model.process.audit.time_stamp_by_priority_pct_95
+                model.process.audit.time_stamp_by_priority_pct_95,
+            'complete_in_24hrs': model.process.audit.complete_in_24hrs
                    }
         
         return results
@@ -416,3 +433,11 @@ class Replicator:
             result_item['name'] = name
             self.summary_time_stamps_by_priority_pct_95 = \
                 self.summary_time_stamps_by_priority_pct_95.append(result_item)
+
+            # Complete in 24 hours by priority
+            result_item = pd.DataFrame(
+                results[run]['complete_in_24hrs'])
+            result_item['run'] = run
+            result_item['name'] = name
+            self.summary_complete_in_24hrs = \
+                self.summary_complete_in_24hrs.append(result_item)
