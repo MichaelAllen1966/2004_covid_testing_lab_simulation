@@ -29,8 +29,8 @@ class Scenario(object):
 
         # Breaks for people (high priority job, but does not interrupt work)
         # Times from start of FTE day (6am)
-        self.tea_break_times = [2 * 60, 16 * 60]
-        self.meal_break_times = [6.5 * 60, 14 * 60]
+        self.tea_break_times = [2*60, 16*60, 18*60]
+        self.meal_break_times = [6.5*60, 14*60, 22*60]
         # Spread start of break for people randomly after set start times
         self.break_start_spread = 60
 
@@ -45,32 +45,37 @@ class Scenario(object):
         self.resource_numbers = {
             'human_sample_preprocess_1': 10,
             'human_sample_preprocess_2': 10,
-            'human_sample_receipt_1': 30,
-            'human_sample_receipt_2': 10,
-            'human_sample_prep_1': 35,
-            'human_sample_prep_2': 22,
-            'human_rna_prep_1': 10,
-            'human_rna_prep_2': 10,
-            'human_pcr_1': 35,
-            'human_pcr_2': 25,
+            'human_sample_preprocess_3': 0,
+            'human_sample_receipt_1': 1,
+            'human_sample_receipt_2': 1,
+            'human_sample_receipt_3': 1,
+            'human_sample_prep_1': 29,
+            'human_sample_prep_2': 29,
+            'human_sample_prep_3': 4,
+            'human_rna_prep_1': 4,
+            'human_rna_prep_2': 4,
+            'human_rna_prep_3': 3,
+            'human_pcr_1': 4,
+            'human_pcr_2': 4,
+            'human_pcr_3': 2,
             'human_data_analysis': 10,
-            'sample_heat_incubator': 10,
-            'beckman_rna_extraction': 28,
-            'pcr_plate_stamper': 9,
-            'pcr_plate_reader': 15,
-            'sample_prep_automation': 5,
+            'sample_heat_incubator': 8,
+            'beckman_rna_extraction': 11,
+            'pcr_plate_stamper': 4,
+            'pcr_plate_reader': 8,
+            'sample_prep_automation': 0,
             'transfer': 1
         }
 
         self.workstation_capacity = {
             'workstation_0': 9999,
-            'workstation_1a': 21,
-            'workstation_1b_man': 25,
-            'workstation_1b_auto': 5,
-            'workstation_1c': 10,
-            'workstation_2': 26,
-            'workstation_3': 9,
-            'workstation_4': 15,
+            'workstation_1a': 9,
+            'workstation_1b_man': 9,
+            'workstation_1b_auto': 0,
+            'workstation_1c': 8,
+            'workstation_2': 11,
+            'workstation_3': 4,
+            'workstation_4': 8,
             'workstation_5': 999,
             'workstation_6': 10,
             'transfer': 99
@@ -80,32 +85,39 @@ class Scenario(object):
         self.resource_shift_hours = {
             'human_sample_preprocess_1': (0.00, 9.00),
             'human_sample_preprocess_2': (9.01, 18.00),
+            'human_sample_preprocess_3': (17.0, 24.00),
             'human_sample_receipt_1': (0.00, 9.00),
             'human_sample_receipt_2': (9.01, 18.0),
+            'human_sample_receipt_3': (17.0, 24.0),
             'human_sample_prep_1': (0.00, 9.00),
             'human_sample_prep_2': (9.01, 18.0),
+            'human_sample_prep_3': (17, 24.0),
             'human_rna_prep_1': (0.00, 9.00),
             'human_rna_prep_2': (9.01, 18.0),
+            'human_rna_prep_3': (17.0, 24.0),
             'human_pcr_1': (0.0, 9.00),
             'human_pcr_2': (9.01, 18.0),
-            'human_data_analysis': (0.0, 18.0),
-            'sample_heat_incubator': (0.0, 18.0),
-            'beckman_rna_extraction': (0.0, 18.0),
-            'pcr_plate_stamper': (0.0, 18.0),
-            'pcr_plate_reader': (0.0, 20.0),
-            'sample_prep_automation': (0.0, 18.0),
-            'transfer': (0.0, 18.0),
+            'human_pcr_3': (17.0, 24.0),
+            'human_data_analysis': (0.0, 24.0),
+            'sample_heat_incubator': (0.0, 24.0),
+            'beckman_rna_extraction': (0.0, 24.0),
+            'pcr_plate_stamper': (0.0, 24.0),
+            'pcr_plate_reader': (0.0, 24.0),
+            'sample_prep_automation': (0.0, 24.0),
+            'transfer': (0.0, 24.0),
             'dummy': (0.0, 24.0)
         }
 
         # Resource unavailability on any whole day due to breakdown
         self.resource_breakdown_unavailability = {
-            'human_sample_preprocess_1': 0,
-            'human_sample_preprocess_2': 0,
-            'human_sample_receipt_1': 0,
-            'human_sample_receipt_2': 0,
-            'human_sample_prep_1': 0,
-            'human_sample_prep_2': 0,
+            'human_sample_preprocess_1': 0.1,
+            'human_sample_preprocess_2': 0.1,
+            'human_sample_preprocess_3': 0.1,
+            'human_sample_receipt_1': 0.1,
+            'human_sample_receipt_2': 0.1,
+            'human_sample_receipt_3': 0.1,
+            'human_sample_prep_1': 0.1,
+            'human_sample_prep_2': 0.1,
             'human_rna_prep_1': 0,
             'human_rna_prep_2': 0,
             'human_pcr_1': 0,
@@ -124,6 +136,7 @@ class Scenario(object):
         self.fte_resources = [
             'human_sample_preprocess_1',
             'human_sample_preprocess_2',
+            'human_sample_preprocess_3',
             'human_sample_receipt_1',
             'human_sample_receipt_2',
             'human_sample_prep_1',
@@ -142,13 +155,13 @@ class Scenario(object):
         self.process_duration = {
             'batch_input': ([0, 0, 0],),
             'sample_preprocess': ([10, 0, 0],),
-            'sample_receipt': ([22, 0, 0],),
-            'sample_prep_manual': ([45, 0, 0],),
-            'sample_prep_auto': ([20, 0, 0], [8, 0, 0], [11, 0, 0]),
-            'sample_heat': ([2, 0, 0], [20, 0, 0], [2, 0, 0]),
-            'pcr_prep': ([12.5, 0, 0], [5, 0, 0], [17, 0, 0]),
-            'pcr': ([8, 0, 0], [90, 0, 0], [5, 0, 0]),
-            'rna_extraction': ([5, 0, 0], [115, 0, 0], [2, 0, 0]),
+            'sample_receipt': ([22*1.3, 0, 0],),
+            'sample_prep_manual': ([22*1.3, 0, 0],),
+            'sample_prep_auto': ([2.5, 0, 0], [10, 0, 0], [2.5, 0, 0]),
+            'sample_heat': ([4, 0, 0], [20, 0, 0], [1, 0, 0]),
+            'pcr_prep': ([5, 0, 0], [3, 0, 0], [5, 0, 0]),
+            'pcr': ([6.5, 0, 0], [90, 0, 0], [1, 0, 0]),
+            'rna_extraction': ([5, 0, 0], [114, 0, 0], [2.5, 0, 0]),
             'data_analysis': ([10, 0, 0],),
             'transfer_1': ([6, 0, 0],)
         }
@@ -157,14 +170,14 @@ class Scenario(object):
         self.allow_manual_sample_prep = True
 
         # Batch sizing for stages (collate for job then re-split)
-        self.heat_batch_size = 4
+        self.heat_batch_size = 3
         self.rna_extraction_batch_size = 3
         self.transfer_1_batch_size = 4
 
         # Add a triangular distribution of extra time per process
         # Average extra time with be 1/4 of this
         # (e.g. 0.25 = 6.25% added length on average)
-        self.additional_time_manual = 0.25
+        self.additional_time_manual = 0.76
         self.additional_time_auto = 0.10
 
         # Range of times new jobs may start
@@ -208,7 +221,8 @@ class Scenario(object):
             'sample_preprocess': {
                 'process_type': 'manual',
                 'human_list': (['human_sample_preprocess_1',
-                                'human_sample_preprocess_2'],
+                                'human_sample_preprocess_2',
+                                'human_sample_preprocess_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_sample_preprocess_jobs'],
                                ['tracker_sample_preprocess_fte']),
@@ -218,12 +232,16 @@ class Scenario(object):
                 'process_type': 'manual',
                 'human_list': (['human_sample_receipt_1',
                                 'human_sample_receipt_2',
+                                'human_sample_receipt_3',
                                 'human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['human_sample_receipt_1',
                                 'human_sample_receipt_2',
+                                'human_sample_receipt_3',
                                 'human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['tracker_sample_receipt_fte'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_sample_receipt_jobs']),
@@ -232,9 +250,11 @@ class Scenario(object):
             'sample_prep_manual': {
                 'process_type': 'manual',
                 'human_list': (['human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_sample_prep_jobs'],
                                ['tracker_sample_prep_fte']),
@@ -243,9 +263,11 @@ class Scenario(object):
             'sample_prep_auto': {
                 'process_type': 'auto',
                 'human_list': (['human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_sample_prep_jobs'],
                                ['tracker_sample_prep_fte']),
@@ -255,7 +277,8 @@ class Scenario(object):
             'sample_heat': {
                 'process_type': 'auto',
                 'human_list': (['human_sample_prep_1',
-                                'human_sample_prep_2'],
+                                'human_sample_prep_2',
+                                'human_sample_prep_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_heat_fte']),
                 'machine_list': (['sample_heat_incubator'],
@@ -264,7 +287,8 @@ class Scenario(object):
             'rna_extraction': {
                 'process_type': 'auto',
                 'human_list': (['human_rna_prep_1',
-                                'human_rna_prep_2'],
+                                'human_rna_prep_2',
+                                'human_rna_prep_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_rna_prep_fte']),
                 'machine_list': (['beckman_rna_extraction'],
@@ -273,7 +297,8 @@ class Scenario(object):
             'pcr_prep': {
                 'process_type': 'auto',
                 'human_list': (['human_pcr_1',
-                                'human_pcr_2'],
+                                'human_pcr_2',
+                                'human_pcr_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_pcr_prep_fte']),
                 'machine_list': (['pcr_plate_stamper'],
@@ -282,7 +307,8 @@ class Scenario(object):
             'pcr': {
                 'process_type': 'auto',
                 'human_list': (['human_pcr_1',
-                                'human_pcr_2'],
+                                'human_pcr_2',
+                                'human_pcr_3'],
                                ['tracker_all_jobs_fte'],
                                ['tracker_pcr_fte']),
                 'machine_list': (['pcr_plate_reader'],

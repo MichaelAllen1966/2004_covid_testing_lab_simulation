@@ -379,10 +379,19 @@ class Process:
 
         # Get summary
         df_summary = self.time_stamp_df.describe().T['50%']
+
+        # Limit fields to those present in dataframe
+        df_items = list(df_summary.index)
+        fields = [f for f in fields if f in df_items]
+
         df_summary = df_summary.loc[fields]
         df_summary = df_summary.round(0)
         df_summary.rename('median', inplace=True)
         self.audit.time_stamp_medians = df_summary
+
+        # Restrict time stamp data to those with numeric data
+        keep = list(self.time_stamp_df.count(numeric_only=True).index)
+        self.time_stamp_df = self.time_stamp_df[keep]
 
         # Get medians and 95 percentiles by priority
         medians = self.time_stamp_df.groupby(['priority']).median()
