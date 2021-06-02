@@ -1,0 +1,8 @@
+,,min,mean,median,max
+,,Result,Result,Result,Result
+result_type,name,,,,
+demand_met,base,0.96,0.987,0.99,1.0
+input,base,14973.0,14973.0,14973.0,14973.0
+max_process_time_hours,base,30.2,42.419,42.95,46.48
+median_process_time_hours,base,28.9,34.204333333333324,30.21,42.91
+output,base,14396.4,14811.8,14824.2,15028.8
