@@ -374,9 +374,6 @@ class Process:
         mask = self.time_stamp_df['time_in'] >= cutoff
         self.time_stamp_df = self.time_stamp_df[mask]
 
-        # temp save
-        self.time_stamp_df.to_csv('temp_time_stamp.csv')
-
         # Get summary
         df_summary = self.time_stamp_df.describe().T['50%']
 
